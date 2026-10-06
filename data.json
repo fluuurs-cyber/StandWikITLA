@@ -188,6 +188,38 @@
           "links": []
         }
       ]
+    },
+    {
+      "id": "8nbqibq",
+      "name": "Mandom",
+      "rarity": "Mythic",
+      "part": "Part 7",
+      "type": "Class - Zoner",
+      "status": "Confirmed",
+      "quote": "Welcome to the true man's world.",
+      "quoteLabel": "Ringo Roadagain",
+      "aura": "#da101b",
+      "arc": "Steel Ball Run",
+      "playable": "Confirmed playable",
+      "overview": "Mandom focuses on punishing your enemies from afar and using your utility to mess with your enemy.",
+      "portrait": "",
+      "moves": [
+        {
+          "id": "j4aajjn",
+          "mode": "universal",
+          "key": "Q",
+          "held": false,
+          "name": "True Man's World",
+          "does": "The player plays with their watch, after a short startup, everyone in a timestop radius will go back to their previous place,state, and hp 6 seconds ago, all enemies will be stunned for 3 seconds.",
+          "meter": "25",
+          "blockable": false,
+          "paryable": false,
+          "block": "",
+          "armor": "",
+          "images": [],
+          "links": []
+        }
+      ]
     }
   ]
 }
