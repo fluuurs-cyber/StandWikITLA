@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Move Codex</title>
+<title>TLA Codex</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Spectral:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -26,6 +26,7 @@
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 70px)}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.65;min-height:100vh}
 a{color:inherit;text-decoration:none}
@@ -41,6 +42,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .nav .links a{color:var(--muted)}
 .nav .links a.on,.nav .links a:hover{color:#fff}
 .nav .spacer{flex:1}
+.navbreak{display:none}
 .search{width:min(300px,34vw);background:var(--panel);border:1px solid var(--line2);border-radius:999px;padding:7px 16px;color:var(--text);font:14px var(--mono)}
 .search::placeholder{color:var(--muted)}
 .lockbtn{border:1px solid var(--gold);background:transparent;color:var(--gold);padding:8px 18px;font-family:var(--serif);font-weight:600;font-size:17px;letter-spacing:.04em}
@@ -126,7 +128,7 @@ body.editing .edit-only.block{display:block}
 .move{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
 .move>header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:16px 22px;border-bottom:1px solid var(--line);background:var(--panel2)}
 .move h3{margin:0;flex:1;min-width:180px;font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.15;color:#f1e6c8}
-.move .tools{gap:8px 10px;align-items:center;flex-wrap:wrap}
+.tools{gap:8px 10px;align-items:center;flex-wrap:wrap}
 .keywrap{display:flex;align-items:center;gap:10px}
 .keywrap:empty{display:none}
 .keycap{min-width:42px;height:42px;padding:0 10px;display:inline-grid;place-items:center;font:500 16px var(--mono);text-transform:uppercase;color:var(--gold-soft);background:var(--panel);border:1px solid var(--line2);border-bottom-width:3px;border-radius:4px}
@@ -192,7 +194,73 @@ body.editing .togs + input[type=text]{margin-top:8px}
 .pcard .meta{padding:14px 16px 16px}
 .pcard h3{margin:0;font-family:var(--serif);font-size:26px;font-weight:600;color:#f1e6c8;line-height:1.1}
 .pcard .meta p{margin:4px 0 0;font:12px var(--mono);color:var(--muted)}
-.pcard .del{position:absolute;top:8px;right:8px}
+.pcard .acts{position:absolute;top:8px;right:8px;gap:6px}
+
+/* ---------- titlebar / quests / keywording ---------- */
+.titlebar{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 18px}
+.titlebar h1.title{flex:1;min-width:240px}
+.titlebar .acts2{margin-top:10px;gap:8px}
+.lead{max-width:70ch;margin:-6px 0 10px;font-size:19px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:46px 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.qhead h2{font-size:36px}
+.cast{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.cast .empty{grid-column:1/-1}
+.char{border:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column}
+.char .cimg{aspect-ratio:3/4;background:#0a0a0e;display:grid;place-items:center;border-bottom:3px solid var(--aura);overflow:hidden}
+.char .cimg img{width:100%;height:100%;object-fit:cover;object-position:top;cursor:zoom-in}
+.char .cimg span{font:600 64px var(--serif);color:var(--line2)}
+.char .cbody{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px}
+.char h3{margin:0;font:600 24px/1.1 var(--serif);color:#f1e6c8}
+.char .role{margin:0;font:12px var(--mono);color:var(--muted)}
+.char .drop{padding:10px 8px;font-size:12px}
+.row2{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+
+.blk{margin-bottom:16px}
+.blk.hd{margin:44px 0 18px;padding-bottom:12px;border-bottom:1px solid var(--line2);display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.blk.hd h3{flex:1;margin:0;min-width:200px;font:600 clamp(28px,3vw,38px)/1.1 var(--serif);color:var(--gold)}
+.blk.card{border:1px solid var(--line);background:var(--panel)}
+.blk.card>header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.dlabel{flex:1;min-width:160px;font:italic 500 21px var(--serif);color:var(--gold-soft)}
+body.editing .dlabel input{font-family:var(--serif);font-size:21px;font-style:italic}
+.lines{padding:6px 22px}
+.line{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}
+body:not(.editing) .line{grid-template-columns:52px minmax(0,1fr)}
+.av{width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid var(--line2);background:#0a0a0e;display:grid;place-items:center;font:600 22px var(--serif);color:var(--muted)}
+.av.sys{font:500 11px var(--mono);letter-spacing:.06em}
+.spk{display:block;font:12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:3px}
+.line.player .spk{color:#7fb7ff}
+.line.narrator .ltext{font-style:italic;color:var(--muted)}
+body.editing .line select{margin-bottom:6px}
+.ltext{font-size:18px;overflow-wrap:anywhere}
+
+.blk.opt{border-left:4px solid var(--aura)}
+.pill.optp{color:#b79cff;border-color:#5b3fa0}
+.prompt{padding:18px 22px 6px;font:italic 500 clamp(22px,2.3vw,28px)/1.3 var(--serif);color:#f1e6c8}
+.prompt textarea{font-style:italic}
+.choices{padding:10px 22px 18px;display:grid;gap:10px}
+.choice{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:14px;align-items:start;border:1px solid var(--line2);background:var(--panel2);padding:14px 16px}
+body:not(.editing) .choice{grid-template-columns:34px minmax(0,1fr)}
+.cnum{width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--gold);color:var(--gold);font:500 14px var(--mono)}
+.clabel{font:600 22px/1.25 var(--serif);color:#f1e6c8}
+body.editing .clabel input{font-family:var(--serif);font-size:22px;font-weight:600}
+.coutcome{margin-top:8px}
+.coutcome .lbl{margin-bottom:4px}
+.addrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+
+.kw{border:1px solid var(--line);background:var(--panel);margin-bottom:14px}
+.kw>header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.kw h3{flex:1;min-width:180px;margin:0;font:600 28px/1.15 var(--serif);color:#f1e6c8}
+.kw .kbody{padding:18px 22px;display:grid;gap:14px}
+.kw .ktext{font-size:17px;overflow-wrap:anywhere}
+
+/* mode editing tools */
+.movetools{margin:-6px 0 22px}
+.movetools .bar{display:flex;flex-wrap:wrap;gap:8px}
+.modepanel{margin-top:10px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;border:1px dashed var(--line2);padding:12px 16px;background:rgba(217,164,65,.04)}
+.modepanel .grp{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+.modepanel .grp .lbl{margin:0}
+body.editing .modepanel input[type=text]{width:210px;font-family:var(--serif);font-size:20px}
 
 /* ---------- floating edit panel / overlays ---------- */
 .editbar{position:fixed;right:18px;bottom:18px;z-index:60;display:none;gap:8px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 36px);padding:10px 12px;background:rgba(14,14,19,.97);border:1px solid var(--gold);box-shadow:0 10px 40px rgba(0,0,0,.7)}
@@ -203,13 +271,18 @@ body.editing .editbar{display:flex}
 .lightbox{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);display:none;place-items:center;padding:30px;cursor:zoom-out}
 .lightbox.show{display:grid}
 .lightbox img{max-width:100%;max-height:100%;object-fit:contain}
-dialog{background:var(--panel);color:var(--text);border:1px solid var(--gold);padding:26px 28px;width:min(420px,92vw)}
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--gold);padding:26px 28px;width:min(460px,92vw)}
 dialog::backdrop{background:rgba(0,0,0,.75)}
 dialog h3{margin:0 0 6px;font-family:var(--serif);font-size:28px;color:var(--gold)}
 dialog p{margin:0 0 14px;color:var(--muted);font-size:15px}
 dialog input{width:100%;background:var(--bg);border:1px solid var(--line2);color:var(--text);padding:10px 12px;font:15px var(--mono);margin-bottom:6px}
 dialog .err{color:#e0605c;font:13px var(--mono);min-height:20px}
 dialog .row{display:flex;justify-content:flex-end;gap:10px;margin-top:10px}
+dialog label.dl{display:block;margin-bottom:12px;font:11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+dialog select{display:block;width:100%;margin-top:6px;background:var(--bg);border:1px solid var(--line2);color:var(--text);padding:9px 10px;font:14px var(--mono);letter-spacing:0;text-transform:none;color-scheme:dark}
+dialog .chk{display:flex;gap:8px;align-items:center;font:13px var(--mono);color:var(--text);margin:6px 0 4px}
+dialog input[type=checkbox]{width:auto;margin:0;accent-color:var(--gold)}
+dialog .hint{font-size:13px;color:var(--muted);margin:0 0 12px;min-height:20px}
 
 @media (max-width:980px){
   .hero{grid-template-columns:1fr}
@@ -222,7 +295,7 @@ dialog .row{display:flex;justify-content:flex-end;gap:10px;margin-top:10px}
   .fields{grid-template-columns:1fr 1fr}
 }
 @media (max-width:640px){
-  .nav{padding:0 14px;gap:12px}.nav .links{display:none}.search{width:auto;flex:1}
+  :root{--nav-h:100px}.nav{padding:8px 14px;gap:6px 12px;flex-wrap:wrap;align-content:center}.logo{order:1;font-size:22px}.nav .spacer{order:2}.lockbtn{order:3;padding:6px 14px}.navbreak{display:block;order:4;flex-basis:100%;height:0}.nav .links{order:5;gap:14px;font-size:16px}.search{order:6;width:auto;flex:1;min-width:0;padding:6px 12px}.qhead h2{font-size:30px}.line{grid-template-columns:42px minmax(0,1fr)}.av{width:42px;height:42px}
   main{padding-left:14px;padding-right:14px}
   .fields{grid-template-columns:1fr}
   .modes{border-left:0;padding-left:0;width:100%}.modes button{font-size:18px}.modes button[aria-pressed=true]{font-size:30px}
@@ -232,10 +305,15 @@ dialog .row{display:flex;justify-content:flex-end;gap:10px;margin-top:10px}
 <body>
 
 <nav class="nav">
-  <a class="logo" href="#/"><i></i>Move Codex</a>
-  <div class="links"><a href="#/" id="navPages" class="on">Pages</a></div>
+  <a class="logo" href="#/"><i></i>TLA Codex</a>
+  <div class="links">
+    <a href="#/" id="navPages" class="on">Abilities</a>
+    <a href="#/quests" id="navQuests">Quests</a>
+    <a href="#/keywording" id="navKeywords">Keywording</a>
+  </div>
   <div class="spacer"></div>
-  <input class="search" id="search" type="search" placeholder="Search pages  (Ctrl/⌘ K)" aria-label="Search pages">
+  <span class="navbreak"></span>
+  <input class="search" id="search" type="search" placeholder="Search  (Ctrl/⌘ K)" aria-label="Search">
   <button class="lockbtn" id="lockBtn">Edit</button>
 </nav>
 
@@ -265,22 +343,41 @@ dialog .row{display:flex;justify-content:flex-end;gap:10px;margin-top:10px}
   </form>
 </dialog>
 
+<dialog id="copyDlg">
+  <form id="copyForm" autocomplete="off">
+    <h3>Copy moveset</h3>
+    <p>Copy moves from an ability sheet into this one.</p>
+    <label class="dl">Copy from <select id="cpSrc"></select></label>
+    <label class="dl">What to copy <select id="cpPart"></select></label>
+    <label class="dl" id="cpIntoWrap">Copy into <select id="cpInto"></select></label>
+    <p class="hint" id="cpHint"></p>
+    <label class="chk"><input type="checkbox" id="cpReplace"> Replace the existing moves in the target first</label>
+    <div class="row">
+      <button type="button" class="btn" id="cpCancel">Cancel</button>
+      <button type="submit" class="btn gold">Copy</button>
+    </div>
+  </form>
+</dialog>
+
 <input type="file" id="filePick" accept="image/*" multiple hidden>
 <input type="file" id="jsonPick" accept="application/json,.json" hidden>
 
 <script>
 /* =====================================================================
-   Move Codex — static site for GitHub Pages
+   TLA Codex — static site for GitHub Pages
    - Everyone sees what is in data.json (the published copy)
    - The creator unlocks edit mode with a passphrase, edits happen in a
      local draft, then "Export data.json" and commit it to the repo
    ===================================================================== */
 
-const MODES = [
-  { key:'universal', label:'Universal', note:'Moves every form can use.' },
-  { key:'off',       label:'Stand Off', note:'Everything in Universal, plus moves that only exist with the Stand off.' },
-  { key:'on',        label:'Stand On',  note:'Everything in Universal, plus moves that only exist with the Stand on.' }
-];
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const clone = o => JSON.parse(JSON.stringify(o));
+const listJoin = a => a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+
+/* ---------- keybinds ---------- */
 const KEY_ORDER = ['M1','M2','E','R','T','Y','G','H','J','X','V','B','Z','K'];
 // Looks at the moves already in the list (last one first) and returns the next key in KEY_ORDER.
 function nextKey(list) {
@@ -290,6 +387,30 @@ function nextKey(list) {
   }
   return KEY_ORDER[0];
 }
+
+/* ---------- modes (per ability sheet) ---------- */
+const defaultModes = () => [
+  { id: 'universal', name: 'Universal', links: [] },
+  { id: 'off', name: 'Stand Off', links: ['universal'] },
+  { id: 'on',  name: 'Stand On',  links: ['universal'] }
+];
+const modeById = (p, id) => p.modes.find(m => m.id === id);
+const modeName = (p, id) => (modeById(p, id) || { name: 'Universal' }).name || 'Mode';
+// every mode whose moves show up when viewing `id` (itself + everything it links to, transitively)
+function closure(p, id) {
+  const seen = new Set();
+  const walk = i => { if (seen.has(i)) return; seen.add(i); ((modeById(p, i) || {}).links || []).forEach(walk); };
+  walk(id);
+  return seen;
+}
+function modeNote(p) {
+  const mo = modeById(p, tab); if (!mo) return '';
+  const names = mo.links.filter(id => modeById(p, id)).map(id => modeName(p, id));
+  if (!names.length) return tab === 'universal' ? 'Moves every linked mode can use.' : `Moves that belong to ${mo.name} only.`;
+  return `Everything in ${listJoin(names)}, plus moves that only belong to ${mo.name}.`;
+}
+
+/* ---------- migration of older saved data ---------- */
 function migrateMove(m) {
   m.images = m.images || []; m.links = m.links || [];
   if (typeof m.blockable !== 'boolean') {
@@ -300,8 +421,26 @@ function migrateMove(m) {
   }
   if (typeof m.paryable !== 'boolean') m.paryable = false;
 }
-const migrateState = st => { (st.pages || []).forEach(p => (p.moves || []).forEach(migrateMove)); return st; };
+function migratePage(p) {
+  p.moves = p.moves || [];
+  if (!Array.isArray(p.modes) || !p.modes.length) p.modes = defaultModes();
+  if (!p.modes.some(m => m.id === 'universal')) p.modes.unshift({ id: 'universal', name: 'Universal', links: [] });
+  p.modes.forEach(m => { m.name = m.name || 'Mode'; if (!Array.isArray(m.links)) m.links = m.id === 'universal' ? [] : ['universal']; });
+  p.moves.forEach(m => { migrateMove(m); if (!p.modes.some(x => x.id === m.mode)) m.mode = 'universal'; });
+}
+function migrateQuest(q) {
+  q.summary = q.summary || ''; q.characters = q.characters || []; q.blocks = q.blocks || [];
+  q.characters.forEach(c => { c.image = c.image || ''; c.role = c.role || ''; });
+  q.blocks.forEach(b => { if (b.type === 'dialogue') b.lines = b.lines || []; if (b.type === 'options') b.choices = b.choices || []; });
+}
+function migrateState(st) {
+  st.pages = st.pages || []; st.quests = st.quests || []; st.keywords = st.keywords || [];
+  st.pages.forEach(migratePage); st.quests.forEach(migrateQuest);
+  st.keywords.forEach(k => { if (k.type === 'entry') k.images = k.images || []; });
+  return st;
+}
 
+/* ---------- links / video helpers ---------- */
 function parseLink(raw) {
   raw = (raw || '').trim(); if (!raw) return null;
   try {
@@ -326,12 +465,20 @@ function ytId(href) {
   } catch { return null; }
 }
 
-const modeLabel = k => (MODES.find(m => m.key === k) || MODES[0]).label;
-
-const $  = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid = () => Math.random().toString(36).slice(2, 9);
+/* ---------- generic helpers ---------- */
+// find any object with a given id anywhere inside a document (page, quest or keyword list)
+function findObj(root, id) {
+  if (!root || typeof root !== 'object') return null;
+  if (Array.isArray(root)) { for (const x of root) { const r = findObj(x, id); if (r) return r; } return null; }
+  if (root.id === id) return root;
+  for (const k in root) { const v = root[k]; if (v && typeof v === 'object') { const r = findObj(v, id); if (r) return r; } }
+  return null;
+}
+function swap(arr, id, dir) {
+  const i = arr.findIndex(x => x.id === id), j = i + dir;
+  if (i < 0 || j < 0 || j >= arr.length) return false;
+  [arr[i], arr[j]] = [arr[j], arr[i]]; return true;
+}
 
 /* ---------- data ---------- */
 const blankPage = (name = 'New Character') => ({
@@ -340,26 +487,52 @@ const blankPage = (name = 'New Character') => ({
   quote: 'Your signature line goes here', quoteLabel: 'Signature line',
   aura: '#8144e4', arc: 'Featured arc', playable: 'Confirmed playable',
   overview: 'Write the character overview here.',
-  portrait: '', moves: []
+  portrait: '', modes: defaultModes(), moves: []
 });
 const blankMove = (mode = 'universal') => ({
   id: uid(), mode, key: '', held: false, name: 'New Move', does: '', meter: '', blockable: false, paryable: false, block: '', armor: '', images: [], links: []
 });
+const blankQuest = (name = 'New Quest') => ({ id: uid(), name, summary: '', characters: [], blocks: [] });
+const blankChar = () => ({ id: uid(), name: 'New Character', role: '', image: '' });
+const blankBlock = type => {
+  if (type === 'header')   return { id: uid(), type, text: 'New section' };
+  if (type === 'dialogue') return { id: uid(), type, label: '', lines: [{ id: uid(), speaker: 'narrator', text: '' }] };
+  return { id: uid(), type: 'options', prompt: 'What will you do?', choices: [{ id: uid(), label: 'Option 1', outcome: '' }, { id: uid(), label: 'Option 2', outcome: '' }] };
+};
 const seed = () => {
   const p = blankPage('Example Character');
-  p.overview = 'This is a sample page. Unlock edit mode, then change any text, drop in a portrait, and add moves to each mode.';
+  p.overview = 'This is a sample sheet. Unlock edit mode, then change any text, drop in a portrait, and add moves to each mode.';
   p.moves = [
     { id: uid(), mode:'universal', key:'M1', held:false, name:'Light Combo', does:'Four-hit string that ends in a knockdown.', meter:'0', blockable:true, paryable:true, block:'', armor:'None', images:[], links:[] },
     { id: uid(), mode:'universal', key:'M2', held:false, name:'Grab', does:'Close range throw. Cannot be blocked.', meter:'0', blockable:false, paryable:false, block:'', armor:'None', images:[], links:[] },
     { id: uid(), mode:'off',       key:'E', held:false, name:'Off-Mode Barrage', does:'Rapid flurry that pushes the opponent back.', meter:'25%', blockable:true, paryable:true, block:'Chip damage', armor:'Light armor on startup', images:[], links:[] },
     { id: uid(), mode:'on',        key:'E', held:true, name:'On-Mode Heavy Strike', does:'Slow, powerful hit with a long wind-up.', meter:'50%', blockable:true, paryable:false, block:'Guard break', armor:'Super armor', images:[], links:[] }
   ];
-  return { editHash: '', pages: [p] };
+  const q = blankQuest('Example Quest');
+  q.summary = 'A sample quest showing characters, dialogue and a choice.';
+  const guide = { id: uid(), name: 'The Guide', role: 'Quest giver', image: '' };
+  q.characters = [guide];
+  q.blocks = [
+    { id: uid(), type: 'header', text: 'Chapter 1: The Meeting' },
+    { id: uid(), type: 'dialogue', label: 'At the docks', lines: [
+      { id: uid(), speaker: 'narrator', text: 'A stranger waves you over.' },
+      { id: uid(), speaker: guide.id, text: 'You look like someone who can handle trouble.' } ] },
+    { id: uid(), type: 'options', prompt: 'Will you help?', choices: [
+      { id: uid(), label: 'Accept', outcome: 'The quest begins.' },
+      { id: uid(), label: 'Decline', outcome: 'The guide walks away.' } ] }
+  ];
+  const kws = [
+    { id: uid(), type: 'header', text: 'Defense' },
+    { id: uid(), type: 'entry', name: 'Armor', text: 'While a move has armor, hits do not interrupt it. Super armor ignores all hits; light armor only ignores one.', images: [] },
+    { id: uid(), type: 'entry', name: 'Held', text: 'A held move keeps charging for as long as its key stays down.', images: [] }
+  ];
+  return { editHash: '', pages: [p], quests: [q], keywords: kws };
 };
 
 let state = null;
 let editing = false;
 let tab = 'universal';
+let lastSection = null;
 
 /* ---------- local draft storage (IndexedDB, so big images fit) ---------- */
 const idb = {
@@ -435,11 +608,20 @@ function lock() {
 $('#lockBtn').onclick = () => editing ? lock() : openAuth();
 
 /* ---------- routing ---------- */
-const curPage = () => {
-  const m = location.hash.match(/^#\/p\/(.+)$/);
-  return m ? state.pages.find(p => p.id === m[1]) : null;
-};
-window.addEventListener('hashchange', () => { tab = 'universal'; render(); window.scrollTo(0, 0); });
+function route() {
+  const h = location.hash; let m, d;
+  if ((m = h.match(/^#\/p\/(.+)$/)) && (d = state.pages.find(x => x.id === m[1]))) return { kind: 'ability', doc: d };
+  if ((m = h.match(/^#\/q\/(.+)$/)) && (d = state.quests.find(x => x.id === m[1]))) return { kind: 'quest', doc: d };
+  if (h === '#/quests') return { kind: 'quests' };
+  if (h === '#/keywording') return { kind: 'keywording', doc: state.keywords };
+  return { kind: 'abilities' };
+}
+const sectionOf = k => (k === 'ability' || k === 'abilities') ? 'abilities' : (k === 'quest' || k === 'quests') ? 'quests' : 'keywording';
+window.addEventListener('hashchange', () => {
+  tab = 'universal';
+  if (sectionOf(route().kind) !== lastSection) $('#search').value = '';
+  render(); window.scrollTo(0, 0);
+});
 
 /* ---------- field helper ---------- */
 function F(obj, field, ph, opt = {}) {
@@ -449,26 +631,36 @@ function F(obj, field, ph, opt = {}) {
   const d = `data-f="${field}"${mid} placeholder="${esc(ph)}" aria-label="${esc(ph)}"`;
   return opt.ml ? `<textarea ${d} rows="2">${esc(v)}</textarea>` : `<input type="text" ${d} value="${esc(v)}">`;
 }
+const thumbHTML = (o, src, n) => `
+  <figure class="thumb"><img src="${src}" alt="${esc(o.name || '')} image ${n + 1}" data-act="zoom">
+    ${editing ? `<button class="x" data-act="del-img" data-m="${o.id}" data-i="${n}" aria-label="Remove image">×</button>` : ''}
+  </figure>`;
+const searchText = () => $('#search').value.trim().toLowerCase();
 
-/* ---------- views ---------- */
-function homeView() {
-  const q = $('#search').value.trim().toLowerCase();
+/* =====================================================================
+   ABILITIES
+   ===================================================================== */
+function abilitiesHome() {
+  const q = searchText();
   const pages = state.pages.filter(p => !q || (p.name + ' ' + p.part + ' ' + p.rarity).toLowerCase().includes(q));
   const cards = pages.map(p => `
     <a class="pcard" href="#/p/${p.id}" style="--c:${esc(p.aura)}">
       <div class="img">${p.portrait ? `<img src="${p.portrait}" alt="">` : `<span>${esc((p.name || '?')[0])}</span>`}</div>
       <div class="meta"><h3>${esc(p.name)}</h3><p>${esc(p.part)} · ${esc(p.rarity)}</p></div>
-      <button class="btn sm danger edit-only del" data-act="del-page" data-id="${p.id}">Delete</button>
+      <div class="acts edit-only">
+        <button class="btn sm" data-act="dup-page" data-id="${p.id}">Duplicate</button>
+        <button class="btn sm danger" data-act="del-page" data-id="${p.id}">Delete</button>
+      </div>
     </a>`).join('');
   return `
     <div class="home-head">
       <div>
-        <h1>Pages</h1>
+        <h1>Abilities</h1>
         <p>Pick a character to see their full move list.</p>
       </div>
-      <button class="btn gold edit-only" data-act="new-page">+ New page</button>
+      <button class="btn gold edit-only" data-act="new-page">+ New ability</button>
     </div>
-    ${cards ? `<div class="grid">${cards}</div>` : `<div class="empty">${q ? 'No pages match that search.' : (editing ? 'No pages yet. Select “New page” to start one.' : 'No pages yet.')}</div>`}`;
+    ${cards ? `<div class="grid">${cards}</div>` : `<div class="empty">${q ? 'No abilities match that search.' : (editing ? 'No abilities yet. Select “New ability” to start one.' : 'No abilities yet.')}</div>`}`;
 }
 
 function pageView(p) {
@@ -476,8 +668,11 @@ function pageView(p) {
   const stat = (label, field, ph, cls = '') =>
     `<div class="stat ${cls}"><span class="lbl">${label}</span><div class="val">${F(p, field, ph, { ml: true })}</div></div>`;
   return `
-    <div class="crumbs"><a href="#/">Pages</a><span>/</span>${esc(p.name)}</div>
-    <h1 class="title">${F(p, 'name', 'Page name')}</h1>
+    <div class="crumbs"><a href="#/">Abilities</a><span>/</span>${esc(p.name)}</div>
+    <div class="titlebar">
+      <h1 class="title">${F(p, 'name', 'Page name')}</h1>
+      <div class="acts2 edit-only"><button class="btn" data-act="dup-page" data-id="${p.id}">Duplicate sheet</button></div>
+    </div>
 
     <section class="hero" id="hero">
       <div>
@@ -520,11 +715,13 @@ function pageView(p) {
     </section>
 
     <div class="moves-head"><h2>Move List</h2><div class="modes" id="modes" role="tablist" aria-label="Move list mode"></div><p id="modeNote"></p></div>
+    <div class="movetools edit-only block" id="movetools"></div>
     <section id="moves"></section>`;
 }
 
 function visibleMoves(p) {
-  return p.moves.filter(m => m.mode === 'universal' || m.mode === tab);
+  const ids = closure(p, tab);
+  return p.moves.filter(m => ids.has(m.mode));
 }
 
 function blockHTML(m) {
@@ -554,24 +751,23 @@ function keyHTML(m) {
 
 function movesHTML(p) {
   const list = visibleMoves(p);
-  const cards = list.map((m, i) => {
-    const imgs = (m.images || []).map((src, n) => `
-      <figure class="thumb"><img src="${src}" alt="${esc(m.name)} preview ${n + 1}" data-act="zoom">
-        ${editing ? `<button class="x" data-act="del-img" data-m="${m.id}" data-i="${n}" aria-label="Remove image">×</button>` : ''}
-      </figure>`).join('');
+  const cards = list.map(m => {
+    const imgs = (m.images || []).map((src, n) => thumbHTML(m, src, n)).join('');
     const vids = linksHTML(m);
     const hasMedia = imgs || vids || editing;
-    const showTag = tab !== 'universal';
+    let pill = '';
+    if (m.mode !== tab) pill = `<span class="pill uni" title="Shared from ${esc(modeName(p, m.mode))}">${esc(modeName(p, m.mode))}</span>`;
+    else if (tab !== 'universal') pill = `<span class="pill">${esc(modeName(p, m.mode))} only</span>`;
     return `
     <article class="move" data-id="${m.id}">
       <header>
         <div class="keywrap">${keyHTML(m)}</div>
         <h3>${F(m, 'name', 'Move name', { mid: m.id })}</h3>
-        ${showTag ? `<span class="pill ${m.mode === 'universal' ? 'uni' : ''}">${m.mode === 'universal' ? 'Universal' : modeLabel(m.mode) + ' only'}</span>` : ''}
+        ${pill}
         <div class="tools edit-only">
           <label class="held-toggle"><input type="checkbox" data-f="held" data-m="${m.id}" ${m.held ? 'checked' : ''}> Held</label>
-          <select data-f="mode" data-m="${m.id}" aria-label="Which modes show this move">
-            ${MODES.map(o => `<option value="${o.key}" ${o.key === m.mode ? 'selected' : ''}>${o.key === 'universal' ? 'All modes' : o.label + ' only'}</option>`).join('')}
+          <select data-f="mode" data-m="${m.id}" aria-label="Which mode this move belongs to">
+            ${p.modes.map(o => `<option value="${o.id}" ${o.id === m.mode ? 'selected' : ''}>${esc(o.name)}${o.id === 'universal' ? ' (shared)' : ' only'}</option>`).join('')}
           </select>
           <button class="btn sm" data-act="up" data-m="${m.id}" aria-label="Move up">↑</button>
           <button class="btn sm" data-act="down" data-m="${m.id}" aria-label="Move down">↓</button>
@@ -598,127 +794,496 @@ function movesHTML(p) {
     </article>`;
   }).join('');
 
-  const add = `<button class="btn gold edit-only" data-act="add-move">+ Add move to ${modeLabel(tab)}</button>`;
-  return (cards || `<div class="empty">No moves in ${modeLabel(tab)} yet.</div>`) + `<div style="margin-top:6px">${add}</div>`;
+  const add = `<button class="btn gold edit-only" data-act="add-move">+ Add move to ${esc(modeName(p, tab))}</button>`;
+  return (cards || `<div class="empty">No moves in ${esc(modeName(p, tab))} yet.</div>`) + `<div style="margin-top:6px">${add}</div>`;
 }
 
-function renderModes() {
-  $('#modes').innerHTML = MODES.map(m =>
-    `<button role="tab" data-act="tab" data-tab="${m.key}" aria-pressed="${m.key === tab}">${m.label}</button>`
+function moveToolsHTML(p) {
+  const mo = modeById(p, tab); if (!mo) return '';
+  const others = p.modes.filter(x => x.id !== tab);
+  return `
+    <div class="bar">
+      <button class="btn sm" data-act="add-mode">+ Add mode</button>
+      <button class="btn sm" data-act="copy-moves">Copy moveset…</button>
+    </div>
+    <div class="modepanel">
+      <div class="grp"><span class="lbl">Mode name</span>
+        <input type="text" data-f="name" data-m="${mo.id}" value="${esc(mo.name)}" placeholder="Mode name" aria-label="Mode name"></div>
+      ${others.length ? `<div class="grp"><span class="lbl">Also includes moves from</span>
+        ${others.map(o => `<label class="tog"><input type="checkbox" data-linkmode="${o.id}" ${mo.links.includes(o.id) ? 'checked' : ''}><span>${esc(o.name)}</span></label>`).join('')}</div>` : ''}
+      ${tab !== 'universal' ? `<button class="btn sm danger" data-act="del-mode">Delete mode</button>` : ''}
+    </div>`;
+}
+
+function renderModes(p) {
+  $('#modes').innerHTML = p.modes.map(m =>
+    `<button role="tab" data-act="tab" data-tab="${m.id}" aria-pressed="${m.id === tab}">${esc(m.name)}</button>`
   ).join('');
 }
 function renderMoves(p) {
+  if (!modeById(p, tab)) tab = 'universal';
   $('#moves').innerHTML = movesHTML(p);
-  $('#modeNote').textContent = (MODES.find(m => m.key === tab) || {}).note || '';
-  renderModes();
+  $('#movetools').innerHTML = moveToolsHTML(p);
+  $('#modeNote').textContent = modeNote(p);
+  renderModes(p);
   autosize();
 }
 
-function applyAura(color) {
-  document.documentElement.style.setProperty('--aura', color || '#8144e4');
+/* ---- copy a moveset ---- */
+let copyInto = 'universal';
+function openCopy(p) {
+  $('#cpSrc').innerHTML = state.pages.map(x => `<option value="${x.id}">${esc(x.name || 'Untitled')}${x.id === p.id ? ' (this sheet)' : ''}</option>`).join('');
+  const other = state.pages.find(x => x.id !== p.id);
+  $('#cpSrc').value = (other || p).id;
+  $('#cpReplace').checked = false;
+  copyInto = tab;
+  fillCopy(p);
+  $('#copyDlg').showModal();
 }
+function fillCopy(p) {
+  const src = state.pages.find(x => x.id === $('#cpSrc').value) || p;
+  const parts = [];
+  if (src.id !== p.id) parts.push(`<option value="all">Everything (all modes)</option>`);
+  src.modes.forEach(m => parts.push(`<option value="${m.id}">Only “${esc(m.name)}” moves</option>`));
+  $('#cpPart').innerHTML = parts.join('');
+  $('#cpInto').innerHTML = p.modes.map(m => `<option value="${m.id}" ${m.id === copyInto ? 'selected' : ''}>${esc(m.name)}</option>`).join('');
+  updateCopyUI();
+}
+function updateCopyUI() {
+  const all = $('#cpPart').value === 'all';
+  $('#cpIntoWrap').hidden = all;
+  $('#cpHint').textContent = all
+    ? 'Modes are matched by name. Any that are missing get created on this sheet.'
+    : 'Copies only the moves that belong to that mode, not ones it borrows from other modes.';
+}
+function copyMoveset(dst, src, part, into, replace) {
+  const srcMoves = clone(src.moves);          // snapshot, so copying within one sheet is safe
+  const put = (m, mode) => { const c = clone(m); c.id = uid(); c.mode = mode; dst.moves.push(c); };
+  let n = 0;
+  if (part === 'all') {
+    const map = {}, fresh = [];
+    src.modes.forEach(sm => {
+      let dm = dst.modes.find(x => x.name.trim().toLowerCase() === sm.name.trim().toLowerCase());
+      if (!dm) { dm = { id: uid(), name: sm.name, links: [] }; dst.modes.push(dm); fresh.push([dm, sm]); }
+      map[sm.id] = dm.id;
+    });
+    fresh.forEach(([dm, sm]) => { dm.links = sm.links.map(l => map[l]).filter(Boolean); });
+    if (replace) dst.moves = [];
+    srcMoves.forEach(m => { put(m, map[m.mode] || 'universal'); n++; });
+  } else {
+    if (replace) dst.moves = dst.moves.filter(m => m.mode !== into);
+    srcMoves.filter(m => m.mode === part).forEach(m => { put(m, into); n++; });
+  }
+  return n;
+}
+$('#cpCancel').onclick = () => $('#copyDlg').close();
+$('#cpSrc').onchange = () => { const r = route(); if (r.kind === 'ability') fillCopy(r.doc); };
+$('#cpPart').onchange = updateCopyUI;
+$('#copyForm').onsubmit = e => {
+  e.preventDefault();
+  const r = route(); if (r.kind !== 'ability' || !editing) return;
+  const src = state.pages.find(x => x.id === $('#cpSrc').value); if (!src) return;
+  const n = copyMoveset(r.doc, src, $('#cpPart').value, $('#cpInto').value, $('#cpReplace').checked);
+  $('#copyDlg').close(); save(); renderMoves(r.doc);
+  toast(`Copied ${n} move${n === 1 ? '' : 's'}`);
+};
+
+/* =====================================================================
+   QUESTS
+   ===================================================================== */
+function questsHome() {
+  const q = searchText();
+  const list = state.quests.filter(x => !q || (x.name + ' ' + x.summary + ' ' + x.characters.map(c => c.name).join(' ')).toLowerCase().includes(q));
+  const cards = list.map(x => {
+    const face = x.characters.find(c => c.image);
+    return `
+    <a class="pcard" href="#/q/${x.id}">
+      <div class="img">${face ? `<img src="${face.image}" alt="">` : `<span>${esc((x.name || '?')[0])}</span>`}</div>
+      <div class="meta"><h3>${esc(x.name)}</h3><p>${x.characters.length} character${x.characters.length === 1 ? '' : 's'} · ${x.blocks.length} section${x.blocks.length === 1 ? '' : 's'}</p></div>
+      <div class="acts edit-only">
+        <button class="btn sm" data-act="dup-quest" data-id="${x.id}">Duplicate</button>
+        <button class="btn sm danger" data-act="del-quest" data-id="${x.id}">Delete</button>
+      </div>
+    </a>`;
+  }).join('');
+  return `
+    <div class="home-head">
+      <div>
+        <h1>Quests</h1>
+        <p>Pick a quest to read its story, characters and choices.</p>
+      </div>
+      <button class="btn gold edit-only" data-act="new-quest">+ New quest</button>
+    </div>
+    ${cards ? `<div class="grid">${cards}</div>` : `<div class="empty">${q ? 'No quests match that search.' : (editing ? 'No quests yet. Select “New quest” to start one.' : 'No quests yet.')}</div>`}`;
+}
+
+function questView(q) {
+  return `
+    <div class="crumbs"><a href="#/quests">Quests</a><span>/</span>${esc(q.name)}</div>
+    <div class="titlebar">
+      <h1 class="title">${F(q, 'name', 'Quest title')}</h1>
+      <div class="acts2 edit-only"><button class="btn" data-act="dup-quest" data-id="${q.id}">Duplicate quest</button></div>
+    </div>
+    ${(q.summary || editing) ? `<div class="lead">${F(q, 'summary', 'Short summary of the quest', { ml: true })}</div>` : ''}
+
+    <section id="castSec">
+      <div class="qhead"><h2>Story Characters</h2><button class="btn gold edit-only" data-act="add-char">+ Add character</button></div>
+      <div class="cast" id="cast"></div>
+    </section>
+
+    <section>
+      <div class="qhead"><h2>Story</h2></div>
+      <div id="qblocks"></div>
+      <div class="edit-only block"><div class="addrow">
+        <button class="btn gold" data-act="add-blk" data-type="header">+ Header</button>
+        <button class="btn gold" data-act="add-blk" data-type="dialogue">+ Dialogue</button>
+        <button class="btn gold" data-act="add-blk" data-type="options">+ Options</button>
+      </div></div>
+    </section>`;
+}
+
+function charHTML(c) {
+  return `
+  <article class="char" data-id="${c.id}">
+    <div class="cimg">${c.image ? `<img src="${c.image}" alt="${esc(c.name)}" data-act="zoom">` : `<span>${esc((c.name || '?')[0])}</span>`}</div>
+    <div class="cbody">
+      <h3>${F(c, 'name', 'Name', { mid: c.id })}</h3>
+      ${(c.role || editing) ? `<p class="role">${F(c, 'role', 'Role / notes', { mid: c.id })}</p>` : ''}
+      <div class="edit-only block">
+        <div class="drop" data-drop="${c.id}" data-pick="${c.id}">${c.image ? 'Replace image' : 'Drop image or click'}</div>
+        <div class="row2">
+          ${c.image ? `<button class="btn sm" data-act="del-char-img" data-m="${c.id}">Remove image</button>` : ''}
+          <button class="btn sm danger" data-act="del-char" data-m="${c.id}">Delete</button>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+
+const speakerList = q => [{ id: 'narrator', name: 'Narrator' }, { id: 'player', name: 'Player' }, ...q.characters.map(c => ({ id: c.id, name: c.name || 'Unnamed' }))];
+const speakerName = (q, id) => (speakerList(q).find(s => s.id === id) || { name: 'Unknown' }).name;
+function avatar(q, id) {
+  const c = q.characters.find(x => x.id === id);
+  if (c) return c.image ? `<img class="av" src="${c.image}" alt="">` : `<span class="av">${esc((c.name || '?')[0])}</span>`;
+  return `<span class="av sys">${id === 'player' ? 'You' : 'N'}</span>`;
+}
+const blkTools = b => `
+  <div class="tools edit-only">
+    <button class="btn sm" data-act="blk-up" data-b="${b.id}" aria-label="Move section up">↑</button>
+    <button class="btn sm" data-act="blk-down" data-b="${b.id}" aria-label="Move section down">↓</button>
+    <button class="btn sm danger" data-act="del-blk" data-b="${b.id}">Delete</button>
+  </div>`;
+
+function blockItem(q, b) {
+  if (b.type === 'header') {
+    return `<div class="blk hd" data-id="${b.id}"><h3>${F(b, 'text', 'Section header', { mid: b.id })}</h3>${blkTools(b)}</div>`;
+  }
+  if (b.type === 'dialogue') {
+    const lines = b.lines.map(l => {
+      const cls = l.speaker === 'narrator' ? 'narrator' : l.speaker === 'player' ? 'player' : '';
+      return `
+      <div class="line ${cls}" data-id="${l.id}">
+        ${avatar(q, l.speaker)}
+        <div class="lmain">
+          ${editing
+            ? `<select data-f="speaker" data-m="${l.id}" aria-label="Speaker">${speakerList(q).map(s => `<option value="${s.id}" ${s.id === l.speaker ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select>`
+            : `<span class="spk">${esc(speakerName(q, l.speaker))}</span>`}
+          <div class="ltext">${F(l, 'text', 'What they say…', { ml: true, mid: l.id })}</div>
+        </div>
+        <div class="tools edit-only">
+          <button class="btn sm" data-act="line-up" data-b="${b.id}" data-l="${l.id}" aria-label="Move line up">↑</button>
+          <button class="btn sm" data-act="line-down" data-b="${b.id}" data-l="${l.id}" aria-label="Move line down">↓</button>
+          <button class="btn sm danger" data-act="del-line" data-b="${b.id}" data-l="${l.id}" aria-label="Delete line">×</button>
+        </div>
+      </div>`;
+    }).join('');
+    return `
+    <article class="blk card dlg" data-id="${b.id}">
+      <header><span class="pill">Dialogue</span><div class="dlabel">${(b.label || editing) ? F(b, 'label', 'Scene label (optional)', { mid: b.id }) : ''}</div>${blkTools(b)}</header>
+      <div class="lines">${lines || '<div class="empty">No lines yet.</div>'}</div>
+      <div class="edit-only block" style="padding:0 22px 18px"><button class="btn sm" data-act="add-line" data-b="${b.id}">+ Add line</button></div>
+    </article>`;
+  }
+  // options
+  const choices = b.choices.map((c, i) => `
+    <div class="choice" data-id="${c.id}">
+      <div class="cnum">${i + 1}</div>
+      <div class="cmain">
+        <div class="clabel">${F(c, 'label', 'What the player picks', { mid: c.id })}</div>
+        ${(c.outcome || editing) ? `<div class="coutcome"><span class="lbl">What happens</span>${F(c, 'outcome', 'Result, next dialogue, reward…', { ml: true, mid: c.id })}</div>` : ''}
+      </div>
+      <div class="tools edit-only"><button class="btn sm danger" data-act="del-choice" data-b="${b.id}" data-c="${c.id}" aria-label="Delete choice">×</button></div>
+    </div>`).join('');
+  return `
+  <article class="blk card opt" data-id="${b.id}">
+    <header><span class="pill optp">Player choice</span><div class="dlabel"></div>${blkTools(b)}</header>
+    <div class="prompt">${F(b, 'prompt', 'The question or situation', { ml: true, mid: b.id })}</div>
+    <div class="choices">${choices || '<div class="empty">No options yet.</div>'}</div>
+    <div class="edit-only block" style="padding:0 22px 18px"><button class="btn sm" data-act="add-choice" data-b="${b.id}">+ Add option</button></div>
+  </article>`;
+}
+
+function renderQuestBody(q) {
+  $('#cast').innerHTML = q.characters.map(charHTML).join('') || (editing ? '<div class="empty">No story characters yet. Add one to use them as speakers in dialogue.</div>' : '');
+  $('#castSec').hidden = !editing && !q.characters.length;
+  $('#qblocks').innerHTML = q.blocks.map(b => blockItem(q, b)).join('') || `<div class="empty">${editing ? 'Nothing here yet. Add a header, dialogue or options below.' : 'This quest has no story yet.'}</div>`;
+  autosize();
+}
+
+/* =====================================================================
+   KEYWORDING
+   ===================================================================== */
+function kwView() {
+  return `
+    <div class="home-head">
+      <div>
+        <h1>Keywording</h1>
+        <p>Key terms and rules that apply to every moveset.</p>
+      </div>
+    </div>
+    <div id="kwlist"></div>
+    <div class="edit-only block"><div class="addrow">
+      <button class="btn gold" data-act="kw-add" data-type="header">+ Header</button>
+      <button class="btn gold" data-act="kw-add" data-type="entry">+ Keyword</button>
+    </div></div>`;
+}
+const kwTools = k => `
+  <div class="tools edit-only">
+    <button class="btn sm" data-act="kw-up" data-b="${k.id}" aria-label="Move up">↑</button>
+    <button class="btn sm" data-act="kw-down" data-b="${k.id}" aria-label="Move down">↓</button>
+    <button class="btn sm danger" data-act="kw-del" data-b="${k.id}">Delete</button>
+  </div>`;
+function kwItem(k) {
+  if (k.type === 'header') return `<div class="blk hd" data-id="${k.id}"><h3>${F(k, 'text', 'Section header', { mid: k.id })}</h3>${kwTools(k)}</div>`;
+  const imgs = (k.images || []).map((src, n) => thumbHTML(k, src, n)).join('');
+  return `
+  <article class="kw" data-id="${k.id}">
+    <header><h3>${F(k, 'name', 'Keyword', { mid: k.id })}</h3>${kwTools(k)}</header>
+    <div class="kbody">
+      <div class="ktext">${F(k, 'text', 'What it means and how it works…', { ml: true, mid: k.id })}</div>
+      ${imgs ? `<div class="thumbs">${imgs}</div>` : ''}
+      <div class="drop edit-only block" data-drop="${k.id}" data-pick="${k.id}">Drop images or GIFs here, or click to choose</div>
+    </div>
+  </article>`;
+}
+function renderKeywords() {
+  const q = searchText();
+  const items = q ? state.keywords.filter(k => k.type === 'entry' && ((k.name || '') + ' ' + (k.text || '')).toLowerCase().includes(q)) : state.keywords;
+  $('#kwlist').innerHTML = items.map(kwItem).join('') || `<div class="empty">${q ? 'No keywords match that search.' : (editing ? 'Nothing here yet. Add a header or keyword below.' : 'No keywords yet.')}</div>`;
+  autosize();
+}
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+function applyAura(color) { document.documentElement.style.setProperty('--aura', color || '#8144e4'); }
 function autosize() {
   $$('textarea').forEach(t => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; });
+}
+// re-draw just the part of the page that holds editable content
+function refresh() {
+  const r = route();
+  if (r.kind === 'ability') renderMoves(r.doc);
+  else if (r.kind === 'quest') renderQuestBody(r.doc);
+  else if (r.kind === 'keywording') renderKeywords();
 }
 
 function render() {
   document.body.classList.toggle('editing', editing);
   $('#lockBtn').textContent = editing ? 'Lock' : 'Edit';
-  const p = curPage();
-  $('#navPages').classList.toggle('on', !p);
-  if (p) {
-    applyAura(p.aura);
-    $('#app').innerHTML = pageView(p);
-    $('#auraDot') && ($('#auraDot').style.background = p.aura);
-    renderMoves(p);
+  const r = route(), sec = sectionOf(r.kind);
+  $('#navPages').classList.toggle('on', sec === 'abilities');
+  $('#navQuests').classList.toggle('on', sec === 'quests');
+  $('#navKeywords').classList.toggle('on', sec === 'keywording');
+  applyAura(r.kind === 'ability' ? r.doc.aura : '#8144e4');
+  const app = $('#app');
+  if (r.kind === 'ability') {
+    if (!modeById(r.doc, tab)) tab = 'universal';
+    app.innerHTML = pageView(r.doc);
+    const dot = $('#auraDot'); if (dot) dot.style.background = r.doc.aura;
+    renderMoves(r.doc);
+  } else if (r.kind === 'quest') {
+    app.innerHTML = questView(r.doc); renderQuestBody(r.doc);
+  } else if (r.kind === 'quests') {
+    app.innerHTML = questsHome();
+  } else if (r.kind === 'keywording') {
+    app.innerHTML = kwView(); renderKeywords();
   } else {
-    applyAura('#8144e4');
-    $('#app').innerHTML = homeView();
+    app.innerHTML = abilitiesHome();
   }
   autosize();
+  lastSection = sec;
 }
 
 /* ---------- editing: typing ---------- */
 document.addEventListener('input', e => {
   const t = e.target;
   if (!editing || !t.dataset || !t.dataset.f) return;
-  const p = curPage(); if (!p) return;
-  const tgt = t.dataset.m ? p.moves.find(m => m.id === t.dataset.m) : p;
+  const r = route(); if (!r.doc) return;
+  const tgt = t.dataset.m ? findObj(r.doc, t.dataset.m) : r.doc;
   if (!tgt) return;
-  tgt[t.dataset.f] = t.type === 'checkbox' ? t.checked : t.value;
-  if (t.dataset.f === 'held') { const tag = t.closest('.move').querySelector('.held-tag'); if (tag) tag.hidden = !t.checked; }
+  const f = t.dataset.f;
+  tgt[f] = t.type === 'checkbox' ? t.checked : t.value;
+  if (f === 'held') { const card = t.closest('.move'), tag = card && card.querySelector('.held-tag'); if (tag) tag.hidden = !t.checked; }
   if (t.tagName === 'TEXTAREA') { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; }
-  if (t.dataset.f === 'aura') { applyAura(t.value); $('#auraDot').style.background = t.value; $('#auraHex').textContent = t.value; }
-  if (t.dataset.f === 'mode') renderMoves(p);
+  if (f === 'aura' && r.kind === 'ability') { applyAura(t.value); $('#auraDot').style.background = t.value; $('#auraHex').textContent = t.value; }
+  if (f === 'mode' || f === 'speaker') refresh();
+  if (r.kind === 'ability' && f === 'name' && t.dataset.m) {
+    const b = $(`#modes [data-tab="${t.dataset.m}"]`); if (b) b.textContent = t.value || 'Mode';
+  }
+  if (r.kind === 'quest' && f === 'name' && t.dataset.m) $$(`option[value="${t.dataset.m}"]`).forEach(o => { o.textContent = t.value || 'Unnamed'; });
   save();
 });
-// keep the status colour in sync when the user finishes typing
 document.addEventListener('change', e => {
-  const t = e.target;
-  if (editing && t.dataset && (t.dataset.f === 'status' || t.dataset.f === 'part')) { const p = curPage(); if (p) { render(); } }
+  const t = e.target; if (!editing || !t.dataset) return;
+  const r = route();
+  if (t.dataset.linkmode && r.kind === 'ability') {
+    const mo = modeById(r.doc, tab), id = t.dataset.linkmode;
+    mo.links = mo.links.filter(x => x !== id); if (t.checked) mo.links.push(id);
+    save(); renderMoves(r.doc); return;
+  }
+  if (r.kind === 'ability' && (t.dataset.f === 'status' || t.dataset.f === 'part') && !t.dataset.m) { render(); return; }
+  if (r.kind === 'ability' && t.dataset.f === 'name' && t.dataset.m && r.doc.modes.some(x => x.id === t.dataset.m)) renderMoves(r.doc);
 });
 
 /* ---------- editing: clicks ---------- */
+const EDIT_ACTS = new Set(['new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down']);
+const focusId = id => { const el = id && $(`[data-id="${id}"]`); if (el) el.scrollIntoView({ block: 'center' }); };
+
 document.addEventListener('click', async e => {
   const el = e.target.closest('[data-act],[data-pick]');
   if (!el) return;
   const act = el.dataset.act;
-  const p = curPage();
-  if (!editing && ['new-page','del-page','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link'].includes(act)) return;
+  const r = route(), doc = r.doc;
+  if (!editing && EDIT_ACTS.has(act)) return;
 
   if (el.dataset.pick && !act) { pickTarget = el.dataset.pick; $('#filePick').click(); return; }
 
   switch (act) {
-    case 'tab':
-      tab = el.dataset.tab; renderMoves(p); break;
+    case 'tab': tab = el.dataset.tab; renderMoves(doc); break;
+    case 'zoom': $('#lightbox img').src = el.src; $('#lightbox').classList.add('show'); break;
 
-    case 'zoom':
-      $('#lightbox img').src = el.src; $('#lightbox').classList.add('show'); break;
-
-    case 'new-page': {
-      if (!editing) return;
-      const np = blankPage(); state.pages.push(np); save(); location.hash = '#/p/' + np.id; break;
-    }
+    /* ----- abilities ----- */
+    case 'new-page': { const np = blankPage(); state.pages.push(np); save(); location.hash = '#/p/' + np.id; break; }
     case 'del-page':
       e.preventDefault(); e.stopPropagation();
-      if (editing && confirm('Delete this page and all of its moves?')) { state.pages = state.pages.filter(x => x.id !== el.dataset.id); save(); render(); }
+      if (confirm('Delete this ability sheet and all of its moves?')) { state.pages = state.pages.filter(x => x.id !== el.dataset.id); save(); render(); }
       break;
-
+    case 'dup-page': {
+      e.preventDefault(); e.stopPropagation();
+      const i = state.pages.findIndex(x => x.id === el.dataset.id); if (i < 0) break;
+      const c = clone(state.pages[i]); c.id = uid(); c.name = (c.name || 'Untitled') + ' (Copy)';
+      c.moves.forEach(m => { m.id = uid(); });
+      state.pages.splice(i + 1, 0, c); save();
+      toast('Duplicated. You are now editing the copy.');
+      if (r.kind === 'ability') location.hash = '#/p/' + c.id; else render();
+      break;
+    }
     case 'add-move': {
-      const m = blankMove(tab); m.key = nextKey(visibleMoves(p)); p.moves.push(m); save(); renderMoves(p);
-      const card = $(`.move[data-id="${m.id}"]`); card && card.scrollIntoView({ block: 'center' });
-      break;
+      const m = blankMove(tab); m.key = nextKey(visibleMoves(doc)); doc.moves.push(m); save(); renderMoves(doc); focusId(m.id); break;
     }
     case 'del-move':
-      if (confirm('Delete this move?')) { p.moves = p.moves.filter(m => m.id !== el.dataset.m); save(); renderMoves(p); }
+      if (confirm('Delete this move?')) { doc.moves = doc.moves.filter(m => m.id !== el.dataset.m); save(); renderMoves(doc); }
       break;
     case 'up': case 'down': {
-      const vis = visibleMoves(p), i = vis.findIndex(m => m.id === el.dataset.m);
+      const vis = visibleMoves(doc), i = vis.findIndex(m => m.id === el.dataset.m);
       const j = act === 'up' ? i - 1 : i + 1;
-      if (j < 0 || j >= vis.length) break;
-      const a = p.moves.indexOf(vis[i]), b = p.moves.indexOf(vis[j]);
-      [p.moves[a], p.moves[b]] = [p.moves[b], p.moves[a]];
-      save(); renderMoves(p);
-      const card = $(`.move[data-id="${el.dataset.m}"]`); card && card.scrollIntoView({ block: 'center' });
+      if (i < 0 || j < 0 || j >= vis.length) break;
+      const a = doc.moves.indexOf(vis[i]), b = doc.moves.indexOf(vis[j]);
+      [doc.moves[a], doc.moves[b]] = [doc.moves[b], doc.moves[a]];
+      save(); renderMoves(doc); focusId(el.dataset.m);
       break;
     }
-    case 'del-img': {
-      const m = p.moves.find(x => x.id === el.dataset.m);
-      m.images.splice(+el.dataset.i, 1); save(); renderMoves(p); break;
-    }
-    case 'del-portrait': p.portrait = ''; save(); render(); break;
+    case 'del-portrait': doc.portrait = ''; save(); render(); break;
     case 'add-link': {
-      const m = p.moves.find(x => x.id === el.dataset.m);
+      const m = findObj(doc, el.dataset.m); if (!m) break;
       const inp = el.closest('.linkadd').querySelector('input');
       const href = parseLink(inp.value);
       if (!href) { toast('That does not look like a valid link'); break; }
-      m.links.push(href); save(); renderMoves(p); break;
+      m.links.push(href); save(); renderMoves(doc); break;
     }
-    case 'del-link': {
-      const m = p.moves.find(x => x.id === el.dataset.m);
-      m.links.splice(+el.dataset.i, 1); save(); renderMoves(p); break;
-    }
+    case 'del-link': { const m = findObj(doc, el.dataset.m); if (m) { m.links.splice(+el.dataset.i, 1); save(); renderMoves(doc); } break; }
+    case 'del-img': { const o = findObj(doc, el.dataset.m); if (o && o.images) { o.images.splice(+el.dataset.i, 1); save(); refresh(); } break; }
 
+    case 'add-mode': {
+      const mo = { id: uid(), name: 'New Mode', links: ['universal'] };
+      doc.modes.push(mo); tab = mo.id; save(); renderMoves(doc);
+      const inp = $('.modepanel input[type=text]'); if (inp) { inp.focus(); inp.select(); }
+      break;
+    }
+    case 'del-mode': {
+      const mo = modeById(doc, tab); if (!mo || tab === 'universal') break;
+      if (!confirm(`Delete the mode “${mo.name}”? Its own moves will be moved to Universal.`)) break;
+      doc.moves.forEach(m => { if (m.mode === tab) m.mode = 'universal'; });
+      doc.modes = doc.modes.filter(x => x.id !== tab);
+      doc.modes.forEach(x => { x.links = x.links.filter(l => l !== tab); });
+      tab = 'universal'; save(); renderMoves(doc); break;
+    }
+    case 'copy-moves': openCopy(doc); break;
+
+    /* ----- quests ----- */
+    case 'new-quest': { const nq = blankQuest(); state.quests.push(nq); save(); location.hash = '#/q/' + nq.id; break; }
+    case 'del-quest':
+      e.preventDefault(); e.stopPropagation();
+      if (confirm('Delete this quest and everything in it?')) { state.quests = state.quests.filter(x => x.id !== el.dataset.id); save(); render(); }
+      break;
+    case 'dup-quest': {
+      e.preventDefault(); e.stopPropagation();
+      const i = state.quests.findIndex(x => x.id === el.dataset.id); if (i < 0) break;
+      const c = clone(state.quests[i]); c.id = uid(); c.name = (c.name || 'Untitled') + ' (Copy)';
+      state.quests.splice(i + 1, 0, c); save();
+      toast('Duplicated. You are now editing the copy.');
+      if (r.kind === 'quest') location.hash = '#/q/' + c.id; else render();
+      break;
+    }
+    case 'add-char': { const c = blankChar(); doc.characters.push(c); save(); renderQuestBody(doc); focusId(c.id); break; }
+    case 'del-char':
+      if (confirm('Delete this story character? Their dialogue lines will switch to Narrator.')) {
+        doc.characters = doc.characters.filter(c => c.id !== el.dataset.m);
+        doc.blocks.forEach(b => (b.lines || []).forEach(l => { if (l.speaker === el.dataset.m) l.speaker = 'narrator'; }));
+        save(); renderQuestBody(doc);
+      }
+      break;
+    case 'del-char-img': { const c = findObj(doc, el.dataset.m); if (c) { c.image = ''; save(); renderQuestBody(doc); } break; }
+    case 'add-blk': { const b = blankBlock(el.dataset.type); doc.blocks.push(b); save(); renderQuestBody(doc); focusId(b.id); break; }
+    case 'del-blk':
+      if (confirm('Delete this section?')) { doc.blocks = doc.blocks.filter(b => b.id !== el.dataset.b); save(); renderQuestBody(doc); }
+      break;
+    case 'blk-up': case 'blk-down':
+      if (swap(doc.blocks, el.dataset.b, act === 'blk-up' ? -1 : 1)) { save(); renderQuestBody(doc); focusId(el.dataset.b); }
+      break;
+    case 'add-line': {
+      const b = findObj(doc, el.dataset.b); if (!b) break;
+      const last = b.lines[b.lines.length - 1];
+      const l = { id: uid(), speaker: last ? last.speaker : 'narrator', text: '' };
+      b.lines.push(l); save(); renderQuestBody(doc); focusId(l.id); break;
+    }
+    case 'del-line': { const b = findObj(doc, el.dataset.b); if (b) { b.lines = b.lines.filter(l => l.id !== el.dataset.l); save(); renderQuestBody(doc); } break; }
+    case 'line-up': case 'line-down': {
+      const b = findObj(doc, el.dataset.b);
+      if (b && swap(b.lines, el.dataset.l, act === 'line-up' ? -1 : 1)) { save(); renderQuestBody(doc); focusId(el.dataset.l); }
+      break;
+    }
+    case 'add-choice': {
+      const b = findObj(doc, el.dataset.b); if (!b) break;
+      const c = { id: uid(), label: `Option ${b.choices.length + 1}`, outcome: '' };
+      b.choices.push(c); save(); renderQuestBody(doc); focusId(c.id); break;
+    }
+    case 'del-choice': { const b = findObj(doc, el.dataset.b); if (b) { b.choices = b.choices.filter(c => c.id !== el.dataset.c); save(); renderQuestBody(doc); } break; }
+
+    /* ----- keywording ----- */
+    case 'kw-add': {
+      const k = el.dataset.type === 'header' ? { id: uid(), type: 'header', text: 'New section' } : { id: uid(), type: 'entry', name: 'New keyword', text: '', images: [] };
+      state.keywords.push(k); save(); renderKeywords(); focusId(k.id); break;
+    }
+    case 'kw-del':
+      if (confirm('Delete this item?')) { state.keywords = state.keywords.filter(k => k.id !== el.dataset.b); save(); renderKeywords(); }
+      break;
+    case 'kw-up': case 'kw-down':
+      if (swap(state.keywords, el.dataset.b, act === 'kw-up' ? -1 : 1)) { save(); renderKeywords(); focusId(el.dataset.b); }
+      break;
+
+    /* ----- site ----- */
     case 'export': exportJSON(); break;
     case 'import': $('#jsonPick').click(); break;
     case 'discard':
@@ -735,7 +1300,12 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') $('#lightbox').classList.remove('show');
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); $('#search').focus(); }
 });
-$('#search').addEventListener('input', () => { if (curPage()) location.hash = '#/'; else render(); });
+$('#search').addEventListener('input', () => {
+  const k = route().kind;
+  if (k === 'ability') location.hash = '#/';
+  else if (k === 'quest') location.hash = '#/quests';
+  else render();
+});
 
 /* ---------- images ---------- */
 let pickTarget = null;
@@ -758,17 +1328,21 @@ function toData(file, max) {
 }
 async function handleFiles(target, files) {
   if (!editing) return;
-  const p = curPage(); if (!p) return;
+  const r = route(), doc = r.doc; if (!doc) return;
   const imgs = [...files].filter(f => f.type.startsWith('image/'));
   if (!imgs.length) { toast('Only image files can be added'); return; }
   for (const f of imgs) {
     try {
-      if (target === 'portrait') { p.portrait = await toData(f, 1100); }
-      else { const m = p.moves.find(x => x.id === target); if (m) m.images.push(await toData(f, 900)); }
+      const data = await toData(f, target === 'portrait' ? 1100 : 900);
+      if (target === 'portrait') doc.portrait = data;
+      else {
+        const o = findObj(doc, target); if (!o) continue;
+        if (Array.isArray(o.images)) o.images.push(data); else if ('image' in o) o.image = data;
+      }
     } catch { toast('Could not read ' + f.name); }
   }
   save();
-  target === 'portrait' ? render() : renderMoves(p);
+  target === 'portrait' ? render() : refresh();
 }
 $('#filePick').onchange = e => { handleFiles(pickTarget, e.target.files); e.target.value = ''; };
 
@@ -794,7 +1368,7 @@ $('#jsonPick').onchange = async e => {
     const d = JSON.parse(await f.text());
     if (!Array.isArray(d.pages)) throw 0;
     if (!confirm('Replace your current draft with this file?')) return;
-    state = migrateState({ editHash: d.editHash || state.editHash || '', pages: d.pages });
+    state = migrateState({ editHash: d.editHash || state.editHash || '', pages: d.pages, quests: d.quests, keywords: d.keywords });
     await saveNow(); location.hash = '#/'; render(); toast('Imported');
   } catch { toast('That file is not a valid data.json'); }
 };
