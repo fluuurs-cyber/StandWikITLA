@@ -126,7 +126,16 @@ body.editing .edit-only.block{display:block}
 .move{border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
 .move>header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:16px 22px;border-bottom:1px solid var(--line);background:var(--panel2)}
 .move h3{margin:0;flex:1;min-width:180px;font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.15;color:#f1e6c8}
-.move .tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.move .tools{gap:8px 10px;align-items:center;flex-wrap:wrap}
+.keywrap{display:flex;align-items:center;gap:10px}
+.keywrap:empty{display:none}
+.keycap{min-width:42px;height:42px;padding:0 10px;display:inline-grid;place-items:center;font:500 16px var(--mono);text-transform:uppercase;color:var(--gold-soft);background:var(--panel);border:1px solid var(--line2);border-bottom-width:3px;border-radius:4px}
+.held-tag{font:italic 500 13px var(--mono);color:var(--gold);white-space:nowrap}
+.held-tag[hidden]{display:none}
+body.editing input[type=text].keyin{width:78px;height:42px;padding:0 6px;text-align:center;font:500 16px var(--mono);text-transform:uppercase;color:var(--gold-soft);border-style:solid;border-bottom-width:3px;border-radius:4px}
+.held-toggle{display:flex;align-items:center;gap:6px;font:12px var(--mono);color:var(--muted);cursor:pointer;user-select:none}
+.held-toggle input{width:16px;height:16px;accent-color:var(--gold);margin:0;cursor:pointer}
+.held-toggle:hover{color:var(--gold)}
 .pill{font:11px var(--mono);letter-spacing:.08em;border:1px solid var(--line2);padding:3px 9px;color:var(--gold-soft);white-space:nowrap}
 .pill.uni{color:var(--muted)}
 .move-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,40%);gap:0}
@@ -245,6 +254,15 @@ const MODES = [
   { key:'off',       label:'Stand Off', note:'Everything in Universal, plus moves that only exist with the Stand off.' },
   { key:'on',        label:'Stand On',  note:'Everything in Universal, plus moves that only exist with the Stand on.' }
 ];
+const KEY_ORDER = ['M1','M2','E','R','T','Y','G','H','J','X','V','B','Z','K'];
+// Looks at the moves already in the list (last one first) and returns the next key in KEY_ORDER.
+function nextKey(list) {
+  for (let i = list.length - 1; i >= 0; i--) {
+    const idx = KEY_ORDER.indexOf((list[i].key || '').trim().toUpperCase());
+    if (idx !== -1) return KEY_ORDER[idx + 1] || '';
+  }
+  return KEY_ORDER[0];
+}
 const modeLabel = k => (MODES.find(m => m.key === k) || MODES[0]).label;
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -262,16 +280,16 @@ const blankPage = (name = 'New Character') => ({
   portrait: '', moves: []
 });
 const blankMove = (mode = 'universal') => ({
-  id: uid(), mode, name: 'New Move', does: '', meter: '', block: '', armor: '', images: []
+  id: uid(), mode, key: '', held: false, name: 'New Move', does: '', meter: '', block: '', armor: '', images: []
 });
 const seed = () => {
   const p = blankPage('Example Character');
   p.overview = 'This is a sample page. Unlock edit mode, then change any text, drop in a portrait, and add moves to each mode.';
   p.moves = [
-    { id: uid(), mode:'universal', name:'Light Combo', does:'Four-hit string that ends in a knockdown.', meter:'0', block:'Blockable', armor:'None', images:[] },
-    { id: uid(), mode:'universal', name:'Grab', does:'Close range throw. Cannot be blocked.', meter:'0', block:'Unblockable', armor:'None', images:[] },
-    { id: uid(), mode:'off',       name:'Off-Mode Barrage', does:'Rapid flurry that pushes the opponent back.', meter:'25%', block:'Blockable, chip damage', armor:'Light armor on startup', images:[] },
-    { id: uid(), mode:'on',        name:'On-Mode Heavy Strike', does:'Slow, powerful hit with a long wind-up.', meter:'50%', block:'Guard break', armor:'Super armor', images:[] }
+    { id: uid(), mode:'universal', key:'M1', held:false, name:'Light Combo', does:'Four-hit string that ends in a knockdown.', meter:'0', block:'Blockable', armor:'None', images:[] },
+    { id: uid(), mode:'universal', key:'M2', held:false, name:'Grab', does:'Close range throw. Cannot be blocked.', meter:'0', block:'Unblockable', armor:'None', images:[] },
+    { id: uid(), mode:'off',       key:'E', held:false, name:'Off-Mode Barrage', does:'Rapid flurry that pushes the opponent back.', meter:'25%', block:'Blockable, chip damage', armor:'Light armor on startup', images:[] },
+    { id: uid(), mode:'on',        key:'E', held:true, name:'On-Mode Heavy Strike', does:'Slow, powerful hit with a long wind-up.', meter:'50%', block:'Guard break', armor:'Super armor', images:[] }
   ];
   return { editHash: '', pages: [p] };
 };
@@ -446,6 +464,12 @@ function visibleMoves(p) {
   return p.moves.filter(m => m.mode === 'universal' || m.mode === tab);
 }
 
+function keyHTML(m) {
+  const tag = `<span class="held-tag" ${m.held ? '' : 'hidden'}>(Held)</span>`;
+  if (editing) return `<input type="text" class="keyin" data-f="key" data-m="${m.id}" value="${esc(m.key || '')}" placeholder="Key" maxlength="10" aria-label="Keybind">${tag}`;
+  return (m.key ? `<span class="keycap">${esc(m.key)}</span>` : '') + tag;
+}
+
 function movesHTML(p) {
   const list = visibleMoves(p);
   const cards = list.map((m, i) => {
@@ -458,9 +482,11 @@ function movesHTML(p) {
     return `
     <article class="move" data-id="${m.id}">
       <header>
+        <div class="keywrap">${keyHTML(m)}</div>
         <h3>${F(m, 'name', 'Move name', { mid: m.id })}</h3>
         ${showTag ? `<span class="pill ${m.mode === 'universal' ? 'uni' : ''}">${m.mode === 'universal' ? 'Universal' : modeLabel(m.mode) + ' only'}</span>` : ''}
         <div class="tools edit-only">
+          <label class="held-toggle"><input type="checkbox" data-f="held" data-m="${m.id}" ${m.held ? 'checked' : ''}> Held</label>
           <select data-f="mode" data-m="${m.id}" aria-label="Which modes show this move">
             ${MODES.map(o => `<option value="${o.key}" ${o.key === m.mode ? 'selected' : ''}>${o.key === 'universal' ? 'All modes' : o.label + ' only'}</option>`).join('')}
           </select>
@@ -531,7 +557,8 @@ document.addEventListener('input', e => {
   const p = curPage(); if (!p) return;
   const tgt = t.dataset.m ? p.moves.find(m => m.id === t.dataset.m) : p;
   if (!tgt) return;
-  tgt[t.dataset.f] = t.value;
+  tgt[t.dataset.f] = t.type === 'checkbox' ? t.checked : t.value;
+  if (t.dataset.f === 'held') { const tag = t.closest('.move').querySelector('.held-tag'); if (tag) tag.hidden = !t.checked; }
   if (t.tagName === 'TEXTAREA') { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; }
   if (t.dataset.f === 'aura') { applyAura(t.value); $('#auraDot').style.background = t.value; $('#auraHex').textContent = t.value; }
   if (t.dataset.f === 'mode') renderMoves(p);
@@ -549,6 +576,7 @@ document.addEventListener('click', async e => {
   if (!el) return;
   const act = el.dataset.act;
   const p = curPage();
+  if (!editing && ['new-page','del-page','add-move','del-move','up','down','del-img','del-portrait'].includes(act)) return;
 
   if (el.dataset.pick && !act) { pickTarget = el.dataset.pick; $('#filePick').click(); return; }
 
@@ -569,7 +597,7 @@ document.addEventListener('click', async e => {
       break;
 
     case 'add-move': {
-      const m = blankMove(tab); p.moves.push(m); save(); renderMoves(p);
+      const m = blankMove(tab); m.key = nextKey(visibleMoves(p)); p.moves.push(m); save(); renderMoves(p);
       const card = $(`.move[data-id="${m.id}"]`); card && card.scrollIntoView({ block: 'center' });
       break;
     }
