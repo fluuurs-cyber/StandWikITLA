@@ -148,8 +148,35 @@ body.editing input[type=text].keyin{width:78px;height:42px;padding:0 6px;text-al
 .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .thumb{margin:0;position:relative;border:1px solid var(--line2);background:#0a0a0e;aspect-ratio:16/10;display:grid;place-items:center;overflow:hidden}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
-.thumb .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border:0;background:rgba(8,8,11,.85);color:#fff;line-height:1;font-size:16px}
-.thumb .x:hover{background:#c0443f}
+.thumb .x,.vid .x,.linkcard .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border:0;background:rgba(8,8,11,.85);color:#fff;line-height:1;font-size:16px}
+.thumb .x:hover,.vid .x:hover,.linkcard .x:hover{background:#c0443f}
+.vids{display:grid;gap:10px}
+.vid{position:relative;aspect-ratio:16/9;border:1px solid var(--line2);background:#000}
+.vid iframe{width:100%;height:100%;border:0;display:block}
+.linkcard{position:relative;display:flex;flex-direction:column;border:1px solid var(--line2);background:var(--panel2);padding:10px 36px 10px 14px;min-width:0}
+.linkcard a{color:var(--gold-soft);font:14px var(--mono)}
+.linkcard a:hover{text-decoration:underline}
+.linkcard .u{font:12px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.linkadd{display:flex;gap:8px}
+.linkadd input{flex:1;min-width:0}
+/* block / parry toggles */
+.togs{display:flex;flex-wrap:wrap;gap:6px}
+.tog{position:relative;display:inline-flex;cursor:pointer}
+.tog input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer}
+.tog span,.tog.ro{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;font:13px var(--mono);border:1px solid var(--line2);color:var(--muted);background:var(--panel2);user-select:none}
+.tog span::before{content:"";width:13px;height:13px;border:1px solid var(--muted);display:inline-block;font-size:10px;line-height:11px;text-align:center}
+.tog:hover span{border-color:var(--gold);color:var(--gold-soft)}
+.tog input:checked + span{background:var(--gold);border-color:var(--gold);color:#17110a}
+.tog input:checked + span::before{content:"✓";background:#17110a;border-color:#17110a;color:var(--gold)}
+.tog input:focus-visible + span{outline:2px solid var(--gold);outline-offset:2px}
+.tog.ro{cursor:default}
+.tog.ro i{font-style:normal}
+.tog.ro.on{border-color:var(--gold);color:var(--gold-soft)}
+.tog.ro.on b{color:var(--green)}
+.tog.ro:not(.on) b{color:#e0605c}
+.tog.ro:not(.on) i{text-decoration:line-through}
+.note{margin-top:8px;font-size:15px}
+body.editing .togs + input[type=text]{margin-top:8px}
 .empty{border:1px dashed var(--line2);padding:46px 20px;text-align:center;color:var(--muted);font-style:italic}
 
 /* ---------- home ---------- */
@@ -263,6 +290,42 @@ function nextKey(list) {
   }
   return KEY_ORDER[0];
 }
+function migrateMove(m) {
+  m.images = m.images || []; m.links = m.links || [];
+  if (typeof m.blockable !== 'boolean') {
+    const t = (m.block || '').trim();
+    m.blockable = /blockable/i.test(t) && !/unblockable|not blockable|cannot be blocked/i.test(t);
+    m.paryable  = /paryable|parr(y|ied)/i.test(t) && !/unparr|not parr|cannot be parr|unparyable|not paryable/i.test(t);
+    m.block = t.replace(/^(?:(?:(?:un)?blockable|paryable|none)\s*[,;.:-]*\s*)+/i, '');
+  }
+  if (typeof m.paryable !== 'boolean') m.paryable = false;
+}
+const migrateState = st => { (st.pages || []).forEach(p => (p.moves || []).forEach(migrateMove)); return st; };
+
+function parseLink(raw) {
+  raw = (raw || '').trim(); if (!raw) return null;
+  try {
+    const u = new URL(/^https?:\/\//i.test(raw) ? raw : 'https://' + raw);
+    return /^https?:$/.test(u.protocol) && u.hostname.includes('.') ? u.href : null;
+  } catch { return null; }
+}
+function ytId(href) {
+  try {
+    const u = new URL(href), h = u.hostname.replace(/^(www|m|music)\./, '');
+    let id = null;
+    if (h === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
+    else if (h === 'youtube.com' || h === 'youtube-nocookie.com') {
+      if (u.pathname === '/watch') id = u.searchParams.get('v');
+      else { const m = u.pathname.match(/^\/(?:embed|shorts|live|v)\/([\w-]+)/); if (m) id = m[1]; }
+    }
+    if (!id || !/^[\w-]{6,20}$/.test(id)) return null;
+    let start = 0; const t = u.searchParams.get('t') || u.searchParams.get('start');
+    const mm = t && t.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/);
+    if (mm) start = (+mm[1] || 0) * 3600 + (+mm[2] || 0) * 60 + (+mm[3] || 0);
+    return { id, start };
+  } catch { return null; }
+}
+
 const modeLabel = k => (MODES.find(m => m.key === k) || MODES[0]).label;
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -280,16 +343,16 @@ const blankPage = (name = 'New Character') => ({
   portrait: '', moves: []
 });
 const blankMove = (mode = 'universal') => ({
-  id: uid(), mode, key: '', held: false, name: 'New Move', does: '', meter: '', block: '', armor: '', images: []
+  id: uid(), mode, key: '', held: false, name: 'New Move', does: '', meter: '', blockable: false, paryable: false, block: '', armor: '', images: [], links: []
 });
 const seed = () => {
   const p = blankPage('Example Character');
   p.overview = 'This is a sample page. Unlock edit mode, then change any text, drop in a portrait, and add moves to each mode.';
   p.moves = [
-    { id: uid(), mode:'universal', key:'M1', held:false, name:'Light Combo', does:'Four-hit string that ends in a knockdown.', meter:'0', block:'Blockable', armor:'None', images:[] },
-    { id: uid(), mode:'universal', key:'M2', held:false, name:'Grab', does:'Close range throw. Cannot be blocked.', meter:'0', block:'Unblockable', armor:'None', images:[] },
-    { id: uid(), mode:'off',       key:'E', held:false, name:'Off-Mode Barrage', does:'Rapid flurry that pushes the opponent back.', meter:'25%', block:'Blockable, chip damage', armor:'Light armor on startup', images:[] },
-    { id: uid(), mode:'on',        key:'E', held:true, name:'On-Mode Heavy Strike', does:'Slow, powerful hit with a long wind-up.', meter:'50%', block:'Guard break', armor:'Super armor', images:[] }
+    { id: uid(), mode:'universal', key:'M1', held:false, name:'Light Combo', does:'Four-hit string that ends in a knockdown.', meter:'0', blockable:true, paryable:true, block:'', armor:'None', images:[], links:[] },
+    { id: uid(), mode:'universal', key:'M2', held:false, name:'Grab', does:'Close range throw. Cannot be blocked.', meter:'0', blockable:false, paryable:false, block:'', armor:'None', images:[], links:[] },
+    { id: uid(), mode:'off',       key:'E', held:false, name:'Off-Mode Barrage', does:'Rapid flurry that pushes the opponent back.', meter:'25%', blockable:true, paryable:true, block:'Chip damage', armor:'Light armor on startup', images:[], links:[] },
+    { id: uid(), mode:'on',        key:'E', held:true, name:'On-Mode Heavy Strike', does:'Slow, powerful hit with a long wind-up.', meter:'50%', blockable:true, paryable:false, block:'Guard break', armor:'Super armor', images:[], links:[] }
   ];
   return { editHash: '', pages: [p] };
 };
@@ -464,6 +527,25 @@ function visibleMoves(p) {
   return p.moves.filter(m => m.mode === 'universal' || m.mode === tab);
 }
 
+function blockHTML(m) {
+  const tg = (f, label) => editing
+    ? `<label class="tog"><input type="checkbox" data-f="${f}" data-m="${m.id}" ${m[f] ? 'checked' : ''}><span>${label}</span></label>`
+    : `<span class="tog ro ${m[f] ? 'on' : ''}"><b>${m[f] ? '✓' : '✕'}</b><i>${label}</i></span>`;
+  const note = editing ? F(m, 'block', 'Notes (optional)', { mid: m.id }) : (m.block ? `<div class="note">${esc(m.block).replace(/\n/g, '<br>')}</div>` : '');
+  return `<div class="togs">${tg('blockable', 'Blockable')}${tg('paryable', 'Paryable')}</div>${note}`;
+}
+
+function linksHTML(m) {
+  return (m.links || []).map((raw, n) => {
+    const href = parseLink(raw); if (!href) return '';
+    const rm = editing ? `<button class="x" data-act="del-link" data-m="${m.id}" data-i="${n}" aria-label="Remove link">×</button>` : '';
+    const yt = ytId(href);
+    if (yt) return `<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${yt.id}${yt.start ? '?start=' + yt.start : ''}" title="${esc(m.name)} video" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>${rm}</div>`;
+    let host = href; try { host = new URL(href).hostname.replace(/^www\./, ''); } catch {}
+    return `<div class="linkcard"><a href="${esc(href)}" target="_blank" rel="noopener noreferrer">↗ ${esc(host)}</a><span class="u">${esc(href)}</span>${rm}</div>`;
+  }).join('');
+}
+
 function keyHTML(m) {
   const tag = `<span class="held-tag" ${m.held ? '' : 'hidden'}>(Held)</span>`;
   if (editing) return `<input type="text" class="keyin" data-f="key" data-m="${m.id}" value="${esc(m.key || '')}" placeholder="Key" maxlength="10" aria-label="Keybind">${tag}`;
@@ -477,7 +559,8 @@ function movesHTML(p) {
       <figure class="thumb"><img src="${src}" alt="${esc(m.name)} preview ${n + 1}" data-act="zoom">
         ${editing ? `<button class="x" data-act="del-img" data-m="${m.id}" data-i="${n}" aria-label="Remove image">×</button>` : ''}
       </figure>`).join('');
-    const hasMedia = imgs || editing;
+    const vids = linksHTML(m);
+    const hasMedia = imgs || vids || editing;
     const showTag = tab !== 'universal';
     return `
     <article class="move" data-id="${m.id}">
@@ -499,12 +582,17 @@ function movesHTML(p) {
         <div class="fields">
           <div class="field wide"><span class="lbl">What it does</span><div class="v">${F(m, 'does', 'Describe the move', { ml: true, mid: m.id })}</div></div>
           <div class="field"><span class="lbl">Meter cost</span><div class="v">${F(m, 'meter', 'e.g. 25%', { mid: m.id })}</div></div>
-          <div class="field"><span class="lbl">Block properties</span><div class="v">${F(m, 'block', 'e.g. Blockable', { ml: true, mid: m.id })}</div></div>
+          <div class="field"><span class="lbl">Block properties</span><div class="v">${blockHTML(m)}</div></div>
           <div class="field"><span class="lbl">Armor properties</span><div class="v">${F(m, 'armor', 'e.g. Super armor', { ml: true, mid: m.id })}</div></div>
         </div>
         ${hasMedia ? `<div class="media">
           ${imgs ? `<div class="thumbs">${imgs}</div>` : ''}
+          ${vids ? `<div class="vids">${vids}</div>` : ''}
           <div class="drop edit-only block" data-drop="${m.id}" data-pick="${m.id}">Drop images or GIFs here, or click to choose</div>
+          <div class="edit-only block"><div class="linkadd">
+            <input type="text" class="linkin" placeholder="Paste a YouTube or other link, then press Enter" aria-label="Add a link">
+            <button class="btn" data-act="add-link" data-m="${m.id}">Add link</button>
+          </div></div>
         </div>` : ''}
       </div>
     </article>`;
@@ -576,7 +664,7 @@ document.addEventListener('click', async e => {
   if (!el) return;
   const act = el.dataset.act;
   const p = curPage();
-  if (!editing && ['new-page','del-page','add-move','del-move','up','down','del-img','del-portrait'].includes(act)) return;
+  if (!editing && ['new-page','del-page','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link'].includes(act)) return;
 
   if (el.dataset.pick && !act) { pickTarget = el.dataset.pick; $('#filePick').click(); return; }
 
@@ -619,6 +707,17 @@ document.addEventListener('click', async e => {
       m.images.splice(+el.dataset.i, 1); save(); renderMoves(p); break;
     }
     case 'del-portrait': p.portrait = ''; save(); render(); break;
+    case 'add-link': {
+      const m = p.moves.find(x => x.id === el.dataset.m);
+      const inp = el.closest('.linkadd').querySelector('input');
+      const href = parseLink(inp.value);
+      if (!href) { toast('That does not look like a valid link'); break; }
+      m.links.push(href); save(); renderMoves(p); break;
+    }
+    case 'del-link': {
+      const m = p.moves.find(x => x.id === el.dataset.m);
+      m.links.splice(+el.dataset.i, 1); save(); renderMoves(p); break;
+    }
 
     case 'export': exportJSON(); break;
     case 'import': $('#jsonPick').click(); break;
@@ -630,6 +729,9 @@ document.addEventListener('click', async e => {
 });
 $('#lightbox').onclick = () => $('#lightbox').classList.remove('show');
 document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('linkin')) {
+    e.preventDefault(); e.target.closest('.linkadd').querySelector('[data-act="add-link"]').click(); return;
+  }
   if (e.key === 'Escape') $('#lightbox').classList.remove('show');
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); $('#search').focus(); }
 });
@@ -692,7 +794,7 @@ $('#jsonPick').onchange = async e => {
     const d = JSON.parse(await f.text());
     if (!Array.isArray(d.pages)) throw 0;
     if (!confirm('Replace your current draft with this file?')) return;
-    state = { editHash: d.editHash || state.editHash || '', pages: d.pages };
+    state = migrateState({ editHash: d.editHash || state.editHash || '', pages: d.pages });
     await saveNow(); location.hash = '#/'; render(); toast('Imported');
   } catch { toast('That file is not a valid data.json'); }
 };
@@ -713,6 +815,7 @@ function toast(msg) {
     try { const r = await fetch('data.json', { cache: 'no-store' }); if (r.ok) state = await r.json(); } catch {}
     if (!state || !Array.isArray(state.pages)) state = seed();
   }
+  migrateState(state);
   editing = sessionStorage.getItem('codex-unlocked') === '1' && !!state.editHash;
   render();
 })();
