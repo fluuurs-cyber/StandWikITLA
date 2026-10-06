@@ -1,3 +1,1 @@
-# StandWikITLA
-[Awe
-](https://fluuurs-cyber.github.io/StandWikITLA/#/)
+https://fluuurs-cyber.github.io/StandWikITLA/#/
