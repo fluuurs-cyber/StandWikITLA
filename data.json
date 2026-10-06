@@ -1,0 +1,70 @@
+{
+  "editHash": "a0e6d14efb190c76cfc5f63c9872d71df57ceb36708423f82835ba94295e43ef",
+  "pages": [
+    {
+      "id": "jho30pv",
+      "name": "Example Character",
+      "rarity": "High Tier",
+      "part": "Part 1",
+      "type": "Class - Role",
+      "status": "Confirmed",
+      "quote": "Your signature line goes here",
+      "quoteLabel": "Signature line",
+      "aura": "#8144e4",
+      "arc": "Featured arc",
+      "playable": "Confirmed playable",
+      "overview": "This is a sample page. Unlock edit mode, then change any text, drop in a portrait, and add moves to each mode.",
+      "portrait": "",
+      "moves": [
+        {
+          "id": "2nq2l36",
+          "mode": "universal",
+          "key": "M1",
+          "held": false,
+          "name": "Light Combo",
+          "does": "Four-hit string that ends in a knockdown.",
+          "meter": "0",
+          "block": "Blockable",
+          "armor": "None",
+          "images": []
+        },
+        {
+          "id": "vuajlfi",
+          "mode": "universal",
+          "key": "M2",
+          "held": false,
+          "name": "Grab",
+          "does": "Close range throw. Cannot be blocked.",
+          "meter": "0",
+          "block": "Unblockable",
+          "armor": "None",
+          "images": []
+        },
+        {
+          "id": "00ro0i3",
+          "mode": "off",
+          "key": "E",
+          "held": false,
+          "name": "Off-Mode Barrage",
+          "does": "Rapid flurry that pushes the opponent back.",
+          "meter": "25%",
+          "block": "Blockable, chip damage",
+          "armor": "Light armor on startup",
+          "images": []
+        },
+        {
+          "id": "zgfevbi",
+          "mode": "on",
+          "key": "E",
+          "held": true,
+          "name": "On-Mode Heavy Strike",
+          "does": "Slow, powerful hit with a long wind-up.",
+          "meter": "50%",
+          "block": "Guard break",
+          "armor": "Super armor",
+          "images": []
+        }
+      ]
+    }
+  ]
+}
