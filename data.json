@@ -187,6 +187,27 @@
           "images": [],
           "links": []
         }
+      ],
+      "modes": [
+        {
+          "id": "universal",
+          "name": "Universal",
+          "links": []
+        },
+        {
+          "id": "off",
+          "name": "Stand Off",
+          "links": [
+            "universal"
+          ]
+        },
+        {
+          "id": "on",
+          "name": "Stand On",
+          "links": [
+            "universal"
+          ]
+        }
       ]
     },
     {
@@ -337,6 +358,27 @@
           "images": [],
           "links": []
         }
+      ],
+      "modes": [
+        {
+          "id": "universal",
+          "name": "Universal",
+          "links": []
+        },
+        {
+          "id": "off",
+          "name": "Stand Off",
+          "links": [
+            "universal"
+          ]
+        },
+        {
+          "id": "on",
+          "name": "Stand On",
+          "links": [
+            "universal"
+          ]
+        }
       ]
     },
     {
@@ -422,7 +464,7 @@
           "key": "E",
           "held": false,
           "name": "Wormhole Manifestation",
-          "does": "The player aims and then shoots a nail forward. If this were to hit a player, Tusk will come out and barrage them, ending with a punch that ragdolls. If this hits a surface, it will create a wormhole that tries to move towards the closest enemy, ragdolling them when in contact.",
+          "does": "The player aims and then shoots a nail forward. If this were to hit a player, Tusk will come out and barrage them, ending with a punch that ragdolls. If this hits a surface, it will create a wormhole that tries to move towards the closest enemy, ragdolling them when in contact. The player can freely move and use moves without tusk while Tusk is barraging.",
           "meter": "1 Nail",
           "blockable": false,
           "paryable": true,
@@ -466,8 +508,123 @@
           "links": [
             "https://trello.com/1/cards/67fa0a4f2a3eec89bdbfc997/attachments/6864f757b968f92b97a95223/download/goldnail.gif"
           ]
+        },
+        {
+          "id": "1sx4k97",
+          "mode": "universal",
+          "key": "T",
+          "held": true,
+          "name": "Nail Shot",
+          "does": "The player shoots a nail forward, Holding this move will fire more nails, skipping the startup",
+          "meter": "1+",
+          "blockable": true,
+          "paryable": false,
+          "block": "",
+          "armor": "",
+          "images": [],
+          "links": []
+        },
+        {
+          "id": "tw63dhs",
+          "mode": "off",
+          "key": "Y",
+          "held": false,
+          "name": "Spatial Harassement",
+          "does": "The player points at the sky and shoots nail up above. The nearest enemy will then have a black cylinder under their feet that gets smaller, Once it becomes small enough, the fired nail will come down, creating a wormhole in the ground where tusk appears to try and punch the enemy through, ragdolling if landed.",
+          "meter": "30 + 1 Nail",
+          "blockable": false,
+          "paryable": true,
+          "block": "",
+          "armor": "",
+          "images": [],
+          "links": []
+        },
+        {
+          "id": "r7ko2ob",
+          "mode": "on",
+          "key": "Y",
+          "held": false,
+          "name": "Looming Destruction",
+          "does": "Tusk punches forward. If this hits an enemy, the enemy will be Soft Knocked tusk will  come from behind, grabbing their head and throwing them towards the user. During the second part the player can freely move and use moves without tusk.",
+          "meter": "20",
+          "blockable": false,
+          "paryable": false,
+          "block": "",
+          "armor": "Armor",
+          "images": [],
+          "links": []
+        },
+        {
+          "id": "8obubo6",
+          "mode": "on",
+          "key": "G",
+          "held": false,
+          "name": "Infinite Rotation",
+          "does": "Tusk punches the ground beneath the user, creating an AOE that ragdolls. The main purpose of this move is the following. A giant wormhole will then be created where the ground was smashed for 10 seconds that pulls enemies towards it center, slowly damaging them. Can pull in ragdolled enemies and enemies in I-Frames. Does not stun",
+          "meter": "10",
+          "blockable": false,
+          "paryable": true,
+          "block": "",
+          "armor": "Armor",
+          "images": [],
+          "links": []
+        },
+        {
+          "id": "q6xop2v",
+          "mode": "universal",
+          "key": "H",
+          "held": false,
+          "name": "Wormhole Traveling",
+          "does": "The player shoots nail into their head and then fall into a wormhole. If not cancelled, the player will become a fast moving wormhole that can climb any surface (Can cling to walls). While in the hole, the player can use any moves that can be done with their hand, having the player's hand come out of the hole and do the animation. Pressing H will cancel this move and exit out of the wormhole, Lasts for a max of 6 seconds. Hitting the wormhole will make the player exit.",
+          "meter": "25 Meter + 1 Nail",
+          "blockable": false,
+          "paryable": false,
+          "block": "",
+          "armor": "",
+          "images": [],
+          "links": [
+            "https://trello.com/1/cards/67fa0a4f2a3eec89bdbfc997/attachments/6a120983cefafdef7e946885/download/newddwormhole.gif"
+          ]
+        },
+        {
+          "id": "k7vkmbz",
+          "mode": "on",
+          "key": "J",
+          "held": false,
+          "name": "Lesson Five",
+          "does": "The player poses with tusk and then fire a nail forward (Not mouse aimed). ",
+          "meter": "80",
+          "blockable": false,
+          "paryable": false,
+          "block": "",
+          "armor": "",
+          "images": [],
+          "links": []
+        }
+      ],
+      "modes": [
+        {
+          "id": "universal",
+          "name": "Universal",
+          "links": []
+        },
+        {
+          "id": "off",
+          "name": "Stand Off",
+          "links": [
+            "universal"
+          ]
+        },
+        {
+          "id": "on",
+          "name": "Stand On",
+          "links": [
+            "universal"
+          ]
         }
       ]
     }
-  ]
+  ],
+  "quests": [],
+  "keywords": []
 }
