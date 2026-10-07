@@ -274,6 +274,27 @@ body.editing .standname input{text-align:center;font:inherit;font-size:26px;text
 .shint{margin:12px 0 0;font:12px/1.5 var(--mono);color:var(--muted)}
 @media (max-width:700px){.statsbody{grid-template-columns:1fr}.statchart{max-width:340px;width:100%;margin:0 auto}}
 
+/* quest items + objectives */
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:16px}
+.items .empty{grid-column:1/-1}
+.qitem{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;border:1px solid var(--line);background:var(--panel);padding:16px}
+.iimg{width:96px;height:96px;background:#0a0a0e;border:1px solid var(--line2);display:grid;place-items:center;overflow:hidden}
+.iimg img{width:100%;height:100%;object-fit:contain;cursor:zoom-in}
+.iimg span{font:600 40px var(--serif);color:var(--line2)}
+.ibody{min-width:0}
+.ibody h3{margin:0 0 6px;font:600 25px/1.15 var(--serif);color:#f1e6c8}
+.idesc{font-size:16px;overflow-wrap:anywhere}
+.iobtain{margin-top:10px;padding:10px 12px;border-left:3px solid var(--gold);background:var(--panel2);font-size:16px;overflow-wrap:anywhere}
+.iobtain .lbl{margin-bottom:4px}
+.ibody .edit-only.block{margin-top:10px}
+.pill.objp{color:var(--green);border-color:#1d6b52}
+.objlist{list-style:none;margin:0;padding:8px 22px 14px}
+.objective{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:14px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.objective:last-child{border-bottom:0}
+body:not(.editing) .objective{grid-template-columns:22px minmax(0,1fr)}
+.ocheck{width:20px;height:20px;margin-top:5px;border:2px solid var(--gold);display:block}
+.otext{font-size:18px;overflow-wrap:anywhere}
+
 /* mode editing tools */
 .movetools{margin:-6px 0 22px}
 .movetools .bar{display:flex;flex-wrap:wrap;gap:8px}
@@ -468,9 +489,10 @@ function migratePage(p) {
   p.moves.forEach(m => { migrateMove(m); if (!p.modes.some(x => x.id === m.mode)) m.mode = 'universal'; });
 }
 function migrateQuest(q) {
-  q.summary = q.summary || ''; q.characters = q.characters || []; q.blocks = q.blocks || [];
+  q.summary = q.summary || ''; q.characters = q.characters || []; q.blocks = q.blocks || []; q.items = q.items || [];
   q.characters.forEach(c => { c.image = c.image || ''; c.role = c.role || ''; });
-  q.blocks.forEach(b => { if (b.type === 'dialogue') b.lines = b.lines || []; if (b.type === 'options') b.choices = b.choices || []; if (b.type !== 'header') { b.images = b.images || []; b.links = b.links || []; } });
+  q.items.forEach(i => { i.image = i.image || ''; i.description = i.description || ''; i.obtain = i.obtain || ''; });
+  q.blocks.forEach(b => { if (b.type === 'dialogue') b.lines = b.lines || []; if (b.type === 'options') b.choices = b.choices || []; if (b.type === 'objectives') b.objectives = b.objectives || []; if (b.type !== 'header') { b.images = b.images || []; b.links = b.links || []; } });
 }
 function migrateState(st) {
   st.pages = st.pages || []; st.quests = st.quests || []; st.keywords = st.keywords || [];
@@ -555,11 +577,13 @@ const blankPage = (name = 'New Character') => ({
 const blankMove = (mode = 'universal') => ({
   id: uid(), mode, key: '', held: false, name: 'New Move', does: '', meter: '', blockable: false, paryable: false, block: '', armor: '', images: [], links: []
 });
-const blankQuest = (name = 'New Quest') => ({ id: uid(), name, summary: '', characters: [], blocks: [] });
+const blankQuest = (name = 'New Quest') => ({ id: uid(), name, summary: '', items: [], characters: [], blocks: [] });
+const blankItem = () => ({ id: uid(), name: 'New Item', description: '', obtain: '', image: '' });
 const blankChar = () => ({ id: uid(), name: 'New Character', role: '', image: '' });
 const blankBlock = type => {
   if (type === 'header')   return { id: uid(), type, text: 'New section' };
   if (type === 'dialogue') return { id: uid(), type, label: '', lines: [{ id: uid(), speaker: 'narrator', text: '' }], images: [], links: [] };
+  if (type === 'objectives') return { id: uid(), type, title: 'Quest Objectives', objectives: [{ id: uid(), text: 'New objective' }] };
   return { id: uid(), type: 'options', prompt: 'What will you do?', choices: [{ id: uid(), label: 'Option 1', outcome: '' }, { id: uid(), label: 'Option 2', outcome: '' }], images: [], links: [] };
 };
 const seed = () => {
@@ -576,8 +600,10 @@ const seed = () => {
   q.summary = 'A sample quest showing characters, dialogue and a choice.';
   const guide = { id: uid(), name: 'The Guide', role: 'Quest giver', image: '' };
   q.characters = [guide];
+  q.items = [{ id: uid(), name: 'Old Key', description: 'Opens the warehouse door.', obtain: 'Talk to the Guide after accepting the quest.', image: '' }];
   q.blocks = [
     { id: uid(), type: 'header', text: 'Chapter 1: The Meeting' },
+    { id: uid(), type: 'objectives', title: 'Quest Objectives', objectives: [{ id: uid(), text: 'Speak to the Guide' }, { id: uid(), text: 'Find the Old Key' }] },
     { id: uid(), type: 'dialogue', label: 'At the docks', lines: [
       { id: uid(), speaker: 'narrator', text: 'A stranger waves you over.' },
       { id: uid(), speaker: guide.id, text: 'You look like someone who can handle trouble.' } ] },
@@ -1038,7 +1064,7 @@ $('#copyForm').onsubmit = e => {
    ===================================================================== */
 function questsHome() {
   const q = searchText();
-  const list = state.quests.filter(x => !q || (x.name + ' ' + x.summary + ' ' + x.characters.map(c => c.name).join(' ')).toLowerCase().includes(q));
+  const list = state.quests.filter(x => !q || (x.name + ' ' + x.summary + ' ' + x.characters.map(c => c.name).join(' ') + ' ' + x.items.map(i => i.name).join(' ')).toLowerCase().includes(q));
   const cards = list.map(x => {
     const face = x.characters.find(c => c.image);
     return `
@@ -1071,6 +1097,11 @@ function questView(q) {
     </div>
     ${(q.summary || editing) ? `<div class="lead">${F(q, 'summary', 'Short summary of the quest', { ml: true })}</div>` : ''}
 
+    <section id="itemsSec">
+      <div class="qhead"><h2>Quest Items</h2><button class="btn gold edit-only" data-act="add-item">+ Add item</button></div>
+      <div class="items" id="items"></div>
+    </section>
+
     <section id="castSec">
       <div class="qhead"><h2>Story Characters</h2><button class="btn gold edit-only" data-act="add-char">+ Add character</button></div>
       <div class="cast" id="cast"></div>
@@ -1083,6 +1114,7 @@ function questView(q) {
         <button class="btn gold" data-act="add-blk" data-type="header">+ Header</button>
         <button class="btn gold" data-act="add-blk" data-type="dialogue">+ Dialogue</button>
         <button class="btn gold" data-act="add-blk" data-type="options">+ Options</button>
+        <button class="btn gold" data-act="add-blk" data-type="objectives">+ Quest Objectives</button>
       </div></div>
     </section>`;
 }
@@ -1099,6 +1131,27 @@ function charHTML(c) {
         <div class="row2">
           ${c.image ? `<button class="btn sm" data-act="del-char-img" data-m="${c.id}">Remove image</button>` : ''}
           <button class="btn sm danger" data-act="del-char" data-m="${c.id}">Delete</button>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+
+function itemHTML(it) {
+  return `
+  <article class="qitem" data-id="${it.id}">
+    <div class="iimg">${it.image ? `<img src="${it.image}" alt="${esc(it.name)}" data-act="zoom">` : `<span>${esc((it.name || '?')[0])}</span>`}</div>
+    <div class="ibody">
+      <h3>${F(it, 'name', 'Item name', { mid: it.id })}</h3>
+      ${(it.description || editing) ? `<div class="idesc">${F(it, 'description', 'What it is', { ml: true, mid: it.id })}</div>` : ''}
+      ${(it.obtain || editing) ? `<div class="iobtain"><span class="lbl">How to obtain</span>${F(it, 'obtain', 'Where or how the player gets it', { ml: true, mid: it.id })}</div>` : ''}
+      <div class="edit-only block">
+        <div class="drop" data-drop="${it.id}" data-pick="${it.id}">${it.image ? 'Replace image' : 'Drop image or click'}</div>
+        <div class="row2">
+          <button class="btn sm" data-act="item-up" data-m="${it.id}" aria-label="Move item up">↑</button>
+          <button class="btn sm" data-act="item-down" data-m="${it.id}" aria-label="Move item down">↓</button>
+          ${it.image ? `<button class="btn sm" data-act="del-item-img" data-m="${it.id}">Remove image</button>` : ''}
+          <button class="btn sm danger" data-act="del-item" data-m="${it.id}">Delete</button>
         </div>
       </div>
     </div>
@@ -1150,6 +1203,24 @@ function blockItem(q, b) {
       ${blkMedia(b)}
     </article>`;
   }
+  if (b.type === 'objectives') {
+    const rows = b.objectives.map(o => `
+      <li class="objective" data-id="${o.id}">
+        <span class="ocheck" aria-hidden="true"></span>
+        <div class="otext">${F(o, 'text', 'What the player needs to do', { ml: true, mid: o.id })}</div>
+        <div class="tools edit-only">
+          <button class="btn sm" data-act="obj-up" data-b="${b.id}" data-o="${o.id}" aria-label="Move objective up">↑</button>
+          <button class="btn sm" data-act="obj-down" data-b="${b.id}" data-o="${o.id}" aria-label="Move objective down">↓</button>
+          <button class="btn sm danger" data-act="del-obj" data-b="${b.id}" data-o="${o.id}" aria-label="Delete objective">×</button>
+        </div>
+      </li>`).join('');
+    return `
+    <article class="blk card obj" data-id="${b.id}">
+      <header><span class="pill objp">Objectives</span><div class="dlabel">${(b.title || editing) ? F(b, 'title', 'Section title', { mid: b.id }) : ''}</div>${blkTools(b)}</header>
+      ${rows ? `<ul class="objlist">${rows}</ul>` : '<div class="empty">No objectives yet.</div>'}
+      <div class="edit-only block" style="padding:0 22px 18px"><button class="btn sm" data-act="add-obj" data-b="${b.id}">+ Add objective</button></div>
+    </article>`;
+  }
   // options
   const choices = b.choices.map((c, i) => `
     <div class="choice" data-id="${c.id}">
@@ -1171,6 +1242,8 @@ function blockItem(q, b) {
 }
 
 function renderQuestBody(q) {
+  $('#items').innerHTML = q.items.map(itemHTML).join('') || (editing ? '<div class="empty">No quest items yet. Add the items that matter to this quest and how the player gets them.</div>' : '');
+  $('#itemsSec').hidden = !editing && !q.items.length;
   $('#cast').innerHTML = q.characters.map(charHTML).join('') || (editing ? '<div class="empty">No story characters yet. Add one to use them as speakers in dialogue.</div>' : '');
   $('#castSec').hidden = !editing && !q.characters.length;
   $('#qblocks').innerHTML = q.blocks.map(b => blockItem(q, b)).join('') || `<div class="empty">${editing ? 'Nothing here yet. Add a header, dialogue or options below.' : 'This quest has no story yet.'}</div>`;
@@ -1302,7 +1375,7 @@ document.addEventListener('change', e => {
 });
 
 /* ---------- editing: clicks ---------- */
-const EDIT_ACTS = new Set(['new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down']);
+const EDIT_ACTS = new Set(['new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down']);
 const focusId = id => { const el = id && $(`[data-id="${id}"]`); if (el) el.scrollIntoView({ block: 'center' }); };
 
 document.addEventListener('click', async e => {
@@ -1400,6 +1473,24 @@ document.addEventListener('click', async e => {
       }
       break;
     case 'del-char-img': { const c = findObj(doc, el.dataset.m); if (c) { c.image = ''; save(); renderQuestBody(doc); } break; }
+    case 'add-item': { const it = blankItem(); doc.items.push(it); save(); renderQuestBody(doc); focusId(it.id); break; }
+    case 'del-item':
+      if (confirm('Delete this quest item?')) { doc.items = doc.items.filter(i => i.id !== el.dataset.m); save(); renderQuestBody(doc); }
+      break;
+    case 'del-item-img': { const it = findObj(doc, el.dataset.m); if (it) { it.image = ''; save(); renderQuestBody(doc); } break; }
+    case 'item-up': case 'item-down':
+      if (swap(doc.items, el.dataset.m, act === 'item-up' ? -1 : 1)) { save(); renderQuestBody(doc); focusId(el.dataset.m); }
+      break;
+    case 'add-obj': {
+      const b = findObj(doc, el.dataset.b); if (!b) break;
+      const o = { id: uid(), text: '' }; b.objectives.push(o); save(); renderQuestBody(doc); focusId(o.id); break;
+    }
+    case 'del-obj': { const b = findObj(doc, el.dataset.b); if (b) { b.objectives = b.objectives.filter(o => o.id !== el.dataset.o); save(); renderQuestBody(doc); } break; }
+    case 'obj-up': case 'obj-down': {
+      const b = findObj(doc, el.dataset.b);
+      if (b && swap(b.objectives, el.dataset.o, act === 'obj-up' ? -1 : 1)) { save(); renderQuestBody(doc); focusId(el.dataset.o); }
+      break;
+    }
     case 'add-blk': { const b = blankBlock(el.dataset.type); doc.blocks.push(b); save(); renderQuestBody(doc); focusId(b.id); break; }
     case 'del-blk':
       if (confirm('Delete this section?')) { doc.blocks = doc.blocks.filter(b => b.id !== el.dataset.b); save(); renderQuestBody(doc); }
