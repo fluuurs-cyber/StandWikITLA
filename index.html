@@ -50,7 +50,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 body.editing .lockbtn{background:var(--gold);color:#17110a}
 
 /* ---------- layout ---------- */
-main{max-width:1240px;margin:0 auto;padding:calc(var(--nav-h) + 34px) 28px 140px}
+main{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:calc(var(--nav-h) + 34px) 28px 140px}
+#pagebg{position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;filter:grayscale(1) brightness(.6);opacity:0;transition:opacity .35s ease;pointer-events:none}
+#pagebg.on{opacity:1}
 .crumbs{font:13px var(--mono);color:var(--muted);margin-bottom:6px}
 .crumbs a:hover{color:var(--gold)}
 .crumbs span{margin:0 6px}
@@ -150,8 +152,8 @@ body.editing input[type=text].keyin{width:78px;height:42px;padding:0 6px;text-al
 .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .thumb{margin:0;position:relative;border:1px solid var(--line2);background:#0a0a0e;aspect-ratio:16/10;display:grid;place-items:center;overflow:hidden}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
-.thumb .x,.vid .x,.linkcard .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border:0;background:rgba(8,8,11,.85);color:#fff;line-height:1;font-size:16px}
-.thumb .x:hover,.vid .x:hover,.linkcard .x:hover{background:#c0443f}
+.thumb .x,.vid .x,.linkcard .x,.reftext .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border:0;background:rgba(8,8,11,.85);color:#fff;line-height:1;font-size:16px}
+.thumb .x:hover,.vid .x:hover,.linkcard .x:hover,.reftext .x:hover{background:#c0443f}
 .vids{display:grid;gap:10px}
 .vid{position:relative;aspect-ratio:16/9;border:1px solid var(--line2);background:#000}
 .vid iframe{width:100%;height:100%;border:0;display:block}
@@ -295,6 +297,31 @@ body:not(.editing) .objective{grid-template-columns:22px minmax(0,1fr)}
 .ocheck{width:20px;height:20px;margin-top:5px;border:2px solid var(--gold);display:block}
 .otext{font-size:18px;overflow-wrap:anywhere}
 
+/* categories, backgrounds, references, stat meanings */
+.pcard .plink{display:flex;flex-direction:column;flex:1;color:inherit}
+.porder{padding:0 12px 12px}
+body.editing .porder select{width:100%;margin-bottom:8px}
+.porder .row2{margin-top:0}
+.cathead{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:44px 0 16px;padding-bottom:12px;border-bottom:1px solid var(--line2)}
+.cathead:first-of-type{margin-top:8px}
+.cathead h2{flex:1;min-width:200px;font-size:clamp(28px,3vw,38px);line-height:1.1}
+.cathead .count{font:12px var(--mono);color:var(--muted)}
+body.editing .cathead input{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--gold)}
+.bgbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:-8px 0 24px;padding:10px 14px;border:1px dashed var(--line2);background:rgba(217,164,65,.04)}
+.bgbar .lbl{margin:0}
+.bgbar .drop{padding:8px 14px}
+.bghint{font:12px var(--mono);color:var(--muted)}
+.titlebar .acts2 select{margin-right:2px}
+.reftext{position:relative;padding:10px 38px 10px 14px;border-left:3px solid var(--gold);background:var(--panel2);font-size:16px;overflow-wrap:anywhere}
+.reftext textarea{font-size:16px}
+.vids .thumb.linkimg{aspect-ratio:auto;display:block}
+.vids .thumb.linkimg img{height:auto;max-height:420px;object-fit:contain;background:#0a0a0e}
+.statdefs{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.statdefs h4{margin:0 0 12px;font:400 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.statdefs dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 24px}
+.statdefs dt{font:600 20px var(--serif);color:var(--gold-soft)}
+.statdefs dd{margin:2px 0 0;font-size:15px}
+
 /* mode editing tools */
 .movetools{margin:-6px 0 22px}
 .movetools .bar{display:flex;flex-wrap:wrap;gap:8px}
@@ -335,8 +362,18 @@ dialog .hint{font-size:13px;color:var(--muted);margin:0 0 12px;min-height:20px}
   .media{border-left:0;border-top:1px solid var(--line)}
   .fields{grid-template-columns:1fr 1fr}
 }
+@media (max-width:860px){
+  :root{--nav-h:100px}
+  .nav{padding:8px 14px;gap:6px 12px;flex-wrap:wrap;align-content:center}
+  .logo{order:1;font-size:22px}
+  .nav .spacer{display:none}
+  .search{order:2;width:auto;flex:1;min-width:0;padding:6px 12px}
+  .lockbtn{order:3;padding:6px 14px}
+  .navbreak{display:block;order:4;flex-basis:100%;height:0}
+  .nav .links{order:5;flex-basis:100%;gap:22px;font-size:17px;overflow-x:auto;white-space:nowrap}
+}
 @media (max-width:640px){
-  :root{--nav-h:100px}.nav{padding:8px 14px;gap:6px 12px;flex-wrap:wrap;align-content:center}.logo{order:1;font-size:22px}.nav .spacer{order:2}.lockbtn{order:3;padding:6px 14px}.navbreak{display:block;order:4;flex-basis:100%;height:0}.nav .links{order:5;gap:14px;font-size:16px}.search{order:6;width:auto;flex:1;min-width:0;padding:6px 12px}.qhead h2{font-size:30px}.line{grid-template-columns:42px minmax(0,1fr)}.av{width:42px;height:42px}
+  .qhead h2{font-size:30px}.line{grid-template-columns:42px minmax(0,1fr)}.av{width:42px;height:42px}
   main{padding-left:14px;padding-right:14px}
   .fields{grid-template-columns:1fr}
   .modes{border-left:0;padding-left:0;width:100%}.modes button{font-size:18px}.modes button[aria-pressed=true]{font-size:30px}
@@ -351,6 +388,7 @@ dialog .hint{font-size:13px;color:var(--muted);margin:0 0 12px;min-height:20px}
     <a href="#/" id="navPages" class="on">Abilities</a>
     <a href="#/quests" id="navQuests">Quests</a>
     <a href="#/keywording" id="navKeywords">Keywording</a>
+    <a href="#/archetypes" id="navArch">Archetypes</a>
   </div>
   <div class="spacer"></div>
   <span class="navbreak"></span>
@@ -358,6 +396,7 @@ dialog .hint{font-size:13px;color:var(--muted);margin:0 0 12px;min-height:20px}
   <button class="lockbtn" id="lockBtn">Edit</button>
 </nav>
 
+<div id="pagebg" aria-hidden="true"></div>
 <main id="app"></main>
 
 <div class="editbar" id="editbar">
@@ -387,7 +426,7 @@ dialog .hint{font-size:13px;color:var(--muted);margin:0 0 12px;min-height:20px}
 <dialog id="copyDlg">
   <form id="copyForm" autocomplete="off">
     <h3>Copy moveset</h3>
-    <p>Copy moves from an ability sheet into this one.</p>
+    <p>Copy moves and passives from an ability sheet into this one.</p>
     <label class="dl">Copy from <select id="cpSrc"></select></label>
     <label class="dl">What to copy <select id="cpPart"></select></label>
     <label class="dl" id="cpIntoWrap">Copy into <select id="cpInto"></select></label>
@@ -444,11 +483,12 @@ function closure(p, id) {
   walk(id);
   return seen;
 }
-function modeNote(p) {
+function modeNote(p, noun = 'moves') {
   const mo = modeById(p, tab); if (!mo) return '';
+  const N = noun[0].toUpperCase() + noun.slice(1);
   const names = mo.links.filter(id => modeById(p, id)).map(id => modeName(p, id));
-  if (!names.length) return tab === 'universal' ? 'Moves every linked mode can use.' : `Moves that belong to ${mo.name} only.`;
-  return `Everything in ${listJoin(names)}, plus moves that only belong to ${mo.name}.`;
+  if (!names.length) return tab === 'universal' ? `${N} every linked mode can use.` : `${N} that belong to ${mo.name} only.`;
+  return `Everything in ${listJoin(names)}, plus ${noun} that only belong to ${mo.name}.`;
 }
 
 /* ---------- stand stats ---------- */
@@ -469,10 +509,22 @@ function normStats(p) {
   p.standName = p.standName || '';
 }
 const hasStats = p => STAT_DEFS.some(d => p.stats[d.key] > 0);
+const STAT_INFO = {
+  power:      'Its damage output.',
+  speed:      'Its ability to move rapidly.',
+  range:      'Its effective range of combat.',
+  durability: 'Its way of fighting back.',
+  precision:  'How much precision it takes to be good with this stand.',
+  potential:  'Its skill ceiling.'
+};
 
 /* ---------- migration of older saved data ---------- */
+// reference entries are either a link/path string or a text note { id, text }
+function fixLinks(o) {
+  o.links = (o.links || []).map(x => (x && typeof x === 'object') ? { id: x.id || uid(), text: x.text || '' } : x);
+}
 function migrateMove(m) {
-  m.images = m.images || []; m.links = m.links || [];
+  m.images = m.images || []; fixLinks(m);
   if (typeof m.blockable !== 'boolean') {
     const t = (m.block || '').trim();
     m.blockable = /blockable/i.test(t) && !/unblockable|not blockable|cannot be blocked/i.test(t);
@@ -487,29 +539,35 @@ function migratePage(p) {
   if (!p.modes.some(m => m.id === 'universal')) p.modes.unshift({ id: 'universal', name: 'Universal', links: [] });
   p.modes.forEach(m => { m.name = m.name || 'Mode'; if (!Array.isArray(m.links)) m.links = m.id === 'universal' ? [] : ['universal']; });
   p.moves.forEach(m => { migrateMove(m); if (!p.modes.some(x => x.id === m.mode)) m.mode = 'universal'; });
+  p.category = p.category || ''; p.background = p.background || ''; p.passives = p.passives || [];
+  p.passives.forEach(x => { x.name = x.name || ''; x.does = x.does || ''; x.images = x.images || []; fixLinks(x); if (!p.modes.some(m => m.id === x.mode)) x.mode = 'universal'; });
 }
 function migrateQuest(q) {
   q.summary = q.summary || ''; q.characters = q.characters || []; q.blocks = q.blocks || []; q.items = q.items || [];
   q.characters.forEach(c => { c.image = c.image || ''; c.role = c.role || ''; });
   q.items.forEach(i => { i.image = i.image || ''; i.description = i.description || ''; i.obtain = i.obtain || ''; });
-  q.blocks.forEach(b => { if (b.type === 'dialogue') b.lines = b.lines || []; if (b.type === 'options') b.choices = b.choices || []; if (b.type === 'objectives') b.objectives = b.objectives || []; if (b.type !== 'header') { b.images = b.images || []; b.links = b.links || []; } });
+  q.blocks.forEach(b => { if (b.type === 'dialogue') b.lines = b.lines || []; if (b.type === 'options') b.choices = b.choices || []; if (b.type === 'objectives') b.objectives = b.objectives || []; if (b.type !== 'header') { b.images = b.images || []; fixLinks(b); } });
 }
 function migrateState(st) {
-  st.pages = st.pages || []; st.quests = st.quests || []; st.keywords = st.keywords || [];
+  st.categories = Array.isArray(st.categories) ? st.categories : [];
+  st.categories.forEach(c => { c.id = c.id || uid(); c.name = c.name || 'Category'; });
+  st.pages = st.pages || []; st.quests = st.quests || []; st.keywords = st.keywords || []; st.archetypes = st.archetypes || [];
   st.pages.forEach(migratePage); st.quests.forEach(migrateQuest);
-  st.keywords.forEach(k => { if (k.type === 'entry') { k.images = k.images || []; k.links = k.links || []; } });
+  st.pages.forEach(p => { if (!st.categories.some(c => c.id === p.category)) p.category = ''; });
+  [st.keywords, st.archetypes].forEach(list => list.forEach(k => { if (k.type === 'entry') { k.images = k.images || []; fixLinks(k); } }));
   return st;
 }
 
 /* ---------- links / video helpers ---------- */
 const VIDEO_EXT = /\.(mp4|webm|ogv|mov|m4v)$/i;
+const IMG_EXT = /\.(gif|png|jpe?g|webp|avif|apng|bmp)$/i;
 function parseLink(raw) {
   raw = (raw || '').trim(); if (!raw) return null;
   if (/^data:video\/[\w.+-]+;base64,/i.test(raw)) return raw;               // small clip stored inside the site data
   const first = raw.split('/')[0];
   const looksLikeDomain = raw.includes('/') && first.includes('.');
   if (!/^[a-z][a-z0-9+.-]*:/i.test(raw) && !looksLikeDomain && !raw.startsWith('/') && !raw.includes('..') &&
-      /^[\w\-. %()/]+$/.test(raw) && VIDEO_EXT.test(raw)) return raw.replace(/\\/g, '/'); // file inside the repo, e.g. videos/clip.mp4
+      /^[\w\-. %()/]+$/.test(raw) && (VIDEO_EXT.test(raw) || IMG_EXT.test(raw))) return raw.replace(/\\/g, '/'); // file inside the repo, e.g. gifs/clip.gif
   try {
     const u = new URL(/^https?:\/\//i.test(raw) ? raw : 'https://' + raw);
     return /^https?:$/.test(u.protocol) && u.hostname.includes('.') ? u.href : null;
@@ -532,22 +590,44 @@ function ytId(href) {
   } catch { return null; }
 }
 
-// Vimeo and Streamable pages that can be embedded
+// Vimeo, Streamable and Tenor pages that can be embedded
 function embedSrc(href) {
   try {
     const u = new URL(href), h = u.hostname.replace(/^www\./, '');
     let m;
     if (h === 'vimeo.com' && (m = u.pathname.match(/^\/(\d+)/))) return 'https://player.vimeo.com/video/' + m[1];
     if (h === 'streamable.com' && (m = u.pathname.match(/^\/(?:e\/)?(\w+)$/))) return 'https://streamable.com/e/' + m[1];
+    if (h === 'tenor.com' && (m = u.pathname.match(/-(\d{6,})\/?$/))) return 'https://tenor.com/embed/' + m[1];
+  } catch {}
+  return null;
+}
+// a picture or GIF we can show directly (direct image link, Giphy page, or a file in the repo)
+function imageSrc(href) {
+  if (!/^https?:/i.test(href)) return IMG_EXT.test(href) ? encodeURI(href) : null;
+  try {
+    const u = new URL(href), h = u.hostname.replace(/^www\./, '');
+    if (h === 'giphy.com') { const m = u.pathname.match(/^\/(?:gifs|stickers|embed)\/(?:[\w-]*-)?([A-Za-z0-9]+)\/?$/); if (m) return `https://media.giphy.com/media/${m[1]}/giphy.gif`; }
+    if (IMG_EXT.test(u.pathname)) return href;
   } catch {}
   return null;
 }
 // a video file we can play with the browser's own player (inline clip, repo file, or direct .mp4 link)
 function fileVideo(href) {
   if (/^data:video\//i.test(href)) return href;
-  if (!/^https?:/i.test(href)) return encodeURI(href);
+  if (!/^https?:/i.test(href)) return VIDEO_EXT.test(href) ? encodeURI(href) : null;
   try { if (VIDEO_EXT.test(new URL(href).pathname)) return href; } catch {}
   return null;
+}
+// what to do with whatever was typed in the reference box: a link (string), a text note, or null / undefined for nothing / bad link
+function makeRef(raw) {
+  raw = (raw || '').trim(); if (!raw) return null;
+  const linky = !/\s/.test(raw) && (/^[a-z][a-z0-9+.-]*:/i.test(raw) || /^www\./i.test(raw) || raw.includes('/') || VIDEO_EXT.test(raw) || IMG_EXT.test(raw));
+  if (linky) {
+    const href = parseLink(raw);
+    if (href) return href;
+    if (/^(https?|data):/i.test(raw)) return undefined;
+  }
+  return { id: uid(), text: raw };
 }
 
 /* ---------- generic helpers ---------- */
@@ -565,6 +645,17 @@ function swap(arr, id, dir) {
   [arr[i], arr[j]] = [arr[j], arr[i]]; return true;
 }
 
+// swap a page with its neighbour inside the same category
+function movePage(id, dir) {
+  const pg = state.pages.find(x => x.id === id); if (!pg) return false;
+  const same = state.pages.filter(x => (x.category || '') === (pg.category || ''));
+  const i = same.indexOf(pg), j = i + dir;
+  if (j < 0 || j >= same.length) return false;
+  const a = state.pages.indexOf(pg), b = state.pages.indexOf(same[j]);
+  [state.pages[a], state.pages[b]] = [state.pages[b], state.pages[a]];
+  return true;
+}
+
 /* ---------- data ---------- */
 const blankPage = (name = 'New Character') => ({
   id: uid(), name,
@@ -572,11 +663,12 @@ const blankPage = (name = 'New Character') => ({
   quote: 'Your signature line goes here', quoteLabel: 'Signature line',
   aura: '#8144e4', arc: 'Featured arc', playable: 'Confirmed playable',
   overview: 'Write the character overview here.',
-  portrait: '', stats: { power: 0, speed: 0, range: 0, durability: 0, precision: 0, potential: 0 }, standName: '', modes: defaultModes(), moves: []
+  portrait: '', category: '', background: '', passives: [], stats: { power: 0, speed: 0, range: 0, durability: 0, precision: 0, potential: 0 }, standName: '', modes: defaultModes(), moves: []
 });
 const blankMove = (mode = 'universal') => ({
   id: uid(), mode, key: '', held: false, name: 'New Move', does: '', meter: '', blockable: false, paryable: false, block: '', armor: '', images: [], links: []
 });
+const blankPassive = (mode = 'universal') => ({ id: uid(), mode, name: 'New Passive', does: '', images: [], links: [] });
 const blankQuest = (name = 'New Quest') => ({ id: uid(), name, summary: '', items: [], characters: [], blocks: [] });
 const blankItem = () => ({ id: uid(), name: 'New Item', description: '', obtain: '', image: '' });
 const blankChar = () => ({ id: uid(), name: 'New Character', role: '', image: '' });
@@ -616,7 +708,11 @@ const seed = () => {
     { id: uid(), type: 'entry', name: 'Armor', text: 'While a move has armor, hits do not interrupt it. Super armor ignores all hits; light armor only ignores one.', images: [] },
     { id: uid(), type: 'entry', name: 'Held', text: 'A held move keeps charging for as long as its key stays down.', images: [] }
   ];
-  return { editHash: '', pages: [p], quests: [q], keywords: kws };
+  p.passives = [{ id: uid(), mode: 'universal', name: 'Example Passive', does: 'Always active. Describe what this passive does here.', images: [], links: [] }];
+  const archs = [
+    { id: uid(), type: 'entry', name: 'Example Archetype', text: 'Explain what this archetype is, who it suits and how it plays.', images: [], links: [] }
+  ];
+  return { editHash: '', categories: [], pages: [p], quests: [q], keywords: kws, archetypes: archs };
 };
 
 let state = null;
@@ -704,9 +800,10 @@ function route() {
   if ((m = h.match(/^#\/q\/(.+)$/)) && (d = state.quests.find(x => x.id === m[1]))) return { kind: 'quest', doc: d };
   if (h === '#/quests') return { kind: 'quests' };
   if (h === '#/keywording') return { kind: 'keywording', doc: state.keywords };
-  return { kind: 'abilities' };
+  if (h === '#/archetypes') return { kind: 'archetypes', doc: state.archetypes };
+  return { kind: 'abilities', doc: state.categories };
 }
-const sectionOf = k => (k === 'ability' || k === 'abilities') ? 'abilities' : (k === 'quest' || k === 'quests') ? 'quests' : 'keywording';
+const sectionOf = k => (k === 'ability' || k === 'abilities') ? 'abilities' : (k === 'quest' || k === 'quests') ? 'quests' : k;
 window.addEventListener('hashchange', () => {
   tab = 'universal';
   if (sectionOf(route().kind) !== lastSection) $('#search').value = '';
@@ -730,27 +827,67 @@ const searchText = () => $('#search').value.trim().toLowerCase();
 /* =====================================================================
    ABILITIES
    ===================================================================== */
-function abilitiesHome() {
-  const q = searchText();
-  const pages = state.pages.filter(p => !q || (p.name + ' ' + p.part + ' ' + p.rarity).toLowerCase().includes(q));
-  const cards = pages.map(p => `
-    <a class="pcard" href="#/p/${p.id}" style="--c:${esc(p.aura)}">
-      <div class="img">${p.portrait ? `<img src="${p.portrait}" alt="">` : `<span>${esc((p.name || '?')[0])}</span>`}</div>
-      <div class="meta"><h3>${esc(p.name)}</h3><p>${esc(p.part)} · ${esc(p.rarity)}</p></div>
+const catOptions = sel => `<option value="">Uncategorized</option>` + state.categories.map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
+
+function pageCard(p) {
+  return `
+    <div class="pcard" style="--c:${esc(p.aura)}" data-id="${p.id}">
+      <a class="plink" href="#/p/${p.id}">
+        <div class="img">${p.portrait ? `<img src="${p.portrait}" alt="">` : `<span>${esc((p.name || '?')[0])}</span>`}</div>
+        <div class="meta"><h3>${esc(p.name)}</h3><p>${esc(p.part)} · ${esc(p.rarity)}</p></div>
+      </a>
       <div class="acts edit-only">
         <button class="btn sm" data-act="dup-page" data-id="${p.id}">Duplicate</button>
         <button class="btn sm danger" data-act="del-page" data-id="${p.id}">Delete</button>
       </div>
-    </a>`).join('');
+      <div class="porder edit-only block">
+        ${state.categories.length ? `<select data-catfor="${p.id}" aria-label="Category">${catOptions(p.category)}</select>` : ''}
+        <div class="row2">
+          <button class="btn sm" data-act="page-left" data-id="${p.id}" aria-label="Move earlier">← Earlier</button>
+          <button class="btn sm" data-act="page-right" data-id="${p.id}" aria-label="Move later">Later →</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function abilitiesHome() {
+  const q = searchText();
+  const match = p => !q || (p.name + ' ' + p.part + ' ' + p.rarity).toLowerCase().includes(q);
+  const grid = list => `<div class="grid">${list.map(pageCard).join('')}</div>`;
+  const none = `<div class="empty">${q ? 'No abilities match that search.' : (editing ? 'No abilities yet. Select “New ability” to start one.' : 'No abilities yet.')}</div>`;
+  let body;
+  if (!state.categories.length) {
+    const list = state.pages.filter(match);
+    body = list.length ? grid(list) : none;
+  } else {
+    const groups = state.categories.map(c => ({ c, list: state.pages.filter(p => p.category === c.id && match(p)) }));
+    groups.push({ c: null, list: state.pages.filter(p => !p.category && match(p)) });
+    body = groups.map(({ c, list }) => {
+      if (!list.length && !(editing && c && !q)) return '';        // visitors never see empty groups
+      const head = c
+        ? `<div class="cathead" data-id="${c.id}"><h2>${F(c, 'name', 'Category name', { mid: c.id })}</h2><span class="count">${list.length}</span>
+            <div class="tools edit-only">
+              <button class="btn sm" data-act="new-page" data-cat="${c.id}">+ Ability</button>
+              <button class="btn sm" data-act="cat-up" data-b="${c.id}" aria-label="Move category up">↑</button>
+              <button class="btn sm" data-act="cat-down" data-b="${c.id}" aria-label="Move category down">↓</button>
+              <button class="btn sm danger" data-act="cat-del" data-b="${c.id}">Delete</button>
+            </div></div>`
+        : `<div class="cathead"><h2>Uncategorized</h2><span class="count">${list.length}</span></div>`;
+      return head + (list.length ? grid(list) : `<div class="empty">No abilities in this category yet.</div>`);
+    }).join('') || none;
+  }
   return `
     <div class="home-head">
       <div>
         <h1>Abilities</h1>
         <p>Pick a character to see their full move list.</p>
       </div>
-      <button class="btn gold edit-only" data-act="new-page">+ New ability</button>
+      <div class="edit-only" style="gap:8px">
+        <button class="btn gold" data-act="new-page">+ New ability</button>
+        <button class="btn" data-act="cat-add">+ New category</button>
+      </div>
     </div>
-    ${cards ? `<div class="grid">${cards}</div>` : `<div class="empty">${q ? 'No abilities match that search.' : (editing ? 'No abilities yet. Select “New ability” to start one.' : 'No abilities yet.')}</div>`}`;
+    ${body}`;
 }
 
 function pageView(p) {
@@ -761,8 +898,17 @@ function pageView(p) {
     <div class="crumbs"><a href="#/">Abilities</a><span>/</span>${esc(p.name)}</div>
     <div class="titlebar">
       <h1 class="title">${F(p, 'name', 'Page name')}</h1>
-      <div class="acts2 edit-only"><button class="btn" data-act="dup-page" data-id="${p.id}">Duplicate sheet</button></div>
+      <div class="acts2 edit-only">
+        ${state.categories.length ? `<select data-catfor="${p.id}" aria-label="Category">${catOptions(p.category)}</select>` : ''}
+        <button class="btn" data-act="dup-page" data-id="${p.id}">Duplicate sheet</button>
+      </div>
     </div>
+    <div class="edit-only block"><div class="bgbar">
+      <span class="lbl">Page background</span>
+      <div class="drop" data-drop="background" data-pick="background">${p.background ? 'Replace background image' : 'Drop a background image here or click to choose'}</div>
+      ${p.background ? `<button class="btn sm danger" data-act="del-bg">Remove background</button>` : ''}
+      <span class="bghint">Shown in black and white, slightly darkened.</span>
+    </div></div>
 
     <section class="hero" id="hero">
       <div>
@@ -805,6 +951,11 @@ function pageView(p) {
         </div>
       </aside>
     </section>
+
+    <div id="passiveSec">
+      <div class="moves-head"><h2>Passives</h2><div class="modes" id="pmodes" role="tablist" aria-label="Passives mode"></div><p id="pNote"></p></div>
+      <section id="passives"></section>
+    </div>
 
     <div class="moves-head"><h2>Move List</h2><div class="modes" id="modes" role="tablist" aria-label="Move list mode"></div><p id="modeNote"></p></div>
     <div class="movetools edit-only block" id="movetools"></div>
@@ -873,12 +1024,20 @@ function statsCard(p) {
           ${editing ? '<p class="shint">Enter a rating from 0 to 100. The letters update on their own: A is 80+, B is 60+, C is 40+, D is 20+, E is under 20.</p>' : ''}
         </div>
       </div>
+      <div class="statdefs">
+        <h4>What the stats mean</h4>
+        <dl>${STAT_DEFS.map(d => `<div><dt>${d.label}</dt><dd>${STAT_INFO[d.key]}</dd></div>`).join('')}</dl>
+      </div>
     </div>`;
 }
 
 function visibleMoves(p) {
   const ids = closure(p, tab);
   return p.moves.filter(m => ids.has(m.mode));
+}
+function visiblePassives(p) {
+  const ids = closure(p, tab);
+  return p.passives.filter(x => ids.has(x.mode));
 }
 
 function blockHTML(m) {
@@ -891,13 +1050,21 @@ function blockHTML(m) {
 
 function linksHTML(m) {
   return (m.links || []).map((raw, n) => {
+    const rm = editing ? `<button class="x" data-act="del-link" data-m="${m.id}" data-i="${n}" aria-label="Remove">×</button>` : '';
+    if (raw && typeof raw === 'object') {                       // text note
+      const body = editing
+        ? `<textarea data-f="text" data-m="${raw.id}" rows="2" placeholder="Note" aria-label="Note">${esc(raw.text)}</textarea>`
+        : esc(raw.text).replace(/\n/g, '<br>');
+      return `<div class="reftext">${body}${rm}</div>`;
+    }
     const href = parseLink(raw); if (!href) return '';
-    const rm = editing ? `<button class="x" data-act="del-link" data-m="${m.id}" data-i="${n}" aria-label="Remove video or link">×</button>` : '';
     const title = esc(m.name || 'Video');
     const yt = ytId(href);
     const frame = src => `<div class="vid"><iframe src="${src}" title="${title}" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>${rm}</div>`;
     if (yt) return frame(`https://www.youtube-nocookie.com/embed/${yt.id}${yt.start ? '?start=' + yt.start : ''}`);
     const emb = embedSrc(href); if (emb) return frame(emb);
+    const img = imageSrc(href);
+    if (img) return `<figure class="thumb linkimg"><img src="${esc(img)}" alt="${title} reference" loading="lazy" referrerpolicy="no-referrer" data-act="zoom">${rm}</figure>`;
     const file = fileVideo(href);
     if (file) return `<div class="vid"><video controls preload="metadata" playsinline src="${esc(file)}"></video>${rm}</div>`;
     let host = href; try { host = new URL(href).hostname.replace(/^www\./, ''); } catch {}
@@ -916,8 +1083,8 @@ function mediaInner(o) {
       ${vids ? `<div class="vids">${vids}</div>` : ''}
       <div class="drop edit-only block" data-drop="${o.id}" data-pick="${o.id}">Drop images, GIFs or short videos here, or click to choose</div>
       <div class="edit-only block"><div class="linkadd">
-        <input type="text" class="linkin" placeholder="YouTube link, video link, or videos/clip.mp4" aria-label="Add a video or link">
-        <button class="btn" data-act="add-link" data-m="${o.id}">Add</button>
+        <input type="text" class="linkin" placeholder="Type a note, or paste a YouTube, GIF, image or video link" aria-label="Add a note or link">
+        <button class="btn" data-act="add-link" data-m="${o.id}">Send</button>
       </div></div>`
   };
 }
@@ -929,25 +1096,29 @@ function keyHTML(m) {
   return (m.key ? `<span class="keycap">${esc(m.key)}</span>` : '') + tag;
 }
 
+function pillFor(p, o) {
+  if (o.mode !== tab) return `<span class="pill uni" title="Shared from ${esc(modeName(p, o.mode))}">${esc(modeName(p, o.mode))}</span>`;
+  if (tab !== 'universal') return `<span class="pill">${esc(modeName(p, o.mode))} only</span>`;
+  return '';
+}
+const modeSelect = (p, o) => `<select data-f="mode" data-m="${o.id}" aria-label="Which mode this belongs to">
+  ${p.modes.map(x => `<option value="${x.id}" ${x.id === o.mode ? 'selected' : ''}>${esc(x.name)}${x.id === 'universal' ? ' (shared)' : ' only'}</option>`).join('')}
+</select>`;
+
 function movesHTML(p) {
   const list = visibleMoves(p);
   const cards = list.map(m => {
     const mi = mediaInner(m);
     const hasMedia = mi.has || editing;
-    let pill = '';
-    if (m.mode !== tab) pill = `<span class="pill uni" title="Shared from ${esc(modeName(p, m.mode))}">${esc(modeName(p, m.mode))}</span>`;
-    else if (tab !== 'universal') pill = `<span class="pill">${esc(modeName(p, m.mode))} only</span>`;
     return `
     <article class="move" data-id="${m.id}">
       <header>
         <div class="keywrap">${keyHTML(m)}</div>
         <h3>${F(m, 'name', 'Move name', { mid: m.id })}</h3>
-        ${pill}
+        ${pillFor(p, m)}
         <div class="tools edit-only">
           <label class="held-toggle"><input type="checkbox" data-f="held" data-m="${m.id}" ${m.held ? 'checked' : ''}> Held</label>
-          <select data-f="mode" data-m="${m.id}" aria-label="Which mode this move belongs to">
-            ${p.modes.map(o => `<option value="${o.id}" ${o.id === m.mode ? 'selected' : ''}>${esc(o.name)}${o.id === 'universal' ? ' (shared)' : ' only'}</option>`).join('')}
-          </select>
+          ${modeSelect(p, m)}
           <button class="btn sm" data-act="up" data-m="${m.id}" aria-label="Move up">↑</button>
           <button class="btn sm" data-act="down" data-m="${m.id}" aria-label="Move down">↓</button>
           <button class="btn sm danger" data-act="del-move" data-m="${m.id}">Delete</button>
@@ -969,6 +1140,35 @@ function movesHTML(p) {
   return (cards || `<div class="empty">No moves in ${esc(modeName(p, tab))} yet.</div>`) + `<div style="margin-top:6px">${add}</div>`;
 }
 
+function passivesHTML(p) {
+  const list = visiblePassives(p);
+  const cards = list.map(x => {
+    const mi = mediaInner(x);
+    const hasMedia = mi.has || editing;
+    return `
+    <article class="move passive" data-id="${x.id}">
+      <header>
+        <h3>${F(x, 'name', 'Passive name', { mid: x.id })}</h3>
+        ${pillFor(p, x)}
+        <div class="tools edit-only">
+          ${modeSelect(p, x)}
+          <button class="btn sm" data-act="pup" data-m="${x.id}" aria-label="Move up">↑</button>
+          <button class="btn sm" data-act="pdown" data-m="${x.id}" aria-label="Move down">↓</button>
+          <button class="btn sm danger" data-act="del-passive" data-m="${x.id}">Delete</button>
+        </div>
+      </header>
+      <div class="move-body ${hasMedia ? '' : 'solo'}">
+        <div class="fields">
+          <div class="field wide"><span class="lbl">What it does</span><div class="v">${F(x, 'does', 'Describe the passive', { ml: true, mid: x.id })}</div></div>
+        </div>
+        ${hasMedia ? `<div class="media">${mi.html}</div>` : ''}
+      </div>
+    </article>`;
+  }).join('');
+  const add = `<button class="btn gold edit-only" data-act="add-passive">+ Add passive to ${esc(modeName(p, tab))}</button>`;
+  return (cards || `<div class="empty">No passives in ${esc(modeName(p, tab))} yet.</div>`) + `<div style="margin-top:6px">${add}</div>`;
+}
+
 function moveToolsHTML(p) {
   const mo = modeById(p, tab); if (!mo) return '';
   const others = p.modes.filter(x => x.id !== tab);
@@ -986,16 +1186,19 @@ function moveToolsHTML(p) {
     </div>`;
 }
 
+const modeTabsHTML = p => p.modes.map(m => `<button role="tab" data-act="tab" data-tab="${m.id}" aria-pressed="${m.id === tab}">${esc(m.name)}</button>`).join('');
 function renderModes(p) {
-  $('#modes').innerHTML = p.modes.map(m =>
-    `<button role="tab" data-act="tab" data-tab="${m.id}" aria-pressed="${m.id === tab}">${esc(m.name)}</button>`
-  ).join('');
+  const h = modeTabsHTML(p);
+  $('#modes').innerHTML = h; $('#pmodes').innerHTML = h;
 }
 function renderMoves(p) {
   if (!modeById(p, tab)) tab = 'universal';
   $('#moves').innerHTML = movesHTML(p);
+  $('#passives').innerHTML = passivesHTML(p);
+  $('#passiveSec').hidden = !editing && !p.passives.length;      // Passives are optional: visitors only see them when there are some
   $('#movetools').innerHTML = moveToolsHTML(p);
   $('#modeNote').textContent = modeNote(p);
+  $('#pNote').textContent = modeNote(p, 'passives');
   renderModes(p);
   autosize();
 }
@@ -1015,7 +1218,7 @@ function fillCopy(p) {
   const src = state.pages.find(x => x.id === $('#cpSrc').value) || p;
   const parts = [];
   if (src.id !== p.id) parts.push(`<option value="all">Everything (all modes)</option>`);
-  src.modes.forEach(m => parts.push(`<option value="${m.id}">Only “${esc(m.name)}” moves</option>`));
+  src.modes.forEach(m => parts.push(`<option value="${m.id}">Only “${esc(m.name)}” moves and passives</option>`));
   $('#cpPart').innerHTML = parts.join('');
   $('#cpInto').innerHTML = p.modes.map(m => `<option value="${m.id}" ${m.id === copyInto ? 'selected' : ''}>${esc(m.name)}</option>`).join('');
   updateCopyUI();
@@ -1028,24 +1231,27 @@ function updateCopyUI() {
     : 'Copies only the moves that belong to that mode, not ones it borrows from other modes.';
 }
 function copyMoveset(dst, src, part, into, replace) {
-  const srcMoves = clone(src.moves);          // snapshot, so copying within one sheet is safe
-  const put = (m, mode) => { const c = clone(m); c.id = uid(); c.mode = mode; dst.moves.push(c); };
-  let n = 0;
+  const snapM = clone(src.moves), snapP = clone(src.passives || []);      // snapshots, so copying within one sheet is safe
+  const fresh = o => { const c = clone(o); c.id = uid(); c.links = (c.links || []).map(x => (x && typeof x === 'object') ? { ...x, id: uid() } : x); return c; };
+  dst.passives = dst.passives || [];
+  let moves = 0, passives = 0;
   if (part === 'all') {
-    const map = {}, fresh = [];
+    const map = {}, made = [];
     src.modes.forEach(sm => {
       let dm = dst.modes.find(x => x.name.trim().toLowerCase() === sm.name.trim().toLowerCase());
-      if (!dm) { dm = { id: uid(), name: sm.name, links: [] }; dst.modes.push(dm); fresh.push([dm, sm]); }
+      if (!dm) { dm = { id: uid(), name: sm.name, links: [] }; dst.modes.push(dm); made.push([dm, sm]); }
       map[sm.id] = dm.id;
     });
-    fresh.forEach(([dm, sm]) => { dm.links = sm.links.map(l => map[l]).filter(Boolean); });
-    if (replace) dst.moves = [];
-    srcMoves.forEach(m => { put(m, map[m.mode] || 'universal'); n++; });
+    made.forEach(([dm, sm]) => { dm.links = sm.links.map(l => map[l]).filter(Boolean); });
+    if (replace) { dst.moves = []; dst.passives = []; }
+    snapM.forEach(m => { const c = fresh(m); c.mode = map[m.mode] || 'universal'; dst.moves.push(c); moves++; });
+    snapP.forEach(x => { const c = fresh(x); c.mode = map[x.mode] || 'universal'; dst.passives.push(c); passives++; });
   } else {
-    if (replace) dst.moves = dst.moves.filter(m => m.mode !== into);
-    srcMoves.filter(m => m.mode === part).forEach(m => { put(m, into); n++; });
+    if (replace) { dst.moves = dst.moves.filter(m => m.mode !== into); dst.passives = dst.passives.filter(x => x.mode !== into); }
+    snapM.filter(m => m.mode === part).forEach(m => { const c = fresh(m); c.mode = into; dst.moves.push(c); moves++; });
+    snapP.filter(x => x.mode === part).forEach(x => { const c = fresh(x); c.mode = into; dst.passives.push(c); passives++; });
   }
-  return n;
+  return { moves, passives };
 }
 $('#cpCancel').onclick = () => $('#copyDlg').close();
 $('#cpSrc').onchange = () => { const r = route(); if (r.kind === 'ability') fillCopy(r.doc); };
@@ -1054,9 +1260,9 @@ $('#copyForm').onsubmit = e => {
   e.preventDefault();
   const r = route(); if (r.kind !== 'ability' || !editing) return;
   const src = state.pages.find(x => x.id === $('#cpSrc').value); if (!src) return;
-  const n = copyMoveset(r.doc, src, $('#cpPart').value, $('#cpInto').value, $('#cpReplace').checked);
+  const res = copyMoveset(r.doc, src, $('#cpPart').value, $('#cpInto').value, $('#cpReplace').checked);
   $('#copyDlg').close(); save(); renderMoves(r.doc);
-  toast(`Copied ${n} move${n === 1 ? '' : 's'}`);
+  toast(`Copied ${res.moves} move${res.moves === 1 ? '' : 's'}${res.passives ? ` and ${res.passives} passive${res.passives === 1 ? '' : 's'}` : ''}`);
 };
 
 /* =====================================================================
@@ -1068,14 +1274,16 @@ function questsHome() {
   const cards = list.map(x => {
     const face = x.characters.find(c => c.image);
     return `
-    <a class="pcard" href="#/q/${x.id}">
-      <div class="img">${face ? `<img src="${face.image}" alt="">` : `<span>${esc((x.name || '?')[0])}</span>`}</div>
-      <div class="meta"><h3>${esc(x.name)}</h3><p>${x.characters.length} character${x.characters.length === 1 ? '' : 's'} · ${x.blocks.length} section${x.blocks.length === 1 ? '' : 's'}</p></div>
+    <div class="pcard" data-id="${x.id}">
+      <a class="plink" href="#/q/${x.id}">
+        <div class="img">${face ? `<img src="${face.image}" alt="">` : `<span>${esc((x.name || '?')[0])}</span>`}</div>
+        <div class="meta"><h3>${esc(x.name)}</h3><p>${x.characters.length} character${x.characters.length === 1 ? '' : 's'} · ${x.blocks.length} section${x.blocks.length === 1 ? '' : 's'}</p></div>
+      </a>
       <div class="acts edit-only">
         <button class="btn sm" data-act="dup-quest" data-id="${x.id}">Duplicate</button>
         <button class="btn sm danger" data-act="del-quest" data-id="${x.id}">Delete</button>
       </div>
-    </a>`;
+    </div>`;
   }).join('');
   return `
     <div class="home-head">
@@ -1253,18 +1461,23 @@ function renderQuestBody(q) {
 /* =====================================================================
    KEYWORDING
    ===================================================================== */
-function kwView() {
+const GLOSS = {
+  keywording: { key: 'keywords',   title: 'Keywording', sub: 'Key terms and rules that apply to every moveset.', noun: 'Keyword',   ph: 'What it means and how it works…' },
+  archetypes: { key: 'archetypes', title: 'Archetypes', sub: 'The archetypes and what each one does.',            noun: 'Archetype', ph: 'What this archetype is and what it does…' }
+};
+function kwView(kind) {
+  const g = GLOSS[kind];
   return `
     <div class="home-head">
       <div>
-        <h1>Keywording</h1>
-        <p>Key terms and rules that apply to every moveset.</p>
+        <h1>${g.title}</h1>
+        <p>${g.sub}</p>
       </div>
     </div>
     <div id="kwlist"></div>
     <div class="edit-only block"><div class="addrow">
       <button class="btn gold" data-act="kw-add" data-type="header">+ Header</button>
-      <button class="btn gold" data-act="kw-add" data-type="entry">+ Keyword</button>
+      <button class="btn gold" data-act="kw-add" data-type="entry">+ ${g.noun}</button>
     </div></div>`;
 }
 const kwTools = k => `
@@ -1273,28 +1486,35 @@ const kwTools = k => `
     <button class="btn sm" data-act="kw-down" data-b="${k.id}" aria-label="Move down">↓</button>
     <button class="btn sm danger" data-act="kw-del" data-b="${k.id}">Delete</button>
   </div>`;
-function kwItem(k) {
+function kwItem(k, kind) {
+  const g = GLOSS[kind];
   if (k.type === 'header') return `<div class="blk hd" data-id="${k.id}"><h3>${F(k, 'text', 'Section header', { mid: k.id })}</h3>${kwTools(k)}</div>`;
   const mi = mediaInner(k);
   return `
   <article class="kw" data-id="${k.id}">
-    <header><h3>${F(k, 'name', 'Keyword', { mid: k.id })}</h3>${kwTools(k)}</header>
+    <header><h3>${F(k, 'name', g.noun, { mid: k.id })}</h3>${kwTools(k)}</header>
     <div class="kbody">
-      <div class="ktext">${F(k, 'text', 'What it means and how it works…', { ml: true, mid: k.id })}</div>
+      <div class="ktext">${F(k, 'text', g.ph, { ml: true, mid: k.id })}</div>
       ${mi.html}
     </div>
   </article>`;
 }
-function renderKeywords() {
-  const q = searchText();
-  const items = q ? state.keywords.filter(k => k.type === 'entry' && ((k.name || '') + ' ' + (k.text || '')).toLowerCase().includes(q)) : state.keywords;
-  $('#kwlist').innerHTML = items.map(kwItem).join('') || `<div class="empty">${q ? 'No keywords match that search.' : (editing ? 'Nothing here yet. Add a header or keyword below.' : 'No keywords yet.')}</div>`;
+function renderGlossary(kind) {
+  const g = GLOSS[kind], q = searchText(), all = state[g.key];
+  const items = q ? all.filter(k => k.type === 'entry' && ((k.name || '') + ' ' + (k.text || '')).toLowerCase().includes(q)) : all;
+  $('#kwlist').innerHTML = items.map(k => kwItem(k, kind)).join('') || `<div class="empty">${q ? `No ${g.noun.toLowerCase()}s match that search.` : (editing ? `Nothing here yet. Add a header or ${g.noun.toLowerCase()} below.` : `No ${g.noun.toLowerCase()}s yet.`)}</div>`;
   autosize();
 }
 
 /* =====================================================================
    RENDER
    ===================================================================== */
+// per-ability page background: shown in black and white and slightly darkened
+function applyBg(p) {
+  const el = $('#pagebg');
+  if (p && p.background) { el.style.backgroundImage = `linear-gradient(rgba(8,8,11,.30),rgba(8,8,11,.55)), url("${p.background}")`; el.classList.add('on'); }
+  else { el.style.backgroundImage = 'none'; el.classList.remove('on'); }
+}
 function applyAura(color) { document.documentElement.style.setProperty('--aura', color || '#8144e4'); }
 function autosize() {
   $$('textarea').forEach(t => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; });
@@ -1304,7 +1524,7 @@ function refresh() {
   const r = route();
   if (r.kind === 'ability') renderMoves(r.doc);
   else if (r.kind === 'quest') renderQuestBody(r.doc);
-  else if (r.kind === 'keywording') renderKeywords();
+  else if (GLOSS[r.kind]) renderGlossary(r.kind);
 }
 
 function render() {
@@ -1314,7 +1534,9 @@ function render() {
   $('#navPages').classList.toggle('on', sec === 'abilities');
   $('#navQuests').classList.toggle('on', sec === 'quests');
   $('#navKeywords').classList.toggle('on', sec === 'keywording');
+  $('#navArch').classList.toggle('on', sec === 'archetypes');
   applyAura(r.kind === 'ability' ? r.doc.aura : '#8144e4');
+  applyBg(r.kind === 'ability' ? r.doc : null);
   const app = $('#app');
   if (r.kind === 'ability') {
     if (!modeById(r.doc, tab)) tab = 'universal';
@@ -1325,8 +1547,8 @@ function render() {
     app.innerHTML = questView(r.doc); renderQuestBody(r.doc);
   } else if (r.kind === 'quests') {
     app.innerHTML = questsHome();
-  } else if (r.kind === 'keywording') {
-    app.innerHTML = kwView(); renderKeywords();
+  } else if (GLOSS[r.kind]) {
+    app.innerHTML = kwView(r.kind); renderGlossary(r.kind);
   } else {
     app.innerHTML = abilitiesHome();
   }
@@ -1356,7 +1578,7 @@ document.addEventListener('input', e => {
   if (f === 'aura' && r.kind === 'ability') { applyAura(t.value); $('#auraDot').style.background = t.value; $('#auraHex').textContent = t.value; }
   if (f === 'mode' || f === 'speaker') refresh();
   if (r.kind === 'ability' && f === 'name' && t.dataset.m) {
-    const b = $(`#modes [data-tab="${t.dataset.m}"]`); if (b) b.textContent = t.value || 'Mode';
+    $$(`[data-act="tab"][data-tab="${t.dataset.m}"]`).forEach(b => { b.textContent = t.value || 'Mode'; });
   }
   if (r.kind === 'quest' && f === 'name' && t.dataset.m) $$(`option[value="${t.dataset.m}"]`).forEach(o => { o.textContent = t.value || 'Unnamed'; });
   save();
@@ -1364,6 +1586,12 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   const t = e.target; if (!editing || !t.dataset) return;
   const r = route();
+  if (t.dataset.catfor) {                                     // move an ability into a category
+    const pg = state.pages.find(x => x.id === t.dataset.catfor);
+    if (pg) { pg.category = t.value; save(); render(); }
+    return;
+  }
+  if (r.kind === 'abilities' && t.dataset.f === 'name') { render(); return; }   // category renamed: refresh the dropdowns
   if (t.dataset.stat && r.kind === 'ability') { t.value = r.doc.stats[t.dataset.stat]; return; }
   if (t.dataset.linkmode && r.kind === 'ability') {
     const mo = modeById(r.doc, tab), id = t.dataset.linkmode;
@@ -1375,7 +1603,7 @@ document.addEventListener('change', e => {
 });
 
 /* ---------- editing: clicks ---------- */
-const EDIT_ACTS = new Set(['new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down']);
+const EDIT_ACTS = new Set(['new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down','cat-add','cat-del','cat-up','cat-down','page-left','page-right','add-passive','del-passive','pup','pdown','del-bg']);
 const focusId = id => { const el = id && $(`[data-id="${id}"]`); if (el) el.scrollIntoView({ block: 'center' }); };
 
 document.addEventListener('click', async e => {
@@ -1392,7 +1620,38 @@ document.addEventListener('click', async e => {
     case 'zoom': $('#lightbox img').src = el.src; $('#lightbox').classList.add('show'); break;
 
     /* ----- abilities ----- */
-    case 'new-page': { const np = blankPage(); state.pages.push(np); save(); location.hash = '#/p/' + np.id; break; }
+    case 'new-page': { const np = blankPage(); np.category = el.dataset.cat || ''; state.pages.push(np); save(); location.hash = '#/p/' + np.id; break; }
+    case 'cat-add': {
+      const c = { id: uid(), name: 'New category' }; state.categories.push(c); save(); render();
+      const inp = $(`.cathead[data-id="${c.id}"] input`); if (inp) { inp.focus(); inp.select(); }
+      focusId(c.id); break;
+    }
+    case 'cat-del': {
+      const c = state.categories.find(x => x.id === el.dataset.b); if (!c) break;
+      if (!confirm(`Delete the category “${c.name}”? Its abilities are kept and moved to Uncategorized.`)) break;
+      state.pages.forEach(pg => { if (pg.category === c.id) pg.category = ''; });
+      state.categories = state.categories.filter(x => x.id !== c.id); save(); render(); break;
+    }
+    case 'cat-up': case 'cat-down':
+      if (swap(state.categories, el.dataset.b, act === 'cat-up' ? -1 : 1)) { save(); render(); focusId(el.dataset.b); }
+      break;
+    case 'page-left': case 'page-right':
+      if (movePage(el.dataset.id, act === 'page-left' ? -1 : 1)) { save(); render(); focusId(el.dataset.id); }
+      break;
+    case 'del-bg': doc.background = ''; save(); render(); break;
+    case 'add-passive': { const x = blankPassive(tab); doc.passives.push(x); save(); renderMoves(doc); focusId(x.id); break; }
+    case 'del-passive':
+      if (confirm('Delete this passive?')) { doc.passives = doc.passives.filter(x => x.id !== el.dataset.m); save(); renderMoves(doc); }
+      break;
+    case 'pup': case 'pdown': {
+      const vis = visiblePassives(doc), i = vis.findIndex(x => x.id === el.dataset.m);
+      const j = act === 'pup' ? i - 1 : i + 1;
+      if (i < 0 || j < 0 || j >= vis.length) break;
+      const a = doc.passives.indexOf(vis[i]), b = doc.passives.indexOf(vis[j]);
+      [doc.passives[a], doc.passives[b]] = [doc.passives[b], doc.passives[a]];
+      save(); renderMoves(doc); focusId(el.dataset.m);
+      break;
+    }
     case 'del-page':
       e.preventDefault(); e.stopPropagation();
       if (confirm('Delete this ability sheet and all of its moves?')) { state.pages = state.pages.filter(x => x.id !== el.dataset.id); save(); render(); }
@@ -1426,9 +1685,10 @@ document.addEventListener('click', async e => {
     case 'add-link': {
       const o = findObj(doc, el.dataset.m); if (!o) break;
       const inp = el.closest('.linkadd').querySelector('input');
-      const href = parseLink(inp.value);
-      if (!href) { toast('That does not look like a valid link or video path'); break; }
-      (o.links = o.links || []).push(href); save(); refresh(); break;
+      const ref = makeRef(inp.value);
+      if (ref === null) { toast('Type a note or paste a link first'); break; }
+      if (ref === undefined) { toast('That link does not look valid'); break; }
+      (o.links = o.links || []).push(ref); save(); refresh(); break;
     }
     case 'del-link': { const o = findObj(doc, el.dataset.m); if (o && o.links) { o.links.splice(+el.dataset.i, 1); save(); refresh(); } break; }
     case 'del-img': { const o = findObj(doc, el.dataset.m); if (o && o.images) { o.images.splice(+el.dataset.i, 1); save(); refresh(); } break; }
@@ -1441,8 +1701,9 @@ document.addEventListener('click', async e => {
     }
     case 'del-mode': {
       const mo = modeById(doc, tab); if (!mo || tab === 'universal') break;
-      if (!confirm(`Delete the mode “${mo.name}”? Its own moves will be moved to Universal.`)) break;
+      if (!confirm(`Delete the mode “${mo.name}”? Its own moves and passives will be moved to Universal.`)) break;
       doc.moves.forEach(m => { if (m.mode === tab) m.mode = 'universal'; });
+      doc.passives.forEach(x => { if (x.mode === tab) x.mode = 'universal'; });
       doc.modes = doc.modes.filter(x => x.id !== tab);
       doc.modes.forEach(x => { x.links = x.links.filter(l => l !== tab); });
       tab = 'universal'; save(); renderMoves(doc); break;
@@ -1517,17 +1778,22 @@ document.addEventListener('click', async e => {
     }
     case 'del-choice': { const b = findObj(doc, el.dataset.b); if (b) { b.choices = b.choices.filter(c => c.id !== el.dataset.c); save(); renderQuestBody(doc); } break; }
 
-    /* ----- keywording ----- */
+    /* ----- keywording + archetypes ----- */
     case 'kw-add': {
-      const k = el.dataset.type === 'header' ? { id: uid(), type: 'header', text: 'New section' } : { id: uid(), type: 'entry', name: 'New keyword', text: '', images: [], links: [] };
-      state.keywords.push(k); save(); renderKeywords(); focusId(k.id); break;
+      const g = GLOSS[r.kind]; if (!g) break;
+      const k = el.dataset.type === 'header' ? { id: uid(), type: 'header', text: 'New section' } : { id: uid(), type: 'entry', name: 'New ' + g.noun.toLowerCase(), text: '', images: [], links: [] };
+      state[g.key].push(k); save(); renderGlossary(r.kind); focusId(k.id); break;
     }
-    case 'kw-del':
-      if (confirm('Delete this item?')) { state.keywords = state.keywords.filter(k => k.id !== el.dataset.b); save(); renderKeywords(); }
+    case 'kw-del': {
+      const g = GLOSS[r.kind]; if (!g) break;
+      if (confirm('Delete this item?')) { state[g.key] = state[g.key].filter(k => k.id !== el.dataset.b); save(); renderGlossary(r.kind); }
       break;
-    case 'kw-up': case 'kw-down':
-      if (swap(state.keywords, el.dataset.b, act === 'kw-up' ? -1 : 1)) { save(); renderKeywords(); focusId(el.dataset.b); }
+    }
+    case 'kw-up': case 'kw-down': {
+      const g = GLOSS[r.kind]; if (!g) break;
+      if (swap(state[g.key], el.dataset.b, act === 'kw-up' ? -1 : 1)) { save(); renderGlossary(r.kind); focusId(el.dataset.b); }
       break;
+    }
 
     /* ----- site ----- */
     case 'export': exportJSON(); break;
@@ -1582,7 +1848,7 @@ async function handleFiles(target, files) {
   for (const f of list) {
     try {
       if (f.type.startsWith('video/')) {
-        const o = target === 'portrait' ? null : findObj(doc, target);
+        const o = (target === 'portrait' || target === 'background') ? null : findObj(doc, target);
         if (!o || !Array.isArray(o.links)) { toast('Videos cannot be added here'); continue; }
         if (f.size > VIDEO_MAX) {
           toast(`“${f.name}” is too big to store in the site data (4 MB limit). Upload it to your GitHub repo, then paste its path, like videos/${f.name}, into the link box.`, 9000);
@@ -1590,8 +1856,9 @@ async function handleFiles(target, files) {
         }
         o.links.push(await readDataURL(f)); continue;
       }
-      const data = await toData(f, target === 'portrait' ? 1100 : 900);
+      const data = await toData(f, target === 'background' ? 1600 : target === 'portrait' ? 1100 : 900);
       if (target === 'portrait') doc.portrait = data;
+      else if (target === 'background') doc.background = data;
       else {
         const o = findObj(doc, target); if (!o) continue;
         if (Array.isArray(o.images)) o.images.push(data); else if ('image' in o) o.image = data;
@@ -1599,7 +1866,7 @@ async function handleFiles(target, files) {
     } catch { toast('Could not read ' + f.name); }
   }
   save();
-  target === 'portrait' ? render() : refresh();
+  (target === 'portrait' || target === 'background') ? render() : refresh();
 }
 $('#filePick').onchange = e => { handleFiles(pickTarget, e.target.files); e.target.value = ''; };
 
@@ -1625,7 +1892,7 @@ $('#jsonPick').onchange = async e => {
     const d = JSON.parse(await f.text());
     if (!Array.isArray(d.pages)) throw 0;
     if (!confirm('Replace your current draft with this file?')) return;
-    state = migrateState({ editHash: d.editHash || state.editHash || '', pages: d.pages, quests: d.quests, keywords: d.keywords });
+    state = migrateState({ editHash: d.editHash || state.editHash || '', categories: d.categories, pages: d.pages, quests: d.quests, keywords: d.keywords, archetypes: d.archetypes });
     await saveNow(); location.hash = '#/'; render(); toast('Imported');
   } catch { toast('That file is not a valid data.json'); }
 };
