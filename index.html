@@ -63,6 +63,7 @@ body.editing #lockBtn::before{background:var(--red)}
 /* ---------- layout shell ---------- */
 main{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:calc(var(--nav-h) + 20px) 28px 150px}
 body[data-sec="menu"] main{max-width:none;padding:0}
+body[data-sec="abilities"] main,body[data-sec="quests"] main,body[data-sec="archetypes"] main,body[data-sec="keywording"] main{max-width:1560px;padding-left:3vw;padding-right:3vw}
 #app.enter{animation:p5in .55s cubic-bezier(.2,.8,.2,1) both}
 @keyframes p5in{from{opacity:0;transform:translateX(-36px) skewX(-4deg)}to{opacity:1;transform:none}}
 .edit-only{display:none}
@@ -141,23 +142,24 @@ input[type=color]{width:22px;height:22px;padding:0;border:0;background:none;curs
 .chip2{border:2px solid #fff;background:#000;color:#fff;padding:2px 16px;font:400 15px var(--f-cond);letter-spacing:.08em;text-transform:uppercase;transform:skewX(-12deg);transition:background .15s,color .15s}
 .chip2:hover{background:#fff;color:#000}
 .chip2.on{background:var(--red);box-shadow:3px 3px 0 #000}
-.wheel{position:relative;margin-top:6px;outline:none;transition:height .4s}
-.slab{position:absolute;left:3%;width:min(800px,92%);height:98px;display:block;color:#000;transition:transform .5s cubic-bezier(.2,.85,.25,1),opacity .35s;will-change:transform;transform-origin:left center}
+.select{display:grid;grid-template-columns:minmax(340px,43%) minmax(0,1fr);gap:0 18px;align-items:start;margin-top:6px}
+.wheel{position:relative;outline:none;min-width:0;touch-action:pan-x;transition:height .45s cubic-bezier(.22,1,.36,1)}
+.slab{position:absolute;left:0;width:min(560px,96%);height:86px;display:block;color:#000;cursor:pointer;transition:transform .6s cubic-bezier(.22,1,.36,1),opacity .4s ease;will-change:transform,opacity;backface-visibility:hidden;transform-origin:left center}
 .slab-in{position:absolute;inset:0;transform:skewX(-10deg);background:#f4f4f4;border:3px solid #000;box-shadow:7px 7px 0 rgba(0,0,0,.85);overflow:hidden;transition:background .25s,border-color .25s}
 .slab-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:grayscale(1) contrast(1.05)}
 .slab-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.97) 0,rgba(255,255,255,.93) 34%,rgba(255,255,255,.4) 100%)}
 .slab.active .slab-in{background:var(--red);border-color:#fff}
 .slab.active .slab-bg::after{background:linear-gradient(90deg,rgba(214,0,28,.97) 0,rgba(214,0,28,.92) 34%,rgba(214,0,28,.5) 100%)}
-.slab-row{position:relative;height:100%;display:flex;align-items:center;gap:18px;transform:skewX(10deg);padding:0 28px 0 18px;margin-left:4px}
-.slab-img{flex:none;width:76px;height:76px;border:3px solid #000;background:#111;display:grid;place-items:center;overflow:hidden;box-shadow:3px 3px 0 rgba(0,0,0,.5)}
+.slab-row{position:relative;height:100%;display:flex;align-items:center;gap:14px;transform:skewX(10deg);padding:0 22px 0 14px;margin-left:4px}
+.slab-img{flex:none;width:64px;height:64px;border:3px solid #000;background:#111;display:grid;place-items:center;overflow:hidden;box-shadow:3px 3px 0 rgba(0,0,0,.5)}
 .slab.active .slab-img{border-color:#fff}
 .slab-img img{width:100%;height:100%;object-fit:cover;object-position:top}
 .slab-img span{font:400 38px var(--f-cond);color:#777}
 .slab-txt{min-width:0;flex:1}
-.slab-no{position:absolute;left:104px;top:3px;font:italic 700 12px var(--f-mono);color:#777}
+.slab-no{position:absolute;left:84px;top:1px;font:italic 700 11px var(--f-mono);color:#777}
 .slab.active .slab-no{color:#fff}
-.slab-name{display:block;font:400 clamp(24px,3vw,36px)/1.05 var(--f-cond);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#000}
-.slab-name .ransom{font-size:clamp(24px,3vw,38px)!important}
+.slab-name{display:block;font:400 clamp(20px,2.2vw,30px)/1.05 var(--f-cond);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#000}
+.slab-name .ransom{font-size:clamp(20px,2.3vw,30px)!important}
 .slab .sn-r{display:none}
 .slab.active .sn-r{display:inline-block}
 .slab.active .sn-p{display:none}
@@ -165,13 +167,13 @@ input[type=color]{width:22px;height:22px;padding:0;border:0;background:none;curs
 .slab.active .slab-meta{color:#fff}
 .slab-go{position:absolute;right:18px;top:50%;transform:translateY(-50%) skewX(10deg);font:400 26px var(--f-cond);color:#fff;opacity:0;transition:opacity .2s}
 .slab.active:not(.open) .slab-go{opacity:1}
-.slab-body{position:absolute;left:96px;right:6px;top:calc(100% - 2px);background:#0a0a0a;color:#fff;border:3px solid #fff;box-shadow:7px 7px 0 var(--red);padding:0 22px;max-height:0;overflow:hidden;opacity:0;transition:max-height .45s ease,opacity .3s,padding .3s;font-weight:600}
+.slab-body{position:absolute;left:70px;right:0;top:calc(100% - 2px);background:#0a0a0a;color:#fff;border:3px solid #fff;box-shadow:7px 7px 0 var(--red);padding:0 20px;max-height:0;overflow:hidden;opacity:0;transition:max-height .45s ease,opacity .3s,padding .3s;font-weight:600}
 .slab.open .slab-body{max-height:1600px;opacity:1;padding:18px 22px}
 .slab-body .btext{font-size:18px;overflow-wrap:anywhere}
 .slab-body .thumbs{margin-top:12px}
 .slab-body .vids{margin-top:12px;display:grid;gap:10px}
-.wheel-arrows{display:flex;gap:10px;margin:6px 0 0 3%}
-.wheel-hint{margin:8px 0 0 3%;font:600 13px var(--f-mono);color:#fff;text-shadow:0 2px 0 #000}
+.wheel-arrows{display:flex;gap:10px;margin:14px 0 0}
+.wheel-hint{margin:8px 0 0;font:600 13px var(--f-mono);color:#fff;text-shadow:0 2px 0 #000}
 .wheel-edit{margin-top:22px;background:#0a0a0a;border:4px solid #fff;box-shadow:8px 8px 0 var(--red);padding:18px 22px}
 .wheel-edit h4{margin:0 0 10px;font:400 22px var(--f-cond);letter-spacing:.06em;text-transform:uppercase}
 .wheel-edit .row2{margin-top:0}
@@ -179,6 +181,51 @@ input[type=color]{width:22px;height:22px;padding:0;border:0;background:none;curs
 .catrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 body.editing .catrow input[type=text]{width:220px}
 .flatlist{display:grid;gap:16px}
+
+/* ---------- select screen: big character stage ---------- */
+.stage{position:sticky;top:calc(var(--nav-h) + 8px);min-height:460px}
+.stage::before{content:"";position:absolute;right:-3vw;top:-2%;bottom:-2%;width:88%;background:var(--halftone) 0 0/9px 9px,var(--red);clip-path:polygon(22% 0,100% 0,100% 100%,0 100%);opacity:.95}
+.stage::after{content:"";position:absolute;right:30%;top:-4%;bottom:-4%;width:11%;background:#000;clip-path:polygon(42% 0,100% 0,58% 100%,0 100%);opacity:.92}
+.stage-card{position:absolute;inset:0;z-index:2;cursor:pointer;animation:stageIn .5s ease both}
+.stage-card.leave{animation:stageOut .34s ease both;pointer-events:none}
+.stage-card.down{--dy:50px}.stage-card.up{--dy:-50px}
+.stage-art{position:absolute;right:3%;top:0;bottom:72px;display:flex;justify-content:flex-end;animation:artIn .7s cubic-bezier(.2,.9,.25,1) both}
+.stage .fwrap{height:100%;display:flex;filter:drop-shadow(4px 0 0 #fff) drop-shadow(-4px 0 0 #fff) drop-shadow(0 4px 0 #fff) drop-shadow(0 -4px 0 #fff) drop-shadow(12px 12px 0 var(--accent,#d6001c))}
+.stage-art .frame{height:100%;aspect-ratio:3/4;background:#0a0a0e;clip-path:polygon(9% 0,100% 0,91% 100%,0 100%);overflow:hidden;display:grid;place-items:center}
+.stage-art .frame img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.stage-art .frame.ph span{font:400 190px/1 var(--f-cond);color:#2a2a2a}
+.stage-name{position:absolute;left:-1%;bottom:48px;max-width:94%;z-index:3;transform:rotate(-3deg);animation:nameIn .65s .08s cubic-bezier(.2,.9,.25,1) both}
+.stage-tag{position:absolute;left:2%;bottom:2px;z-index:3;display:flex;max-width:96%;transform:skewX(-10deg);box-shadow:5px 5px 0 #000;animation:tagIn .6s .16s cubic-bezier(.2,.9,.25,1) both}
+.stage-tag b{background:#000;color:#fff;border:3px solid #fff;border-right:0;padding:2px 14px;font:400 17px var(--f-cond);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.stage-tag span{background:#fff;color:#000;border:3px solid #fff;padding:2px 20px 2px 14px;font:400 20px var(--f-cond);letter-spacing:.05em;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stage-sub{position:absolute;right:3%;top:8px;z-index:3;background:#000;color:#fff;border:3px solid #fff;padding:1px 14px;font:700 13px var(--f-mono);transform:skewX(-10deg);animation:tagIn .6s .22s cubic-bezier(.2,.9,.25,1) both}
+@keyframes stageIn{from{opacity:0}to{opacity:1}}
+@keyframes stageOut{from{opacity:1}to{opacity:0;transform:translateX(-30px)}}
+@keyframes artIn{from{opacity:0;transform:translate(90px,var(--dy,0px)) skewX(-8deg) scale(.96)}to{opacity:1;transform:none}}
+@keyframes nameIn{from{opacity:0;transform:translateX(-60px) rotate(-3deg)}to{opacity:1;transform:rotate(-3deg)}}
+@keyframes tagIn{from{opacity:0;transform:translateX(-40px) skewX(-10deg)}to{opacity:1;transform:skewX(-10deg)}}
+@media (max-width:900px){
+  .select{grid-template-columns:1fr}
+  .stage{order:-1;position:relative;top:auto;min-height:340px;margin-bottom:34px}
+  .stage-art .frame.ph span{font-size:110px}
+  .slab{width:96%}
+}
+
+/* ---------- password gate ---------- */
+#gate{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px;background:linear-gradient(rgba(214,0,28,.92),rgba(12,0,0,.84)),var(--bg-menu) center/cover}
+#gate::before{content:"";position:absolute;inset:0;background:var(--halftone) 0 0/9px 9px;pointer-events:none}
+#gate.out{animation:gateOut .45s ease forwards;pointer-events:none}
+@keyframes gateOut{to{opacity:0;transform:scale(1.05)}}
+#gateForm{position:relative;display:grid;gap:34px;justify-items:center;width:min(520px,100%)}
+.gate-box{position:relative;background:#0a0a0a;border:4px solid #fff;box-shadow:10px 10px 0 #000;padding:34px 28px 26px;transform:rotate(-1deg);width:100%;display:grid;gap:12px;animation:p5in .6s cubic-bezier(.2,.8,.2,1) both}
+.gate-box .btag{top:-22px}
+.gate-box p{margin:0;font-style:italic;font-size:18px}
+.gate-box input{width:100%;background:#fff;color:#000;border:3px solid #000;box-shadow:4px 4px 0 var(--red);padding:10px 14px;font:700 18px var(--f-mono);outline:none}
+.gate-box input:focus{box-shadow:4px 4px 0 var(--red2),0 0 0 3px #fff}
+.gate-box.bad{animation:shake .4s}
+@keyframes shake{20%{transform:rotate(-1deg) translateX(-14px)}40%{transform:rotate(-1deg) translateX(12px)}60%{transform:rotate(-1deg) translateX(-8px)}80%{transform:rotate(-1deg) translateX(5px)}}
+.gate-err{min-height:20px;color:var(--red2);font:700 13px var(--f-mono)}
+.gate-box .p5btn{justify-self:end}
 
 /* ---------- section titles / generic boxes ---------- */
 .crumbs{display:none}
@@ -459,7 +506,7 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
   .statchart{max-width:340px;width:100%;margin:0 auto}
 }
 @media (max-width:640px){
-  main{padding-left:14px;padding-right:14px}
+  body[data-sec] main{padding-left:14px;padding-right:14px}
   .topbar{padding:0 12px;gap:8px}
   .p5btn{padding:6px 14px;font-size:17px}
   .fields{grid-template-columns:1fr}
@@ -489,12 +536,26 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
   <span class="state" id="saveState">Draft saved</span>
   <button class="btn gold" data-act="export">Export data.json</button>
   <button class="btn" data-act="import">Import</button>
+  <button class="btn" data-act="sitepw">Site password</button>
   <button class="btn danger" data-act="discard">Discard draft</button>
   <button class="btn" data-act="lock">Lock</button>
 </div>
 
 <button class="p5btn red" id="topBtn" data-act="top" aria-label="Back to top">▲ Top</button>
 <div id="wipe" aria-hidden="true"><i></i><i></i><i></i></div>
+<div id="gate" hidden>
+  <form id="gateForm" autocomplete="off">
+    <div id="gateTitle"></div>
+    <div class="gate-box" id="gateBox">
+      <span class="btag">LOCKED</span>
+      <p id="gateMsg">This site is protected. Enter the password to come in.</p>
+      <input type="password" id="gatePw" placeholder="Password" aria-label="Site password">
+      <div class="gate-err" id="gateErr" role="alert"></div>
+      <button type="submit" class="p5btn red" id="gateGo">Enter</button>
+    </div>
+  </form>
+</div>
+
 <div class="toast" id="toast"></div>
 <div class="lightbox" id="lightbox"><img alt=""></div>
 
@@ -507,6 +568,22 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
     <div class="row">
       <button type="button" class="btn" id="authCancel">Cancel</button>
       <button type="submit" class="btn gold" id="authOk">Unlock</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="pwDlg">
+  <form id="pwForm" autocomplete="off">
+    <h3>Site password</h3>
+    <p id="pwStatus"></p>
+    <label class="dl">New password <input type="password" id="pwNew"></label>
+    <label class="dl">Repeat it <input type="password" id="pwNew2"></label>
+    <div class="err" id="pwErr"></div>
+    <p class="hint">Visitors will have to enter this before they can see anything. Your content in data.json gets encrypted with it, so keep the password somewhere safe: if it is lost, the published data cannot be opened. Export data.json and upload it for the change to go live.</p>
+    <div class="row">
+      <button type="button" class="btn" id="pwCancel">Cancel</button>
+      <button type="button" class="btn danger" id="pwRemove">Remove password</button>
+      <button type="submit" class="btn gold">Save</button>
     </div>
   </form>
 </dialog>
@@ -824,6 +901,84 @@ let editing = false;
 let tab = 'universal';
 let lastSection = null;
 
+/* ---------- site password (encrypts data.json) ---------- */
+let gateKey = null;
+const b64 = buf => { const u = new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+async function deriveKey(pw, saltB64, iter) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: unb64(saltB64), iterations: iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+}
+async function encryptStr(key, str) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(str));
+  return { iv: b64(iv), ct: b64(ct) };
+}
+async function decryptStr(key, o) {
+  return new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(o.iv) }, key, unb64(o.ct)));
+}
+async function rememberKey(key, gate) { sessionStorage.setItem('codex-key', gate.salt + ':' + b64(await crypto.subtle.exportKey('raw', key))); }
+// accept a key if it opens the published data (enc) or the local check value
+async function unlockWith(key, gate, enc) {
+  let data = null;
+  if (enc) data = JSON.parse(await decryptStr(key, enc));
+  else if (await decryptStr(key, gate.check) !== 'codex-ok') throw new Error('wrong password');
+  gateKey = key; if (enc) state = data;
+  await rememberKey(key, gate);
+}
+async function runGate({ gate, enc }) {
+  const saved = sessionStorage.getItem('codex-key');
+  if (saved && saved.split(':')[0] === gate.salt) {
+    try { await unlockWith(await crypto.subtle.importKey('raw', unb64(saved.split(':')[1]), 'AES-GCM', true, ['encrypt', 'decrypt']), gate, enc); return; } catch {}
+  }
+  const el = $('#gate'), form = $('#gateForm'), pw = $('#gatePw'), err = $('#gateErr'), box = $('#gateBox'), go = $('#gateGo');
+  $('#gateTitle').innerHTML = ransom('TLA Codex', 64);
+  el.hidden = false; el.classList.remove('out');
+  if (!(window.crypto && crypto.subtle)) { err.textContent = 'This page needs https to unlock.'; }
+  pw.focus();
+  return new Promise(resolve => {
+    form.onsubmit = async e => {
+      e.preventDefault();
+      const v = pw.value; if (!v) return;
+      err.textContent = ''; go.textContent = 'Checking…';
+      try {
+        await unlockWith(await deriveKey(v, gate.salt, gate.iter), gate, enc);
+        el.classList.add('out'); setTimeout(() => { el.hidden = true; }, 440);
+        pw.value = ''; go.textContent = 'Enter'; resolve();
+      } catch {
+        err.textContent = 'Wrong password.'; go.textContent = 'Enter'; pw.select();
+        box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad');
+      }
+    };
+  });
+}
+async function setSitePassword(pw) {
+  const salt = b64(crypto.getRandomValues(new Uint8Array(16))), iter = 250000;
+  const key = await deriveKey(pw, salt, iter);
+  state.gate = { salt, iter, check: await encryptStr(key, 'codex-ok') };
+  gateKey = key; await rememberKey(key, state.gate); await saveNow();
+}
+function openPw() {
+  $('#pwStatus').textContent = state.gate ? 'The password is ON. Visitors have to enter it.' : 'No password is set, so anyone can open the site.';
+  $('#pwRemove').hidden = !state.gate;
+  $('#pwNew').value = ''; $('#pwNew2').value = ''; $('#pwErr').textContent = '';
+  $('#pwDlg').showModal(); $('#pwNew').focus();
+}
+$('#pwCancel').onclick = () => $('#pwDlg').close();
+$('#pwForm').onsubmit = async e => {
+  e.preventDefault();
+  const a = $('#pwNew').value, b = $('#pwNew2').value, err = $('#pwErr');
+  if (a.length < 4) { err.textContent = 'Use at least 4 characters.'; return; }
+  if (a !== b) { err.textContent = 'The two passwords do not match.'; return; }
+  if (!(window.crypto && crypto.subtle)) { err.textContent = 'Encryption is not available here (needs https).'; return; }
+  try { await setSitePassword(a); $('#pwDlg').close(); toast('Site password set. Export data.json and upload it to lock the live site.', 7000); }
+  catch { err.textContent = 'Could not set the password.'; }
+};
+$('#pwRemove').onclick = async () => {
+  delete state.gate; gateKey = null; sessionStorage.removeItem('codex-key'); await saveNow();
+  $('#pwDlg').close(); toast('Password removed. Export data.json and upload it to open the site to everyone.', 7000);
+};
+
 /* ---------- local draft storage (IndexedDB, so big images fit) ---------- */
 const idb = {
   db: null,
@@ -994,7 +1149,7 @@ document.addEventListener('mouseover', e => { const b = e.target.closest && e.ta
 /* =====================================================================
    SCROLL-WHEEL LISTS (abilities, quests, archetypes, keywording)
    ===================================================================== */
-const wheel = { idx: 0, kind: '', items: [], open: null, openKind: '', filter: '', sel: {}, t: 0 };
+const wheel = { idx: 0, kind: '', items: [], open: null, openKind: '', filter: '', sel: {}, acc: 0, last: 0, stepT: 0, dragAt: 0 };
 const WHEEL_META = {
   abilities:  { title: 'Abilities',  prompt: 'Choose an ability to see its stats, passives and moves.',         empty: 'No abilities yet.' },
   quests:     { title: 'Quests',     prompt: 'Choose a quest to read its story, items and choices.',            empty: 'No quests yet.' },
@@ -1011,23 +1166,29 @@ const glossBody = k => {
 };
 function wheelItems(kind) {
   const q = searchText();
+  const short = (t, n) => { t = String(t || '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
   if (kind === 'abilities') {
     let list = orderedPages();
     if (wheel.filter === '__none') list = list.filter(p => !p.category);
     else if (wheel.filter) list = list.filter(p => p.category === wheel.filter);
     return list.filter(p => !q || (p.name + ' ' + p.part + ' ' + p.rarity + ' ' + p.standName).toLowerCase().includes(q))
-      .map(p => ({ id: p.id, href: '#/p/' + p.id, name: p.name || 'Untitled', meta: [p.part, p.rarity].filter(Boolean).join(' · '), img: p.portrait, bar: p.background }));
+      .map(p => ({ id: p.id, href: '#/p/' + p.id, name: p.name || 'Untitled', meta: [p.part, p.rarity].filter(Boolean).join(' · '), img: p.portrait, bar: p.background,
+        stage: { img: p.portrait, title: p.name || 'Untitled', label: 'Arc', tag: p.arc, sub: [p.part, p.rarity, p.status].filter(Boolean).join(' · '), accent: p.aura } }));
   }
   if (kind === 'quests') {
     return state.quests.filter(x => !q || (x.name + ' ' + x.summary + ' ' + x.characters.map(c => c.name).join(' ') + ' ' + x.items.map(i => i.name).join(' ')).toLowerCase().includes(q))
-      .map(x => ({ id: x.id, href: '#/q/' + x.id, name: x.name || 'Untitled', meta: `${x.characters.length} character${x.characters.length === 1 ? '' : 's'} · ${x.blocks.length} section${x.blocks.length === 1 ? '' : 's'}`,
-        img: (x.characters.find(c => c.image) || x.items.find(i => i.image) || {}).image }));
+      .map(x => {
+        const meta = `${x.characters.length} character${x.characters.length === 1 ? '' : 's'} · ${x.blocks.length} section${x.blocks.length === 1 ? '' : 's'}`;
+        const img = (x.characters.find(c => c.image) || x.items.find(i => i.image) || {}).image;
+        return { id: x.id, href: '#/q/' + x.id, name: x.name || 'Untitled', meta, img, stage: { img, title: x.name || 'Untitled', label: 'Quest', tag: short(x.summary, 80), sub: meta } };
+      });
   }
   const g = GLOSS[kind]; let group = ''; const out = [];
   state[g.key].forEach(k => {
     if (k.type === 'header') { group = k.text || ''; return; }
     if (q && !((k.name || '') + ' ' + (k.text || '')).toLowerCase().includes(q)) return;
-    out.push({ id: k.id, name: k.name || 'Untitled', meta: group, img: (k.images || [])[0], body: glossBody(k) });
+    const img = (k.images || [])[0];
+    out.push({ id: k.id, name: k.name || 'Untitled', meta: group, img, body: glossBody(k), stage: { img, title: k.name || 'Untitled', label: group || g.noun, tag: short(k.text, 80), sub: '' } });
   });
   return out;
 }
@@ -1050,7 +1211,28 @@ function slabsHTML(kind, items) {
       ${it.body ? `<div class="slab-body">${it.body}</div>` : ''}
     </div>`).join('');
 }
-const catOptionsFor = sel => catOptions(sel);
+// the big character shown on the right while you scroll
+function stageCardHTML(it, cls = '') {
+  const s = it.stage || {};
+  return `
+    <div class="stage-card ${cls}" data-act="open-sel" style="--accent:${esc(s.accent || '#d6001c')}">
+      <div class="stage-art"><div class="fwrap">${s.img
+        ? `<div class="frame"><img src="${esc(s.img)}" alt=""></div>`
+        : `<div class="frame ph"><span>${esc((s.title || '?')[0])}</span></div>`}</div></div>
+      <div class="stage-name">${ransom(s.title || it.name, 54)}</div>
+      ${s.tag ? `<div class="stage-tag"><b>${esc(s.label || 'Arc')}</b><span>${esc(s.tag)}</span></div>` : ''}
+      ${s.sub ? `<div class="stage-sub">${esc(s.sub)}</div>` : ''}
+    </div>`;
+}
+function showStage(dir) {
+  const st = $('#stage'); if (!st) return;
+  const it = wheel.items[wheel.idx]; if (!it) return;
+  $$('.stage-card.leave', st).forEach(c => c.remove());
+  const old = st.querySelector('.stage-card');
+  if (old) old.classList.add('leave');
+  st.insertAdjacentHTML('beforeend', stageCardHTML(it, dir > 0 ? 'down' : 'up'));
+  if (old) setTimeout(() => old.remove(), 380);
+}
 function catChips() {
   if (!state.categories.length) return '';
   const chip = (id, label) => `<button class="chip2 ${wheel.filter === id ? 'on' : ''}" data-act="cat-filter" data-cat="${id}">${esc(label)}</button>`;
@@ -1101,7 +1283,10 @@ function wheelPage(kind) {
       <h1 class="p5title">${ransom(m.title, 62)}</h1>
       <p class="lprompt">${esc(m.prompt)}</p>
       ${kind === 'abilities' ? catChips() : ''}
-      <div class="wheel" id="wheel" tabindex="0" role="listbox" aria-label="${esc(m.title)} list">${slabsHTML(kind, items)}</div>
+      <div class="select" id="select">
+        <div class="wheel" id="wheel" tabindex="0" role="listbox" aria-label="${esc(m.title)} list">${slabsHTML(kind, items)}</div>
+        <div class="stage" id="stage" aria-live="polite">${items[idx] ? stageCardHTML(items[idx], 'first') : ''}</div>
+      </div>
       ${items.length ? `<div class="wheel-arrows"><button class="btn sm" data-act="wheel-up" aria-label="Previous">▲</button><button class="btn sm" data-act="wheel-down" aria-label="Next">▼</button></div>
         <div class="wheel-hint">Scroll, use ↑ ↓, or swipe · select the highlighted one to ${canOpen ? 'open it' : 'read it'}</div>` : ''}
       ${(editing && canOpen) ? `<div class="wheel-edit" id="wheelEdit">${wheelEditHTML(kind, items)}</div>` : ''}
@@ -1110,9 +1295,10 @@ function wheelPage(kind) {
 function layoutWheel() {
   const box = $('#wheel'); if (!box) return;
   const slabs = [...box.querySelectorAll('.slab')];
-  if (!slabs.length) { box.style.height = 'auto'; return; }
+  const st = $('#stage');
+  if (!slabs.length) { box.style.height = 'auto'; if (st) st.style.minHeight = '0px'; return; }
   const small = (window.innerWidth || 1200) < 640;
-  const base = Math.max(460, Math.min(Math.round((window.innerHeight || 800) * 0.64), 620));
+  const base = Math.max(440, Math.min(Math.round((window.innerHeight || 800) * 0.66), 640));
   slabs.forEach((s, i) => {
     const d = i - wheel.idx;
     s.classList.toggle('active', d === 0);
@@ -1121,15 +1307,17 @@ function layoutWheel() {
   const body = box.querySelector('.slab.open .slab-body');
   const extra = body ? body.scrollHeight + 44 : 0;       // an opened entry pushes the ones below it down
   box.style.height = (base + extra) + 'px';
-  const gap = small ? 92 : 108, xs = small ? 14 : 40;
+  if (st) st.style.minHeight = (small ? 340 : base) + 'px';
+  const gap = small ? 80 : 90, xs = small ? 10 : 28;
   slabs.forEach((s, i) => {
     const d = i - wheel.idx, ad = Math.abs(d);
-    const y = d * gap + Math.sign(d) * 30 + (d > 0 ? extra : 0);
-    s.style.top = (base / 2 - 49) + 'px';
-    s.style.transform = `translate3d(${ad * xs}px, ${y}px, 0) scale(${d === 0 ? 1.08 : Math.max(.58, 1 - ad * .07)})`;
-    s.style.opacity = ad > 4 ? 0 : (d === 0 ? 1 : Math.max(.15, 1 - ad * .2));
+    const y = d * gap + Math.sign(d) * 26 + (d > 0 ? extra : 0);
+    const x = d === 0 ? -14 : ad * xs;                   // the chosen bar sticks out to the left
+    s.style.top = (base / 2 - 43) + 'px';
+    s.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${d === 0 ? 1.1 : Math.max(.6, 1 - ad * .065)})`;
+    s.style.opacity = ad > 5 ? 0 : (d === 0 ? 1 : Math.max(.2, 1 - ad * .16));
     s.style.zIndex = 50 - ad;
-    s.style.pointerEvents = ad > 4 ? 'none' : 'auto';
+    s.style.pointerEvents = ad > 5 ? 'none' : 'auto';
     s.setAttribute('aria-selected', d === 0 ? 'true' : 'false');
   });
 }
@@ -1140,9 +1328,10 @@ function setIdx(i) {
   const n = wheel.items.length; if (!n) return;
   i = Math.max(0, Math.min(n - 1, i));
   if (i === wheel.idx) return;
+  const dir = i > wheel.idx ? 1 : -1;
   wheel.idx = i; wheel.open = null;
   wheel.sel[wheel.kind] = wheel.items[i].id;
-  layoutWheel(); updateWheelEdit();
+  layoutWheel(); showStage(dir); updateWheelEdit();
 }
 const step = d => setIdx(wheel.idx + d);
 function activateSlab() {
@@ -1151,19 +1340,36 @@ function activateSlab() {
   wheel.open = wheel.open === it.id ? null : it.id; wheel.openKind = wheel.kind;
   layoutWheel();
 }
+// scrolling works anywhere on the select screen: wheel, trackpad, touch swipe, mouse drag, arrow keys
 document.addEventListener('wheel', e => {
-  if (!wheel.items.length || !e.target.closest || !e.target.closest('#wheel') || e.target.closest('.slab-body')) return;
+  if (!wheel.items.length) return;
+  const t = e.target; if (!t.closest || !t.closest('#select') || t.closest('.slab-body')) return;
   e.preventDefault();
-  const now = Date.now(); if (now - wheel.t < 140) return; wheel.t = now;
-  step(e.deltaY > 0 ? 1 : -1);
+  const now = Date.now(), dy = e.deltaMode === 1 ? e.deltaY * 33 : e.deltaY;
+  if (now - wheel.last > 220) wheel.acc = 0;               // a fresh gesture starts from zero
+  wheel.last = now; wheel.acc += dy;
+  if (Math.abs(wheel.acc) >= 45 && now - wheel.stepT >= 60) { step(wheel.acc > 0 ? 1 : -1); wheel.acc = 0; wheel.stepT = now; }
 }, { passive: false });
 let touchY = null;
-document.addEventListener('touchstart', e => { touchY = (e.target.closest && e.target.closest('#wheel')) ? e.touches[0].clientY : null; }, { passive: true });
-document.addEventListener('touchend', e => {
+document.addEventListener('touchstart', e => { touchY = (e.target.closest && e.target.closest('#select')) ? e.touches[0].clientY : null; }, { passive: true });
+document.addEventListener('touchmove', e => {
   if (touchY == null) return;
-  const dy = e.changedTouches[0].clientY - touchY; touchY = null;
-  if (Math.abs(dy) > 45) step(dy < 0 ? 1 : -1);
+  const dy = e.touches[0].clientY - touchY;
+  if (Math.abs(dy) >= 50) { step(dy < 0 ? 1 : -1); touchY = e.touches[0].clientY; wheel.dragAt = Date.now(); }
 }, { passive: true });
+document.addEventListener('touchend', () => { touchY = null; }, { passive: true });
+let drag = null;
+document.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'mouse' || e.button !== 0 || !wheel.items.length) return;
+  const t = e.target; if (!t.closest || !t.closest('#select') || t.closest('.slab-body,button,input,select,textarea,a')) return;
+  drag = { y: e.clientY };
+});
+document.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dy = e.clientY - drag.y;
+  if (Math.abs(dy) >= 54) { step(dy < 0 ? 1 : -1); drag.y = e.clientY; wheel.dragAt = Date.now(); }
+});
+document.addEventListener('pointerup', () => { drag = null; });
 
 function pageView(p) {
   const ok = /confirmed/i.test(p.status || '');
@@ -1862,7 +2068,7 @@ document.addEventListener('change', e => {
 });
 
 /* ---------- editing: clicks ---------- */
-const EDIT_ACTS = new Set(['new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down','cat-add','cat-del','cat-up','cat-down','page-left','page-right','add-passive','del-passive','pup','pdown','del-bg']);
+const EDIT_ACTS = new Set(['sitepw','new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down','cat-add','cat-del','cat-up','cat-down','page-left','page-right','add-passive','del-passive','pup','pdown','del-bg']);
 const focusId = id => { const el = id && $(`[data-id="${id}"]`); if (el) el.scrollIntoView({ block: 'center' }); };
 
 document.addEventListener('click', async e => {
@@ -1876,7 +2082,7 @@ document.addEventListener('click', async e => {
 
   switch (act) {
     case 'tab': tab = el.dataset.tab; renderMoves(doc); break;
-    case 'slab': { if (e.target.closest('.slab-body')) break; const i = +el.dataset.i; if (i !== wheel.idx) setIdx(i); else activateSlab(); break; }
+    case 'slab': { if (e.target.closest('.slab-body') || Date.now() - wheel.dragAt < 300) break; const i = +el.dataset.i; if (i !== wheel.idx) setIdx(i); else activateSlab(); break; }
     case 'wheel-up': step(-1); break;
     case 'wheel-down': step(1); break;
     case 'open-sel': activateSlab(); break;
@@ -2063,6 +2269,7 @@ document.addEventListener('click', async e => {
 
     /* ----- site ----- */
     case 'export': exportJSON(); break;
+    case 'sitepw': openPw(); break;
     case 'import': $('#jsonPick').click(); break;
     case 'discard':
       if (confirm('Throw away your local edits and reload the published data.json?')) { await idb.del('draft'); location.reload(); }
@@ -2082,6 +2289,10 @@ document.addEventListener('keydown', e => {
     } else if (wheel.items.length) {
       if (k === 'ArrowDown' || k === 'ArrowRight' || k === 's' || k === 'S') { e.preventDefault(); step(1); }
       else if (k === 'ArrowUp' || k === 'ArrowLeft' || k === 'w' || k === 'W') { e.preventDefault(); step(-1); }
+      else if (k === 'PageDown') { e.preventDefault(); step(3); }
+      else if (k === 'PageUp') { e.preventDefault(); step(-3); }
+      else if (k === 'Home') { e.preventDefault(); setIdx(0); }
+      else if (k === 'End') { e.preventDefault(); setIdx(wheel.items.length - 1); }
       else if ((k === 'Enter' || k === ' ') && (e.target === document.body || e.target.id === 'wheel')) { e.preventDefault(); activateSlab(); }
     }
   }
@@ -2158,22 +2369,36 @@ document.addEventListener('drop', e => {
 });
 
 /* ---------- export / import ---------- */
-function exportJSON() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+// the object that gets written to data.json: plain, or encrypted when a site password is set
+async function buildExport() {
+  if (!state.gate) return state;
+  if (!gateKey) throw new Error('locked');
+  return { v: 2, gate: state.gate, enc: await encryptStr(gateKey, JSON.stringify(state)) };
+}
+async function exportJSON() {
+  let out;
+  try { out = await buildExport(); } catch { toast('Could not encrypt. Reload and enter the site password first.'); return; }
+  const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = 'data.json'; a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  toast('Saved data.json. Upload it to your repo to publish.');
+  toast(state.gate ? 'Saved an encrypted data.json. Upload it to your repo to publish.' : 'Saved data.json. Upload it to your repo to publish.');
 }
 $('#jsonPick').onchange = async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
   try {
-    const d = JSON.parse(await f.text());
+    let d = JSON.parse(await f.text()), k = null;
+    if (d && d.enc && d.gate) {                                   // an encrypted export
+      const pw = window.prompt('This file is password protected. Enter its password:'); if (!pw) return;
+      k = await deriveKey(pw, d.gate.salt, d.gate.iter);
+      const g = d.gate; d = JSON.parse(await decryptStr(k, d.enc)); d.gate = d.gate || g;
+    }
     if (!Array.isArray(d.pages)) throw 0;
     if (!confirm('Replace your current draft with this file?')) return;
-    state = migrateState({ editHash: d.editHash || state.editHash || '', categories: d.categories, pages: d.pages, quests: d.quests, keywords: d.keywords, archetypes: d.archetypes });
+    state = migrateState({ editHash: d.editHash || state.editHash || '', gate: d.gate || state.gate, categories: d.categories, pages: d.pages, quests: d.quests, keywords: d.keywords, archetypes: d.archetypes });
+    if (k && state.gate) { gateKey = k; await rememberKey(k, state.gate); }
     await saveNow(); location.hash = '#/'; render(true); toast('Imported');
-  } catch { toast('That file is not a valid data.json'); }
+  } catch { toast('That file is not a valid data.json, or the password was wrong'); }
 };
 
 /* ---------- toast ---------- */
@@ -2184,19 +2409,26 @@ function toast(msg, ms = 3200) {
 }
 
 /* ---------- boot ---------- */
-(async function init() {
-  let draft = null;
+async function init() {
+  let draft = null, locked = null;
   try { draft = await idb.get('draft'); } catch {}
   if (draft && draft.pages) state = draft;
   else {
-    try { const r = await fetch('data.json', { cache: 'no-store' }); if (r.ok) state = await r.json(); } catch {}
-    if (!state || !Array.isArray(state.pages)) state = seed();
+    try {
+      const r = await fetch('data.json', { cache: 'no-store' });
+      if (r.ok) { const d = await r.json(); if (d && d.enc && d.gate) locked = d; else state = d; }
+    } catch {}
+    if (!locked && (!state || !Array.isArray(state.pages))) state = seed();
   }
+  // a password is set: nothing is shown until it has been entered
+  if (locked) { await runGate({ gate: locked.gate, enc: locked.enc }); state.gate = state.gate || locked.gate; }
+  else if (state.gate) await runGate({ gate: state.gate });
   migrateState(state);
   editing = sessionStorage.getItem('codex-unlocked') === '1' && !!state.editHash;
   render(true);
   booted = true;
-})();
+}
+init();
 </script>
 </body>
 </html>
