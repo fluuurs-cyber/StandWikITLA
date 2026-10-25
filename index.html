@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TLA Codex</title>
+<meta name="description" content="TLA Codex: abilities, quests, keywording and archetypes.">
+<meta name="theme-color" content="#d6001c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TLA Codex">
+<meta property="og:title" content="TLA Codex">
+<meta property="og:description" content="Abilities, quests, keywording and archetypes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Barlow:ital,wght@0,500;0,600;0,700;1,600&family=JetBrains+Mono:wght@500;700&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
@@ -480,6 +486,10 @@ dialog label.dl{display:block;margin-bottom:12px;font:400 14px var(--f-cond);let
 dialog select{display:block;width:100%;margin-top:6px;background:#000;border:3px solid #fff;color:#fff;padding:9px 10px;font:600 14px var(--f-mono);color-scheme:dark;text-transform:none;letter-spacing:0}
 dialog .chk{display:flex;gap:8px;align-items:center;font:600 13px var(--f-mono);margin:6px 0 4px}
 dialog input[type=checkbox]{width:auto;margin:0;accent-color:var(--red)}
+dialog input[type=text]{width:100%;background:#000;border:3px solid #fff;color:#fff;padding:9px 12px;font:600 14px var(--f-mono);margin-top:6px}
+.tpl-list{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
+.tpl-list li{background:#111;border-left:6px solid var(--red);padding:8px 12px;font-size:14px;color:#ddd}
+.tpl-list b{display:block;font:400 17px var(--f-cond);letter-spacing:.06em;text-transform:uppercase;color:#fff}
 dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
 
 /* ---------- page transition wipe ---------- */
@@ -536,6 +546,7 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
   <span class="state" id="saveState">Draft saved</span>
   <button class="btn gold" data-act="export">Export data.json</button>
   <button class="btn" data-act="import">Import</button>
+  <button class="btn" data-act="sharecards">Link previews</button>
   <button class="btn" data-act="sitepw">Site password</button>
   <button class="btn danger" data-act="discard">Discard draft</button>
   <button class="btn" data-act="lock">Lock</button>
@@ -568,6 +579,31 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
     <div class="row">
       <button type="button" class="btn" id="authCancel">Cancel</button>
       <button type="submit" class="btn gold" id="authOk">Unlock</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="tplDlg">
+  <h3>Create with template</h3>
+  <p>Start this ability with the standard moves already filled in. You can change or delete any of them afterwards.</p>
+  <ul class="tpl-list" id="tplList"></ul>
+  <div class="row">
+    <button type="button" class="btn" id="tplCancel">Cancel</button>
+    <button type="button" class="btn" id="tplBlank">Blank ability</button>
+    <button type="button" class="btn gold" id="tplYes">Create with template</button>
+  </div>
+</dialog>
+
+<dialog id="shareDlg">
+  <form id="shareForm" autocomplete="off">
+    <h3>Link previews</h3>
+    <p>Makes a link to an ability open as a preview card in Discord and similar apps, showing the top of the ability page.</p>
+    <label class="dl">Your site address <input type="text" id="shareBase" placeholder="https://yourname.github.io/YourRepo/"></label>
+    <div class="err" id="shareErr"></div>
+    <p class="hint" id="shareNote"></p>
+    <div class="row">
+      <button type="button" class="btn" id="shareCancel">Close</button>
+      <button type="submit" class="btn gold" id="shareGo">Download share pages (.zip)</button>
     </div>
   </form>
 </dialog>
@@ -979,6 +1015,263 @@ $('#pwRemove').onclick = async () => {
   $('#pwDlg').close(); toast('Password removed. Export data.json and upload it to open the site to everyone.', 7000);
 };
 
+/* ---------- ability template ---------- */
+const ABILITY_TEMPLATE = [
+  { mode: 'off', key: 'M1',   name: 'Rush Attacks',    does: 'The player does a strike forward, has five charges, and the last charge deals knockback and breaks block.', blockable: true },
+  { mode: 'on',  key: 'M1',   name: 'Rush Attacks',    does: 'The stand does a strike forward, has five charges, and the last charge ragdolls and breaks block.', blockable: true },
+  { mode: 'on',  key: 'auto', name: 'Furious Strikes', does: 'The stand does a barrage of hits forward, ending with a strong punch that breaks block and knocks back.', blockable: true }
+];
+function applyTemplate(pg) {
+  ABILITY_TEMPLATE.forEach(t => {
+    const m = blankMove(t.mode);
+    Object.assign(m, { name: t.name, does: t.does, blockable: !!t.blockable, paryable: !!t.paryable });
+    m.key = t.key === 'auto' ? nextKey(pg.moves.filter(x => x.mode === 'universal' || x.mode === t.mode)) : t.key;
+    pg.moves.push(m);
+  });
+}
+let tplCat = '';
+function createPage(cat, withTemplate) {
+  const np = blankPage(); np.category = cat || '';
+  if (withTemplate) applyTemplate(np);
+  state.pages.push(np); save(); wheel.sel.abilities = np.id;
+  location.hash = '#/p/' + np.id;
+  return np;
+}
+function openTemplate(cat) {
+  tplCat = cat || '';
+  const modeNameOf = id => (defaultModes().find(m => m.id === id) || { name: id }).name;
+  $('#tplList').innerHTML = ABILITY_TEMPLATE.map(t => `<li><b>${esc(modeNameOf(t.mode))} · ${esc(t.key === 'auto' ? 'next key' : t.key)} · ${esc(t.name)}</b>${esc(t.does)} <i>Blockable</i></li>`).join('');
+  $('#tplDlg').showModal();
+}
+$('#tplYes').onclick = () => { $('#tplDlg').close(); createPage(tplCat, true); };
+$('#tplBlank').onclick = () => { $('#tplDlg').close(); createPage(tplCat, false); };
+$('#tplCancel').onclick = () => $('#tplDlg').close();
+
+/* ---------- link previews (Discord etc.): one small page + picture per ability ---------- */
+const siteBase = () => (/^https?:/.test(location.protocol) ? location.origin + location.pathname.replace(/[^/]*$/, '') : '');
+const loadImg = src => new Promise(res => { if (!src) return res(null); const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+const canvasBytes = c => new Promise(res => c.toBlob(async b => res(new Uint8Array(await b.arrayBuffer())), 'image/png'));
+function wrapText(g, text, maxW, maxLines) {
+  const words = String(text || '').replace(/\s+/g, ' ').trim().split(' '), lines = []; let cur = '';
+  for (const w of words) {
+    const t = cur ? cur + ' ' + w : w;
+    if (g.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+  }
+  if (cur) lines.push(cur);
+  if (lines.length > maxLines) { lines.length = maxLines; lines[maxLines - 1] = lines[maxLines - 1].replace(/\s*\S*$/, '') + '…'; }
+  return lines;
+}
+function fitText(g, text, maxW) {
+  text = String(text || ''); if (g.measureText(text).width <= maxW) return text;
+  while (text.length > 1 && g.measureText(text + '…').width > maxW) text = text.slice(0, -1);
+  return text + '…';
+}
+// ransom-note lettering on a canvas, same look as the page titles
+function drawRansom(g, text, x, y, size, maxW) {
+  const fonts = [s => `400 ${s}px Anton, Impact, sans-serif`, s => `900 ${s * .95}px "Playfair Display", Georgia, serif`, s => `900 ${s * .95}px "Playfair Display", Georgia, serif`, s => `400 ${s * .86}px "Archivo Black", Arial Black, sans-serif`, s => `400 ${s}px Anton, Impact, sans-serif`, s => `400 ${s * .86}px "Archivo Black", Arial Black, sans-serif`];
+  const looks = [['#fff', '#000'], ['#000', '#fff'], ['#fff', '#000'], ['#000', '#fff'], ['#d6001c', '#fff'], ['#fff', '#d6001c']];
+  const chars = [...text];
+  const layout = sz => { let w = 0; const out = chars.map((ch, i) => {
+      if (ch === ' ') { w += sz * .34; return { sp: sz * .34 }; }
+      const code = ch.codePointAt(0), k = (code * 7 + i * 5 + chars.length) % 6;
+      g.font = fonts[k](sz); const tw = g.measureText(ch).width + sz * .26; w += tw + sz * .02;
+      return { ch, k, tw, rot: (((code * 13 + i * 11) % 9) - 4) * Math.PI / 180 }; });
+    return { out, w }; };
+  let sz = size, lay = layout(sz);
+  if (lay.w > maxW) { sz = Math.max(18, size * maxW / lay.w); lay = layout(sz); }
+  let cx = x;
+  lay.out.forEach(o => {
+    if (o.sp) { cx += o.sp; return; }
+    const h = sz * 1.1;
+    g.save(); g.translate(cx + o.tw / 2, y + h / 2); g.rotate(o.rot);
+    g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(-o.tw / 2 + sz * .05, -h / 2 + sz * .05, o.tw, h);
+    g.fillStyle = looks[o.k][0]; g.fillRect(-o.tw / 2, -h / 2, o.tw, h);
+    if (o.k === 1 || o.k === 3) { g.strokeStyle = '#fff'; g.lineWidth = 2; g.strokeRect(-o.tw / 2 + 2, -h / 2 + 2, o.tw - 4, h - 4); }
+    g.font = fonts[o.k](sz); g.fillStyle = looks[o.k][1]; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(o.ch, 0, sz * .04);
+    g.restore(); cx += o.tw + sz * .02;
+  });
+  return sz * 1.1;
+}
+async function prepCanvas() {
+  const c = document.createElement('canvas'); c.width = 1200; c.height = 630;
+  const g = c.getContext('2d');
+  if (document.fonts && document.fonts.load) await Promise.all(['400 40px Anton', '900 30px "Playfair Display"', 'italic 900 30px "Playfair Display"', '400 20px "Archivo Black"', '600 20px Barlow'].map(f => document.fonts.load(f).catch(() => {})));
+  g.fillStyle = '#d6001c'; g.fillRect(0, 0, 1200, 630);
+  g.fillStyle = 'rgba(0,0,0,.26)';
+  for (let yy = 0; yy < 630; yy += 9) for (let xx = 0; xx < 1200; xx += 9) { g.beginPath(); g.arc(xx, yy, 1.5, 0, 6.2832); g.fill(); }
+  g.fillStyle = '#fff'; g.beginPath(); g.moveTo(0, 560); g.lineTo(1200, 500); g.lineTo(1200, 630); g.lineTo(0, 630); g.fill();
+  g.fillStyle = '#0b0b0b'; g.beginPath(); g.moveTo(0, 584); g.lineTo(1200, 532); g.lineTo(1200, 630); g.lineTo(0, 630); g.fill();
+  return { c, g };
+}
+const boxPath = (g, x, y, w, h) => { g.beginPath(); g.rect(x, y, w, h); };
+function blackBox(g, x, y, w, h) {
+  g.fillStyle = 'rgba(0,0,0,.9)'; g.fillRect(x + 8, y + 8, w, h);
+  g.fillStyle = '#fff'; g.fillRect(x - 4, y - 4, w + 8, h + 8);
+  g.fillStyle = '#0a0a0a'; g.fillRect(x, y, w, h);
+}
+function skewTag(g, x, y, text, font, bg, fg, h) {
+  g.font = font; const w = g.measureText(text).width + 34;
+  g.save(); g.translate(x, y); g.transform(1, 0, -0.18, 1, 0, 0);
+  g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(4, 4, w, h);
+  g.fillStyle = '#fff'; g.fillRect(-3, -3, w + 6, h + 6); g.fillStyle = bg; g.fillRect(0, 0, w, h);
+  g.restore();
+  g.font = font; g.fillStyle = fg; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillText(text, x + 16 - h * .09, y + h / 2 + 1);
+  return w;
+}
+// the picture used for the preview: the top of the ability page
+async function renderShareCard(p) {
+  const { c, g } = await prepCanvas();
+  const aura = /^#[0-9a-f]{3,8}$/i.test(p.aura || '') ? p.aura : '#d6001c';
+  // portrait frame on the right
+  const fx = 842, fy = 64, fw = 316, fh = 421;
+  const poly = () => { g.beginPath(); g.moveTo(fx + fw * .09, fy); g.lineTo(fx + fw, fy); g.lineTo(fx + fw * .91, fy + fh); g.lineTo(fx, fy + fh); g.closePath(); };
+  g.save(); g.translate(14, 14); poly(); g.fillStyle = aura; g.fill(); g.restore();
+  poly(); g.fillStyle = '#fff'; g.fill(); g.lineJoin = 'miter'; g.lineWidth = 12; g.strokeStyle = '#fff'; g.stroke();
+  g.save(); poly(); g.clip(); g.fillStyle = '#0a0a0e'; g.fillRect(fx, fy, fw, fh);
+  const im = await loadImg(p.portrait);
+  if (im) { const sc = Math.max(fw / im.width, fh / im.height); g.drawImage(im, fx + (fw - im.width * sc) / 2, fy, im.width * sc, im.height * sc); }
+  else { g.fillStyle = '#2a2a2a'; g.font = '400 190px Anton, Impact, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText((p.name || '?')[0].toUpperCase(), fx + fw / 2, fy + fh / 2); }
+  g.restore();
+  skewTag(g, fx + 8, 18, String(p.status || '').toUpperCase() || 'ABILITY', '400 17px Anton, Impact, sans-serif', '#d6001c', '#fff', 30);
+  // title block
+  drawRansom(g, 'Abilities', 40, 26, 36, 300);
+  drawRansom(g, p.name || 'Untitled', 40, 84, 70, 760);
+  // stat boxes
+  const sx = 40, sy = 196, sw = 760, sh = 86; blackBox(g, sx, sy, sw, sh);
+  const cells = [['RARITY', p.rarity], ['PART', p.part], ['TYPE', p.type], ['STATUS', p.status]];
+  cells.forEach((cl, i) => {
+    const cx = sx + i * sw / 4;
+    if (i) { g.fillStyle = '#fff'; g.fillRect(cx - 1, sy, 3, sh); }
+    g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+    g.font = '400 14px Anton, Impact, sans-serif'; g.fillStyle = '#ff2a3f'; g.fillText(cl[0], cx + 14, sy + 28);
+    g.font = '400 26px Anton, Impact, sans-serif'; g.fillStyle = (i === 3 && /confirmed/i.test(cl[1] || '')) ? '#3dff9a' : '#fff';
+    g.fillText(fitText(g, String(cl[1] || '—').toUpperCase(), sw / 4 - 26), cx + 14, sy + 64);
+  });
+  // quote
+  const qx = 40, qy = 312, qw = 760, qh = 130;
+  g.fillStyle = '#000'; g.fillRect(qx + 8, qy + 8, qw, qh); g.fillStyle = '#fff'; g.fillRect(qx, qy, qw, qh);
+  g.fillStyle = '#d6001c'; g.fillRect(qx - 12, qy + 16, 12, qh * .6);
+  g.font = 'italic 900 29px "Playfair Display", Georgia, serif'; g.fillStyle = '#000'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  wrapText(g, '“' + (p.quote || '') + '”', qw - 50, 3).forEach((ln, i) => g.fillText(ln, qx + 24, qy + 44 + i * 36));
+  g.font = '400 16px Anton, Impact, sans-serif'; g.fillStyle = '#d6001c'; g.fillText(fitText(g, String(p.quoteLabel || '').toUpperCase(), qw - 50), qx + 24, qy + qh - 14);
+  // chips
+  let cx = 40; const cy = 462;
+  [['AURA COLOUR  ' + aura.toUpperCase(), aura], ['ARC  ' + String(p.arc || '').toUpperCase(), null], [String(p.playable || '').toUpperCase(), null]].filter(t => t[0].trim().length > 4).forEach(t => {
+    const tw = skewTag(g, cx + (t[1] ? 22 : 0), cy, t[0], '400 17px Anton, Impact, sans-serif', '#000', '#fff', 32);
+    if (t[1]) { g.fillStyle = t[1]; g.beginPath(); g.arc(cx + 18, cy + 16, 8, 0, 6.2832); g.fill(); g.strokeStyle = '#fff'; g.lineWidth = 2; g.stroke(); cx += 22; }
+    cx += tw + 18;
+  });
+  // overview
+  const ox = 40, oy = 514, ow = 760, oh = 82; blackBox(g, ox, oy, ow, oh);
+  g.font = '700 18px Barlow, "Segoe UI", Arial, sans-serif'; g.fillStyle = '#fff'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  wrapText(g, p.overview || '', ow - 40, 3).forEach((ln, i) => g.fillText(ln, ox + 20, oy + 28 + i * 24));
+  drawRansom(g, 'TLA Codex', 880, 548, 34, 270);
+  return canvasBytes(c);
+}
+async function renderGenericCard() {
+  const { c, g } = await prepCanvas();
+  drawRansom(g, 'TLA Codex', 120, 190, 120, 960);
+  skewTag(g, 126, 380, 'PASSWORD PROTECTED', '400 34px Anton, Impact, sans-serif', '#000', '#fff', 62);
+  return canvasBytes(c);
+}
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = CRC_T[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+// a small .zip writer (files are stored, not compressed)
+function makeZip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let offset = 0;
+  const now = new Date();
+  const dt = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
+  const tm = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = f.data, crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, tm, true); lh.setUint16(12, dt, true); lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, name.length, true);
+    parts.push(new Uint8Array(lh.buffer), name, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true);
+    ch.setUint16(12, tm, true); ch.setUint16(14, dt, true); ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true);
+    ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
+    central.push(new Uint8Array(ch.buffer), name);
+    offset += 30 + name.length + data.length;
+  });
+  const cdSize = central.reduce((n, a) => n + a.length, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type: 'application/zip' });
+}
+function sharePageHTML(o) {
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(o.title)} | TLA Codex</title>
+<meta name="description" content="${esc(o.desc)}">
+<meta name="theme-color" content="#d6001c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TLA Codex">
+<meta property="og:title" content="${esc(o.title)}">
+<meta property="og:description" content="${esc(o.desc)}">
+<meta property="og:url" content="${esc(o.url)}">
+<meta property="og:image" content="${esc(o.image)}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(o.title)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(o.title)}">
+<meta name="twitter:description" content="${esc(o.desc)}">
+<meta name="twitter:image" content="${esc(o.image)}">
+<meta http-equiv="refresh" content="0; url=${esc(o.go)}">
+<script>location.replace(${JSON.stringify(o.go)});<\/script>
+</head><body><p><a href="${esc(o.go)}">Open ${esc(o.title)}</a></p></body></html>`;
+}
+// builds the files to upload; when the site has a password the previews stay generic so nothing leaks
+async function buildShareFiles(base, onProgress) {
+  const enc = new TextEncoder(), files = [], locked = !!state.gate;
+  if (locked) files.push({ name: 'p/card.png', data: await renderGenericCard() });
+  let n = 0;
+  for (const pg of state.pages) {
+    onProgress && onProgress(++n, state.pages.length);
+    const desc = locked ? 'This site is password protected.'
+      : (([pg.rarity, pg.part, pg.arc ? 'Arc: ' + pg.arc : '', pg.status].filter(Boolean).join(' · ') + (pg.quote ? ' — “' + pg.quote + '”' : '')).slice(0, 220));
+    files.push({ name: `p/${pg.id}/index.html`, data: enc.encode(sharePageHTML({
+      title: locked ? 'TLA Codex' : (pg.name || 'Ability'), desc,
+      url: `${base}p/${pg.id}/`, image: locked ? `${base}p/card.png` : `${base}p/${pg.id}/card.png`, go: `../../#/p/${pg.id}` })) });
+    if (!locked) files.push({ name: `p/${pg.id}/card.png`, data: await renderShareCard(pg) });
+  }
+  return files;
+}
+function openShareDlg() {
+  $('#shareBase').value = siteBase(); $('#shareErr').textContent = '';
+  $('#shareNote').textContent = state.gate
+    ? 'This site has a password, so link previews will only say that the site is password protected. Names and pictures stay hidden.'
+    : 'After downloading, unzip it and upload the “p” folder to your repo (Add file, Upload files, then drag the folder in). Do this again whenever you change an ability’s name, image or quote.';
+  $('#shareDlg').showModal();
+}
+$('#shareCancel').onclick = () => $('#shareDlg').close();
+$('#shareForm').onsubmit = async e => {
+  e.preventDefault();
+  let base = $('#shareBase').value.trim();
+  if (!/^https?:\/\/[^\s/]+/i.test(base)) { $('#shareErr').textContent = 'Type the full address, starting with https://'; return; }
+  if (!base.endsWith('/')) base += '/';
+  const go = $('#shareGo'); go.disabled = true;
+  try {
+    const files = await buildShareFiles(base, (i, n) => { go.textContent = `Making cards ${i}/${n}…`; });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(makeZip(files)); a.download = 'share-pages.zip'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    $('#shareDlg').close(); toast(`Made ${state.pages.length} preview page${state.pages.length === 1 ? '' : 's'}. Unzip and upload the “p” folder.`, 7000);
+  } catch (err) { $('#shareErr').textContent = 'Could not make the cards in this browser.'; }
+  go.disabled = false; go.textContent = 'Download share pages (.zip)';
+};
+// the Share button on every ability: copies a link that shows a preview card (if the share pages were uploaded)
+async function shareLink(id) {
+  const base = siteBase(), plain = (base || location.href.split('#')[0]) + '#/p/' + id;
+  let url = plain, preview = false;
+  if (base) { try { const r = await fetch(base + 'p/' + id + '/', { method: 'HEAD', cache: 'no-store' }); if (r.ok) { url = base + 'p/' + id + '/'; preview = true; } } catch {} }
+  try { await navigator.clipboard.writeText(url); toast(preview ? 'Link copied. It will show a preview card in Discord.' : 'Link copied.', 4200); }
+  catch { window.prompt('Copy this link:', url); }
+}
+
 /* ---------- local draft storage (IndexedDB, so big images fit) ---------- */
 const idb = {
   db: null,
@@ -1382,6 +1675,7 @@ function pageView(p) {
         <div class="sheet-top"><span class="p5title sectag">${ransom('Abilities', 40)}</span></div>
         <div class="titlebar">
           <h1 class="title">${editing ? F(p, 'name', 'Page name') : ransom(p.name, nameSize)}</h1>
+          <button class="btn gold" data-act="share" data-id="${p.id}">Share link</button>
           <div class="acts2 edit-only">
             ${state.categories.length ? `<select data-catfor="${p.id}" aria-label="Category">${catOptions(p.category)}</select>` : ''}
             <button class="btn" data-act="dup-page" data-id="${p.id}">Duplicate sheet</button>
@@ -2068,7 +2362,7 @@ document.addEventListener('change', e => {
 });
 
 /* ---------- editing: clicks ---------- */
-const EDIT_ACTS = new Set(['sitepw','new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down','cat-add','cat-del','cat-up','cat-down','page-left','page-right','add-passive','del-passive','pup','pdown','del-bg']);
+const EDIT_ACTS = new Set(['sharecards','sitepw','new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down','cat-add','cat-del','cat-up','cat-down','page-left','page-right','add-passive','del-passive','pup','pdown','del-bg']);
 const focusId = id => { const el = id && $(`[data-id="${id}"]`); if (el) el.scrollIntoView({ block: 'center' }); };
 
 document.addEventListener('click', async e => {
@@ -2092,7 +2386,7 @@ document.addEventListener('click', async e => {
     case 'zoom': $('#lightbox img').src = el.src; $('#lightbox').classList.add('show'); break;
 
     /* ----- abilities ----- */
-    case 'new-page': { const np = blankPage(); np.category = el.dataset.cat || ''; state.pages.push(np); save(); location.hash = '#/p/' + np.id; break; }
+    case 'new-page': openTemplate(el.dataset.cat || ''); break;
     case 'cat-add': {
       const c = { id: uid(), name: 'New category' }; state.categories.push(c); save(); render();
       const inp = $(`.cathead[data-id="${c.id}"] input`); if (inp) { inp.focus(); inp.select(); }
@@ -2270,6 +2564,8 @@ document.addEventListener('click', async e => {
     /* ----- site ----- */
     case 'export': exportJSON(); break;
     case 'sitepw': openPw(); break;
+    case 'sharecards': openShareDlg(); break;
+    case 'share': shareLink(el.dataset.id); break;
     case 'import': $('#jsonPick').click(); break;
     case 'discard':
       if (confirm('Throw away your local edits and reload the published data.json?')) { await idb.del('draft'); location.reload(); }
