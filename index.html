@@ -597,13 +597,16 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
 <dialog id="shareDlg">
   <form id="shareForm" autocomplete="off">
     <h3>Link previews</h3>
-    <p>Makes a link to an ability open as a preview card in Discord and similar apps, showing the top of the ability page.</p>
+    <p>A link only shows a preview card in Discord when that ability has its own preview page on your site. This tool makes those pages and checks that they are online.</p>
     <label class="dl">Your site address <input type="text" id="shareBase" placeholder="https://yourname.github.io/YourRepo/"></label>
     <div class="err" id="shareErr"></div>
+    <p class="hint" id="shareStatus"></p>
+    <label class="chk"><input type="checkbox" id="shareData" checked> Also include data.json, so the site and the previews stay in step</label>
     <p class="hint" id="shareNote"></p>
     <div class="row">
+      <button type="button" class="btn" id="shareCheck">Check my site</button>
       <button type="button" class="btn" id="shareCancel">Close</button>
-      <button type="submit" class="btn gold" id="shareGo">Download share pages (.zip)</button>
+      <button type="submit" class="btn gold" id="shareGo">Download (.zip)</button>
     </div>
   </form>
 </dialog>
@@ -1168,12 +1171,6 @@ async function renderShareCard(p) {
   drawRansom(g, 'TLA Codex', 880, 548, 34, 270);
   return canvasBytes(c);
 }
-async function renderGenericCard() {
-  const { c, g } = await prepCanvas();
-  drawRansom(g, 'TLA Codex', 120, 190, 120, 960);
-  skewTag(g, 126, 380, 'PASSWORD PROTECTED', '400 34px Anton, Impact, sans-serif', '#000', '#fff', 62);
-  return canvasBytes(c);
-}
 const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
 const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = CRC_T[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
 // a small .zip writer (files are stored, not compressed)
@@ -1220,56 +1217,77 @@ function sharePageHTML(o) {
 <meta name="twitter:title" content="${esc(o.title)}">
 <meta name="twitter:description" content="${esc(o.desc)}">
 <meta name="twitter:image" content="${esc(o.image)}">
-<meta http-equiv="refresh" content="0; url=${esc(o.go)}">
 <script>location.replace(${JSON.stringify(o.go)});<\/script>
 </head><body><p><a href="${esc(o.go)}">Open ${esc(o.title)}</a></p></body></html>`;
 }
-// builds the files to upload; when the site has a password the previews stay generic so nothing leaks
+// builds the files to upload: one small preview page and one picture per ability (always the real name, text and image)
 async function buildShareFiles(base, onProgress) {
-  const enc = new TextEncoder(), files = [], locked = !!state.gate;
-  if (locked) files.push({ name: 'p/card.png', data: await renderGenericCard() });
+  const enc = new TextEncoder(), files = [];
   let n = 0;
   for (const pg of state.pages) {
     onProgress && onProgress(++n, state.pages.length);
-    const desc = locked ? 'This site is password protected.'
-      : (([pg.rarity, pg.part, pg.arc ? 'Arc: ' + pg.arc : '', pg.status].filter(Boolean).join(' · ') + (pg.quote ? ' — “' + pg.quote + '”' : '')).slice(0, 220));
+    const desc = (([pg.rarity, pg.part, pg.arc ? 'Arc: ' + pg.arc : '', pg.status].filter(Boolean).join(' · ') + (pg.quote ? ' — “' + pg.quote + '”' : '')).slice(0, 220));
     files.push({ name: `p/${pg.id}/index.html`, data: enc.encode(sharePageHTML({
-      title: locked ? 'TLA Codex' : (pg.name || 'Ability'), desc,
-      url: `${base}p/${pg.id}/`, image: locked ? `${base}p/card.png` : `${base}p/${pg.id}/card.png`, go: `../../#/p/${pg.id}` })) });
-    if (!locked) files.push({ name: `p/${pg.id}/card.png`, data: await renderShareCard(pg) });
+      title: pg.name || 'Ability', desc,
+      url: `${base}p/${pg.id}/`, image: `${base}p/${pg.id}/card.png`, go: `../../#/p/${pg.id}` })) });
+    files.push({ name: `p/${pg.id}/card.png`, data: await renderShareCard(pg) });
   }
   return files;
 }
+const normBase = v => { v = (v || '').trim(); if (!/^https?:\/\/[^\s/]+/i.test(v)) return ''; return v.endsWith('/') ? v : v + '/'; };
+async function pageIsLive(base, id) {
+  try { const r = await fetch(`${base}p/${id}/`, { method: 'HEAD', cache: 'no-store' }); return r.ok; } catch { return false; }
+}
+// asks the live site which abilities already have their preview page
+async function checkSharePages(base) {
+  const st = $('#shareStatus');
+  if (!base) { st.textContent = ''; return null; }
+  st.textContent = 'Checking your site…';
+  const res = await Promise.all(state.pages.map(async pg => ({ pg, ok: await pageIsLive(base, pg.id) })));
+  const missing = res.filter(r => !r.ok).map(r => r.pg.name || 'Untitled');
+  st.textContent = missing.length
+    ? `${res.length - missing.length} of ${res.length} abilities are ready. Not online yet: ${missing.slice(0, 6).join(', ')}${missing.length > 6 ? ` and ${missing.length - 6} more` : ''}. New files can take a minute or two to appear.`
+    : `All ${res.length} ability preview pages are online.`;
+  return missing;
+}
 function openShareDlg() {
-  $('#shareBase').value = siteBase(); $('#shareErr').textContent = '';
-  $('#shareNote').textContent = state.gate
-    ? 'This site has a password, so link previews will only say that the site is password protected. Names and pictures stay hidden.'
-    : 'After downloading, unzip it and upload the “p” folder to your repo (Add file, Upload files, then drag the folder in). Do this again whenever you change an ability’s name, image or quote.';
+  const base = siteBase();
+  $('#shareBase').value = base; $('#shareErr').textContent = ''; $('#shareStatus').textContent = '';
+  $('#shareNote').textContent = (state.gate ? 'Heads up: the site has a password, but these preview pages are public, so anyone with a link can see an ability’s name, picture and quote in the card. ' : '') + '1. Download. 2. Unzip it. 3. In your repo choose Add file, then Upload files, and drag in everything from the unzipped folder (the “p” folder and data.json). 4. Commit, wait a minute or two, then press Check my site. Do this again whenever you change an ability’s name, image or quote.';
   $('#shareDlg').showModal();
+  if (base) checkSharePages(base);
 }
 $('#shareCancel').onclick = () => $('#shareDlg').close();
+$('#shareCheck').onclick = () => {
+  const b = normBase($('#shareBase').value);
+  if (!b) { $('#shareErr').textContent = 'Type the full address, starting with https://'; return; }
+  $('#shareErr').textContent = ''; checkSharePages(b);
+};
 $('#shareForm').onsubmit = async e => {
   e.preventDefault();
-  let base = $('#shareBase').value.trim();
-  if (!/^https?:\/\/[^\s/]+/i.test(base)) { $('#shareErr').textContent = 'Type the full address, starting with https://'; return; }
-  if (!base.endsWith('/')) base += '/';
+  const base = normBase($('#shareBase').value);
+  if (!base) { $('#shareErr').textContent = 'Type the full address, starting with https://'; return; }
+  $('#shareErr').textContent = '';
   const go = $('#shareGo'); go.disabled = true;
   try {
     const files = await buildShareFiles(base, (i, n) => { go.textContent = `Making cards ${i}/${n}…`; });
+    if ($('#shareData').checked) files.unshift({ name: 'data.json', data: new TextEncoder().encode(JSON.stringify(await buildExport(), null, 2)) });
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(makeZip(files)); a.download = 'share-pages.zip'; a.click();
+    a.href = URL.createObjectURL(makeZip(files)); a.download = 'site-update.zip'; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    $('#shareDlg').close(); toast(`Made ${state.pages.length} preview page${state.pages.length === 1 ? '' : 's'}. Unzip and upload the “p” folder.`, 7000);
-  } catch (err) { $('#shareErr').textContent = 'Could not make the cards in this browser.'; }
-  go.disabled = false; go.textContent = 'Download share pages (.zip)';
+    toast('Downloaded. Unzip it and upload everything inside to your repo.', 7000);
+  } catch (err) { $('#shareErr').textContent = 'Could not make the files. If the site has a password, reload and enter it first.'; }
+  go.disabled = false; go.textContent = 'Download (.zip)';
 };
-// the Share button on every ability: copies a link that shows a preview card (if the share pages were uploaded)
+// the Share button on every ability: copies a link that shows a preview card, when that ability's preview page is online
 async function shareLink(id) {
   const base = siteBase(), plain = (base || location.href.split('#')[0]) + '#/p/' + id;
-  let url = plain, preview = false;
-  if (base) { try { const r = await fetch(base + 'p/' + id + '/', { method: 'HEAD', cache: 'no-store' }); if (r.ok) { url = base + 'p/' + id + '/'; preview = true; } } catch {} }
-  try { await navigator.clipboard.writeText(url); toast(preview ? 'Link copied. It will show a preview card in Discord.' : 'Link copied.', 4200); }
-  catch { window.prompt('Copy this link:', url); }
+  const preview = base ? await pageIsLive(base, id) : false;
+  const url = preview ? base + 'p/' + id + '/' : plain;
+  try { await navigator.clipboard.writeText(url); } catch { window.prompt('Copy this link:', url); }
+  if (preview) toast('Link copied. It will show a preview card in Discord.', 4200);
+  else if (editing && base) { toast('Copied, but this ability has no preview page on your site yet, so Discord will only show a plain card.', 8000); openShareDlg(); }
+  else toast('Link copied. This ability has no preview card set up yet.', 4200);
 }
 
 /* ---------- local draft storage (IndexedDB, so big images fit) ---------- */
