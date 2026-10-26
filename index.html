@@ -490,6 +490,7 @@ dialog input[type=text]{width:100%;background:#000;border:3px solid #fff;color:#
 .tpl-list{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
 .tpl-list li{background:#111;border-left:6px solid var(--red);padding:8px 12px;font-size:14px;color:#ddd}
 .tpl-list b{display:block;font:400 17px var(--f-cond);letter-spacing:.06em;text-transform:uppercase;color:#fff}
+dialog a{color:#fff;text-decoration:underline}
 dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
 
 /* ---------- page transition wipe ---------- */
@@ -546,6 +547,7 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
   <span class="state" id="saveState">Draft saved</span>
   <button class="btn gold" data-act="export">Export data.json</button>
   <button class="btn" data-act="import">Import</button>
+  <button class="btn gold" data-act="publish">Publish</button>
   <button class="btn" data-act="sharecards">Link previews</button>
   <button class="btn" data-act="sitepw">Site password</button>
   <button class="btn danger" data-act="discard">Discard draft</button>
@@ -594,6 +596,26 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
   </div>
 </dialog>
 
+<dialog id="pubDlg">
+  <form id="pubForm" autocomplete="off">
+    <h3>Publish to GitHub</h3>
+    <p>Sends your latest content and the link-preview pages straight to your repo, so there is nothing to download, unzip or upload by hand.</p>
+    <label class="dl">GitHub token <input type="password" id="pubToken" autocomplete="off"></label>
+    <label class="chk"><input type="checkbox" id="pubRemember"> Remember the token on this device</label>
+    <label class="dl">Repository <input type="text" id="pubRepo" placeholder="owner/name"></label>
+    <label class="dl">Site address <input type="text" id="pubBase" placeholder="https://owner.github.io/Repo/"></label>
+    <label class="chk"><input type="checkbox" id="pubData" checked> Update data.json (your content)</label>
+    <label class="chk"><input type="checkbox" id="pubPrev" checked> Update link previews</label>
+    <div class="err" id="pubErr"></div>
+    <p class="hint" id="pubStatus"></p>
+    <p class="hint">One-time setup: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">open GitHub’s token page</a>, give the token a name, under Repository access choose “Only select repositories” and pick this repo, then under Permissions set <b>Contents</b> to “Read and write”. Generate it and paste it above. The token stays in this browser only and is never put in your data.</p>
+    <div class="row">
+      <button type="button" class="btn" id="pubCancel">Close</button>
+      <button type="submit" class="btn gold" id="pubGo">Publish now</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog id="shareDlg">
   <form id="shareForm" autocomplete="off">
     <h3>Link previews</h3>
@@ -604,6 +626,7 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
     <label class="chk"><input type="checkbox" id="shareData" checked> Also include data.json, so the site and the previews stay in step</label>
     <p class="hint" id="shareNote"></p>
     <div class="row">
+      <button type="button" class="btn gold" id="shareToPub">Publish to GitHub</button>
       <button type="button" class="btn" id="shareCheck">Check my site</button>
       <button type="button" class="btn" id="shareCancel">Close</button>
       <button type="submit" class="btn gold" id="shareGo">Download (.zip)</button>
@@ -1239,8 +1262,7 @@ async function pageIsLive(base, id) {
   try { const r = await fetch(`${base}p/${id}/`, { method: 'HEAD', cache: 'no-store' }); return r.ok; } catch { return false; }
 }
 // asks the live site which abilities already have their preview page
-async function checkSharePages(base) {
-  const st = $('#shareStatus');
+async function checkSharePages(base, st = $('#shareStatus')) {
   if (!base) { st.textContent = ''; return null; }
   st.textContent = 'Checking your site…';
   const res = await Promise.all(state.pages.map(async pg => ({ pg, ok: await pageIsLive(base, pg.id) })));
@@ -1286,9 +1308,109 @@ async function shareLink(id) {
   const url = preview ? base + 'p/' + id + '/' : plain;
   try { await navigator.clipboard.writeText(url); } catch { window.prompt('Copy this link:', url); }
   if (preview) toast('Link copied. It will show a preview card in Discord.', 4200);
-  else if (editing && base) { toast('Copied, but this ability has no preview page on your site yet, so Discord will only show a plain card.', 8000); openShareDlg(); }
+  else if (editing && base) { toast('Copied, but this ability has no preview page on your site yet, so Discord will only show a plain card. Press Publish to add it.', 8000); openPub(); }
   else toast('Link copied. This ability has no preview card set up yet.', 4200);
 }
+
+/* ---------- publish straight to GitHub (no download / unzip / upload) ---------- */
+const GH_KEY = 'codex-gh';
+const savedToken = () => localStorage.getItem(GH_KEY) || sessionStorage.getItem(GH_KEY) || '';
+function repoFromSite() {
+  const m = /^https?:$/.test(location.protocol) && (location.hostname || '').match(/^([^.]+)\.github\.io$/i);
+  if (!m) return { owner: '', repo: '', base: '' };
+  const seg = location.pathname.split('/').filter(Boolean)[0];
+  const project = seg && !/\.html?$/i.test(seg);
+  return { owner: m[1], repo: project ? seg : `${m[1]}.github.io`, base: project ? `https://${m[1]}.github.io/${seg}/` : `https://${m[1]}.github.io/` };
+}
+async function gh(token, method, path, body) {
+  const r = await fetch('https://api.github.com' + path, {
+    method, headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', ...(body ? { 'Content-Type': 'application/json' } : {}) },
+    body: body ? JSON.stringify(body) : undefined });
+  const txt = await r.text(); let j = null; try { j = txt ? JSON.parse(txt) : null; } catch {}
+  if (!r.ok) { const e = new Error((j && j.message) || ('GitHub answered ' + r.status)); e.status = r.status; throw e; }
+  return j;
+}
+function ghError(e) {
+  if (e.status === 401) return 'GitHub did not accept that token. Check that it was copied in full and has not expired.';
+  if (e.status === 403) return 'That token is not allowed to change this repo. It needs Contents set to “Read and write”.';
+  if (e.status === 404) return 'GitHub cannot find that repository with this token. Check the owner/name, and that the token was given access to it.';
+  if (e.status === 409 || e.status === 422) return 'The repo changed while publishing. Press Publish again.';
+  return e.message || 'Publishing failed.';
+}
+// one commit containing data.json and/or every preview page + picture
+async function publishToGitHub({ token, owner, repo, base, withData, withPreviews, onStatus = () => {} }) {
+  const R = `/repos/${owner}/${repo}`, enc = new TextEncoder();
+  onStatus('Connecting to GitHub…');
+  const info = await gh(token, 'GET', R);
+  if (info.permissions && info.permissions.push === false) { const e = new Error('no write'); e.status = 403; throw e; }
+  const branch = info.default_branch || 'main';
+  const ref = await gh(token, 'GET', `${R}/git/ref/heads/${branch}`);
+  const headSha = ref.object.sha;
+  const head = await gh(token, 'GET', `${R}/git/commits/${headSha}`);
+  const files = [];
+  if (withPreviews) files.push(...await buildShareFiles(base, (i, n) => onStatus(`Making cards ${i}/${n}…`)));
+  if (withData) files.push({ name: 'data.json', data: enc.encode(JSON.stringify(await buildExport(), null, 2)) });
+  const entries = []; let done = 0;
+  for (let i = 0; i < files.length; i += 4) {
+    await Promise.all(files.slice(i, i + 4).map(async f => {
+      const blob = await gh(token, 'POST', `${R}/git/blobs`, { content: b64(f.data), encoding: 'base64' });
+      entries.push({ path: f.name, mode: '100644', type: 'blob', sha: blob.sha });
+      onStatus(`Uploading ${++done}/${files.length}…`);
+    }));
+  }
+  if (withPreviews) {                                            // tidy away previews of abilities that no longer exist
+    const keep = new Set(files.map(f => f.name));
+    const full = await gh(token, 'GET', `${R}/git/trees/${head.tree.sha}?recursive=1`);
+    if (!full.truncated) (full.tree || []).forEach(t => { if (t.type === 'blob' && /^p\/[^/]+\/(index\.html|card\.png)$/.test(t.path) && !keep.has(t.path)) entries.push({ path: t.path, mode: '100644', type: 'blob', sha: null }); });
+  }
+  if (!entries.length) throw new Error('Nothing to publish.');
+  onStatus('Saving to your repo…');
+  const tree = await gh(token, 'POST', `${R}/git/trees`, { base_tree: head.tree.sha, tree: entries });
+  const commit = await gh(token, 'POST', `${R}/git/commits`, { message: 'Update TLA Codex (published from the editor)', tree: tree.sha, parents: [headSha] });
+  await gh(token, 'PATCH', `${R}/git/refs/heads/${branch}`, { sha: commit.sha });
+  return { commit: commit.sha, files: files.length };
+}
+let pubPoll = 0;
+async function pollLive(base) {                                    // GitHub takes a minute or two to show new files
+  const me = ++pubPoll, st = $('#pubStatus');
+  for (let i = 0; i < 24 && me === pubPoll; i++) {
+    await new Promise(r => setTimeout(r, 8000));
+    if (me !== pubPoll) return;
+    const missing = await checkSharePages(base, st);
+    if (missing && !missing.length) { toast('All link previews are live.', 5000); return; }
+  }
+}
+function openPub() {
+  const site = repoFromSite();
+  $('#pubToken').value = savedToken(); $('#pubRemember').checked = !!localStorage.getItem(GH_KEY);
+  $('#pubRepo').value = site.owner ? `${site.owner}/${site.repo}` : '';
+  $('#pubBase').value = siteBase() || site.base;
+  $('#pubErr').textContent = ''; $('#pubStatus').textContent = '';
+  $('#pubDlg').showModal();
+}
+$('#pubCancel').onclick = () => { pubPoll++; $('#pubDlg').close(); };
+$('#shareToPub').onclick = () => { $('#shareDlg').close(); openPub(); };
+$('#pubForm').onsubmit = async e => {
+  e.preventDefault();
+  const err = $('#pubErr'), st = $('#pubStatus'), go = $('#pubGo');
+  const token = $('#pubToken').value.trim(), m = $('#pubRepo').value.trim().match(/^([\w.-]+)\/([\w.-]+)$/);
+  const base = normBase($('#pubBase').value), withData = $('#pubData').checked, withPreviews = $('#pubPrev').checked;
+  err.textContent = '';
+  if (!token) { err.textContent = 'Paste your GitHub token first (see the setup note below).'; return; }
+  if (!m) { err.textContent = 'Type the repository as owner/name, for example yourname/YourRepo.'; return; }
+  if (!withData && !withPreviews) { err.textContent = 'Tick at least one thing to publish.'; return; }
+  if (withPreviews && !base) { err.textContent = 'Type your full site address, starting with https://'; return; }
+  go.disabled = true;
+  try {
+    const out = await publishToGitHub({ token, owner: m[1], repo: m[2], base, withData, withPreviews, onStatus: t => { st.textContent = t; } });
+    if ($('#pubRemember').checked) { localStorage.setItem(GH_KEY, token); sessionStorage.removeItem(GH_KEY); }
+    else { sessionStorage.setItem(GH_KEY, token); localStorage.removeItem(GH_KEY); }
+    st.textContent = `Published ${out.files} file${out.files === 1 ? '' : 's'}. GitHub is updating your site now, which takes a minute or two.`;
+    toast('Published. Your site updates in a minute or two.', 6000);
+    if (withPreviews) pollLive(base);
+  } catch (x) { err.textContent = ghError(x); st.textContent = ''; }
+  go.disabled = false;
+};
 
 /* ---------- local draft storage (IndexedDB, so big images fit) ---------- */
 const idb = {
@@ -2380,7 +2502,7 @@ document.addEventListener('change', e => {
 });
 
 /* ---------- editing: clicks ---------- */
-const EDIT_ACTS = new Set(['sharecards','sitepw','new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down','cat-add','cat-del','cat-up','cat-down','page-left','page-right','add-passive','del-passive','pup','pdown','del-bg']);
+const EDIT_ACTS = new Set(['publish','sharecards','sitepw','new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down','cat-add','cat-del','cat-up','cat-down','page-left','page-right','add-passive','del-passive','pup','pdown','del-bg']);
 const focusId = id => { const el = id && $(`[data-id="${id}"]`); if (el) el.scrollIntoView({ block: 'center' }); };
 
 document.addEventListener('click', async e => {
@@ -2583,6 +2705,7 @@ document.addEventListener('click', async e => {
     case 'export': exportJSON(); break;
     case 'sitepw': openPw(); break;
     case 'sharecards': openShareDlg(); break;
+    case 'publish': openPub(); break;
     case 'share': shareLink(el.dataset.id); break;
     case 'import': $('#jsonPick').click(); break;
     case 'discard':
