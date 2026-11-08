@@ -117,7 +117,7 @@ input[type=color]{width:22px;height:22px;padding:0;border:0;background:none;curs
 .bubble::before{content:"";position:absolute;left:-10px;bottom:-16px;width:46px;height:30px;background:#0a0a0a;z-index:1;clip-path:polygon(0 100%,100% 0,100% 55%)}
 .btag{position:absolute;left:34px;top:-24px;background:#fff;color:#000;font:400 18px var(--f-cond);letter-spacing:.1em;padding:1px 22px 1px 14px;transform:skewX(-12deg);border:3px solid #000}
 .btag::after{content:"★";margin-left:6px;color:var(--red)}
-.bubble p{margin:0;font:600 clamp(16px,1.5vw,19px)/1.45 var(--f-body);font-style:italic;color:#fff;min-height:3em}
+.bubble p{margin:0;font:600 clamp(16px,1.5vw,19px)/1.45 var(--f-body);font-style:italic;color:#fff;min-height:4.4em}
 .menu{position:absolute;right:3vw;top:24vh;width:min(54vw,780px);height:min(62vh,540px);z-index:3}
 .mbtn{position:absolute;left:var(--l);top:var(--t);width:var(--w,42%);transform:rotate(var(--r));transform-origin:left center;filter:drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(8px 9px 0 rgba(0,0,0,.8));transition:transform .22s cubic-bezier(.3,1.6,.5,1),filter .2s;display:block;border:0;background:none;padding:0;text-align:left;color:#fff}
 .mbtn-body{display:flex;align-items:center;gap:12px;background:#0a0a0a;clip-path:polygon(0 12%,100% 0,96% 100%,4% 88%);padding:14px 26px 14px 24px;transition:background .18s}
@@ -130,7 +130,7 @@ input[type=color]{width:22px;height:22px;padding:0;border:0;background:none;curs
 .mbtn.sel .mb-label,.mbtn:hover .mb-label{text-shadow:3px 3px 0 #000}
 .mbtn.sel .mb-sub,.mbtn:hover .mb-sub{color:#fff}
 .mbtn.sel::before,.mbtn:hover::before{transform:translate(-6px,-6px) scale(1.12);background:#fff}
-.menu-hint{position:absolute;left:4vw;bottom:3vh;z-index:3;font:600 13px var(--f-mono);color:#fff;background:rgba(0,0,0,.78);padding:6px 12px;border-left:4px solid var(--red)}
+.menu-hint{position:absolute;left:4vw;bottom:calc(3vh + 76px);z-index:3;font:600 13px var(--f-mono);color:#fff;background:rgba(0,0,0,.78);padding:6px 12px;border-left:4px solid var(--red)}
 @media (max-width:860px){
   .menu-page{overflow:visible;padding:20px 16px 60px}
   .mtitle{position:static;display:block;margin-bottom:76px}
@@ -503,6 +503,78 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
 #wipe.out i{transform:translateX(135%) skewX(-16deg)}
 #wipe.reset i{transition:none}
 
+/* ---------- extra polish and motion ---------- */
+::selection{background:var(--red);color:#fff}
+html{scrollbar-color:var(--red) #0a0a0a;scrollbar-width:thin}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:#0a0a0a}
+::-webkit-scrollbar-thumb{background:var(--red);border:2px solid #0a0a0a}
+.btn{transition:background .12s,color .12s,transform .12s,box-shadow .12s}
+.btn:hover{transform:skewX(-8deg) translate(-1px,-2px);box-shadow:5px 6px 0 var(--red)}
+.chip2{transition:background .15s,color .15s,transform .15s}
+.chip2:hover{transform:skewX(-12deg) translateY(-2px)}
+#secbg{background-position:calc(50% + var(--mx,0)*10px) calc(50% + var(--my,0)*8px);transform:scale(1.04);transition:opacity .4s,background-position .6s ease-out}
+body[data-sec="menu"] #secbg{background-position:calc(50% + var(--mx,0)*20px) calc(50% + var(--my,0)*12px);animation:kb 32s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1.04)}to{transform:scale(1.13) translate(-1.2%,1%)}}
+#fx{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+#fx::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 50%,rgba(0,0,0,.6) 100%)}
+#fx::after{content:"";position:absolute;inset:0;background:radial-gradient(rgba(0,0,0,.22) 1px,transparent 1.7px) 0 0/6px 6px;opacity:.5;mix-blend-mode:multiply}
+#fx i{position:absolute;color:#fff;font-style:normal;text-shadow:0 0 10px #fff;opacity:0;animation:twinkle var(--t,6s) ease-in-out var(--d,0s) infinite}
+@keyframes twinkle{0%,100%{opacity:0;transform:translateY(0) scale(.4) rotate(0)}50%{opacity:.85;transform:translateY(-30px) scale(1) rotate(45deg)}}
+.ransom .rl{animation:rlPop .55s cubic-bezier(.2,1.6,.4,1) calc(var(--i,0)*42ms) both}
+@keyframes rlPop{from{opacity:0;transform:translateY(-36px) rotate(calc(var(--rot)*4)) scale(.4)}to{opacity:1;transform:rotate(var(--rot))}}
+.mbtn{animation:mbIn .7s cubic-bezier(.2,1.4,.4,1) calc(var(--n,0)*90ms + 200ms) both,mbFloat 5.5s ease-in-out calc(var(--n,0)*90ms + 1.1s) infinite}
+@keyframes mbIn{from{opacity:0;translate:110px 0;rotate:7deg}to{opacity:1;translate:0 0;rotate:0deg}}
+@keyframes mbFloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
+.mbtn::after{content:"✦";position:absolute;right:-12px;top:-16px;font-size:32px;line-height:1;color:#fff;text-shadow:0 0 12px #fff;opacity:0;transform:scale(.2) rotate(-40deg);transition:opacity .2s,transform .35s cubic-bezier(.3,1.8,.5,1)}
+.mbtn.sel::after,.mbtn:hover::after{opacity:1;transform:scale(1) rotate(0)}
+.menu-page::before{content:"";position:absolute;right:-6vw;top:20vh;width:62vw;height:9px;background:#fff;transform:rotate(-14deg);box-shadow:0 18px 0 var(--red);z-index:1;opacity:.9;animation:slideBar 1s .3s cubic-bezier(.2,.9,.25,1) both}
+@keyframes slideBar{from{transform:translateX(120%) rotate(-14deg)}to{transform:rotate(-14deg)}}
+.ticker{position:absolute;left:-6vw;right:-6vw;bottom:2.2vh;z-index:2;transform:rotate(-2.5deg);background:#000;border-block:4px solid #fff;overflow:hidden;white-space:nowrap;box-shadow:0 9px 0 var(--red)}
+.ticker-in{display:inline-block;padding:6px 0;font:400 clamp(18px,2.2vw,28px) var(--f-cond);letter-spacing:.12em;text-transform:uppercase;animation:tick 30s linear infinite}
+.ticker-in span{margin:0 1.1ch}
+.ticker-in b{color:var(--red2);font-weight:400}
+@keyframes tick{to{transform:translateX(-50%)}}
+.fx-corner{position:absolute;right:3vw;top:2vh;z-index:4;font-size:16px;padding:5px 16px}
+.fxbtn{font-size:16px;padding:6px 16px}
+.slab.active .slab-in{box-shadow:7px 7px 0 rgba(0,0,0,.85),0 0 26px rgba(255,40,63,.65)}
+.slab.active .slab-in::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.4) 50%,transparent 65%);transform:translateX(-130%);animation:shine 2.8s ease-in-out .4s infinite}
+@keyframes shine{0%{transform:translateX(-130%)}55%,100%{transform:translateX(130%)}}
+.stage::before{animation:shard 7s ease-in-out infinite alternate}
+@keyframes shard{from{transform:translateX(0)}to{transform:translateX(-16px) skewX(-2deg)}}
+.stage-art{translate:calc(var(--mx,0)*-16px) calc(var(--my,0)*-10px);transition:translate .35s ease-out}
+.stage-name{translate:calc(var(--mx,0)*12px) calc(var(--my,0)*6px);transition:translate .35s ease-out}
+.stage .fwrap{animation:artFloat 5.5s ease-in-out infinite}
+@keyframes artFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(.4deg)}}
+.statpoly{transform-origin:210px 210px;animation:polyGrow 1s cubic-bezier(.2,.9,.25,1) .15s both}
+@keyframes polyGrow{from{transform:scale(.05);opacity:0}to{transform:scale(1);opacity:1}}
+body.editing .statpoly{animation:none}
+.rev{opacity:0;translate:-56px 0;transition:opacity .6s ease,translate .75s cubic-bezier(.2,.9,.25,1)}
+.rev.in{opacity:1;translate:0 0}
+#intro{position:fixed;inset:0;z-index:250;display:grid;place-items:center;align-content:center;gap:26px;background:var(--halftone) 0 0/9px 9px,var(--red);overflow:hidden;cursor:pointer}
+#intro::before{content:"";position:absolute;inset:-20% -10%;background:#000;clip-path:polygon(0 64%,100% 40%,100% 54%,0 78%);transform:translateX(-110%);animation:introBar 1s .2s cubic-bezier(.7,0,.3,1) forwards}
+@keyframes introBar{to{transform:none}}
+.intro-title{position:relative;z-index:2;transform:rotate(-3deg);text-align:center}
+.intro-sub{position:relative;z-index:2;display:flex;align-items:center;gap:14px;background:#000;color:#fff;border:3px solid #fff;padding:4px 20px;font:400 20px var(--f-cond);letter-spacing:.16em;text-transform:uppercase;transform:skewX(-12deg);box-shadow:5px 5px 0 #000}
+.intro-sub i{width:90px;height:10px;background:repeating-linear-gradient(115deg,var(--red) 0 8px,#fff 8px 16px);background-size:32px 100%;animation:stripes .5s linear infinite}
+@keyframes stripes{to{background-position:32px 0}}
+#intro.go{animation:introAway 2.8s cubic-bezier(.7,0,.3,1) both}
+@keyframes introAway{0%,72%{transform:none}100%{transform:translateY(-105%) skewY(-4deg)}}
+#intro.skip{animation:introSkip .4s ease both}
+@keyframes introSkip{to{transform:translateY(-105%)}}
+#wipe::before,#wipe::after{content:"";position:absolute;left:50%;top:50%;width:54vmin;height:54vmin;margin:-27vmin 0 0 -27vmin;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);opacity:0;z-index:5}
+#wipe::before{background:#000;translate:16px 16px}
+#wipe::after{background:#fff}
+#wipe.in::before,#wipe.in::after{animation:starIn .7s .35s cubic-bezier(.2,1.4,.4,1) both}
+#wipe.out::before,#wipe.out::after{opacity:1;animation:starOut .5s ease both}
+@keyframes starIn{from{opacity:0;transform:scale(.1) rotate(-120deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes starOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.7) rotate(40deg)}}
+/* FX off: no looping or entrance animation (transitions stay) */
+body.nofx #fx i,body.nofx .ticker,body.nofx .menu-page::before{display:none}
+body.nofx *,body.nofx *::before,body.nofx *::after{animation:none!important}
+body.nofx .rev{opacity:1;translate:none;transition:none}
+@media (max-width:860px){.ticker{bottom:0;left:0;right:0;transform:none;border-width:3px 0;box-shadow:none}.menu-page{padding-bottom:70px}.menu-page::before{display:none}.fx-corner{top:10px;right:10px}}
+
 /* ---------- responsive ---------- */
 @media (max-width:980px){
   .hero{grid-template-columns:1fr}
@@ -536,11 +608,13 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
   <a class="p5btn red" href="#/">◂ Menu</a>
   <span class="spacer"></span>
   <input class="search" id="search" type="search" placeholder="Search" aria-label="Search">
+  <button class="p5btn fxbtn" id="fxBtn" data-act="fx" aria-label="Turn effects on or off">FX on</button>
   <button class="p5btn" id="lockBtn">Edit</button>
 </header>
 
 <div id="secbg" aria-hidden="true"></div>
 <div id="pagebg" aria-hidden="true"></div>
+<div id="fx" aria-hidden="true"></div>
 <main id="app"></main>
 
 <div class="editbar" id="editbar">
@@ -555,6 +629,10 @@ dialog .hint{font-size:13px;color:#aaa;margin:0 0 12px;min-height:20px}
 </div>
 
 <button class="p5btn red" id="topBtn" data-act="top" aria-label="Back to top">▲ Top</button>
+<div id="intro" hidden aria-hidden="true">
+  <div class="intro-title" id="introTitle"></div>
+  <div class="intro-sub"><span>Loading the codex</span><i></i></div>
+</div>
 <div id="wipe" aria-hidden="true"><i></i><i></i><i></i></div>
 <div id="gate" hidden>
   <form id="gateForm" autocomplete="off">
@@ -694,11 +772,58 @@ function ransom(text, size) {
     const code = ch.codePointAt(0);
     const k = (code * 7 + i * 5 + text.length) % RL.length;
     const rot = ((code * 13 + i * 11) % 9) - 4;
-    out += `<span class="rl ${RL[k]}" style="--rot:${rot}deg">${esc(ch)}</span>`;
+    out += `<span class="rl ${RL[k]}" style="--rot:${rot}deg;--i:${i}">${esc(ch)}</span>`;
   });
   return `<span class="ransom" role="img" aria-label="${esc(text)}" style="font-size:${fs}px"><span aria-hidden="true">${out}</span></span>`;
 }
 const listJoin = a => a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+
+/* ---------- visual effects (can be switched off with the FX button) ---------- */
+let fxOn = true;
+try { fxOn = !reduceMotion && localStorage.getItem('codex-fx') !== '0'; } catch { fxOn = !reduceMotion; }
+function applyFx() {
+  document.body.classList.toggle('nofx', !fxOn);
+  const label = fxOn ? 'FX on' : 'FX off';
+  const b = $('#fxBtn'); if (b) b.textContent = label;
+  $$('.fx-corner').forEach(x => { x.textContent = label; });
+}
+function toggleFx() { fxOn = !fxOn; try { localStorage.setItem('codex-fx', fxOn ? '1' : '0'); } catch {} applyFx(); }
+function buildSparkles() {
+  const fx = $('#fx'); if (!fx) return;
+  fx.innerHTML = Array.from({ length: 16 }, () => `<i style="left:${Math.round(Math.random() * 100)}%;top:${Math.round(20 + Math.random() * 80)}%;font-size:${Math.round(10 + Math.random() * 20)}px;--t:${(5 + Math.random() * 6).toFixed(1)}s;--d:${(-Math.random() * 9).toFixed(1)}s">✦</i>`).join('');
+}
+// the speech bubble types its text out
+let typeTimer = 0;
+function typeHint(el, text) {
+  clearInterval(typeTimer);
+  if (!fxOn) { el.textContent = text; return; }
+  let i = 0; el.textContent = '';
+  typeTimer = setInterval(() => { i += 2; el.textContent = text.slice(0, i); if (i >= text.length) clearInterval(typeTimer); }, 16);
+}
+// the mouse nudges the background and the big character a little
+let mouseRaf = 0, mouseX = 0, mouseY = 0;
+document.addEventListener('mousemove', e => {
+  if (!fxOn) return;
+  mouseX = e.clientX / (window.innerWidth || 1) - .5; mouseY = e.clientY / (window.innerHeight || 1) - .5;
+  if (!mouseRaf) mouseRaf = requestAnimationFrame(() => { mouseRaf = 0; const st = document.documentElement.style; st.setProperty('--mx', mouseX.toFixed(3)); st.setProperty('--my', mouseY.toFixed(3)); });
+});
+// boxes slide in as you scroll down to them
+let revObs = null;
+function armReveal() {
+  if (editing || !fxOn || !('IntersectionObserver' in window)) return;
+  revObs = revObs || new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); revObs.unobserve(en.target); } }), { threshold: .06 });
+  $$('.moves-head,.move,.statscard,.qitem,.blk,.qintro,.wanted,.kw').forEach(el => { if (!el.classList.contains('rev')) { el.classList.add('rev'); revObs.observe(el); } });
+}
+function playIntro() {
+  const el = $('#intro'); if (!el) return;
+  $('#introTitle').innerHTML = ransom('TLA Codex', 130);
+  el.hidden = false; el.classList.remove('skip'); el.classList.add('go');
+  const done = () => { el.hidden = true; el.classList.remove('go', 'skip'); };
+  const skip = () => { el.classList.add('skip'); setTimeout(done, 420); };
+  el.onclick = skip;
+  document.addEventListener('keydown', skip, { once: true });
+  setTimeout(done, 2900);
+}
 
 /* ---------- keybinds ---------- */
 const KEY_ORDER = ['M1','M2','E','R','T','Y','G','H','J','X','V','B','Z','K'];
@@ -1552,19 +1677,20 @@ const MENU = [
   { key: 'archetypes', label: 'Archetypes', sub: 'Playstyles explained',      icon: '✕', ic: '#4aa3ff', href: '#/archetypes', l: '32%', t: '54%', r: '-6deg', w: '47%', hint: 'What each archetype is, and how it plays.' },
   { key: 'edit',       label: 'Edit',       sub: 'Creator only',              icon: '✦', ic: '#ffffff', href: '',             l: '58%', t: '78%', r: '7deg',  w: '38%', hint: '' }
 ];
+const tickerText = Array(5).fill('<span>TLA Codex</span><b>✦</b><span>Abilities</span><b>✦</b><span>Quests</span><b>✦</b><span>Keywording</span><b>✦</b><span>Archetypes</span><b>✦</b>').join('');
 let menuSel = 1;
 const menuHint = i => { const b = MENU[i]; return b.key === 'edit' ? (editing ? 'Editing is on. Lock it when you are done.' : 'Creator only. Unlock edit mode to change the site.') : b.hint; };
 function selectMenu(i) {
   menuSel = (i + MENU.length) % MENU.length;
   $$('.mbtn').forEach((b, j) => b.classList.toggle('sel', j === menuSel));
-  const h = $('#hint'); if (h) h.textContent = menuHint(menuSel);
+  const h = $('#hint'); if (h) typeHint(h, menuHint(menuSel));
 }
 function menuView() {
   const btns = MENU.map((b, i) => {
     const isEdit = b.key === 'edit';
     const label = isEdit ? (editing ? 'Lock' : 'Edit') : b.label, sub = isEdit ? (editing ? 'Editing is on' : b.sub) : b.sub;
     const inner = `<span class="mbtn-body"><span class="mb-icon">${b.icon}</span><span><span class="mb-label">${esc(label)}</span><span class="mb-sub">${esc(sub)}</span></span></span>`;
-    const style = `style="--l:${b.l};--t:${b.t};--r:${b.r};--w:${b.w};--ic:${b.ic}"`;
+    const style = `style="--l:${b.l};--t:${b.t};--r:${b.r};--w:${b.w};--ic:${b.ic};--n:${i}"`;
     return isEdit
       ? `<button class="mbtn ${i === menuSel ? 'sel' : ''}" data-i="${i}" data-act="lockbtn" ${style}>${inner}</button>`
       : `<a class="mbtn ${i === menuSel ? 'sel' : ''}" data-i="${i}" href="${b.href}" ${style}>${inner}</a>`;
@@ -1575,6 +1701,8 @@ function menuView() {
       <div class="bubble"><span class="btag">CODEX</span><p id="hint">${esc(menuHint(menuSel))}</p></div>
       <nav class="menu" aria-label="Main menu">${btns}</nav>
       <div class="menu-hint">▲ ▼ to choose · Enter to open</div>
+      <button class="p5btn fx-corner" data-act="fx">${fxOn ? 'FX on' : 'FX off'}</button>
+      <div class="ticker" aria-hidden="true"><div class="ticker-in">${tickerText}${tickerText}</div></div>
     </div>`;
 }
 document.addEventListener('mouseover', e => { const b = e.target.closest && e.target.closest('.mbtn'); if (b && b.dataset.i !== undefined) selectMenu(+b.dataset.i); });
@@ -1897,7 +2025,7 @@ function statsSVG(p) {
   o += `<circle cx="${C}" cy="${C}" r="181" fill="none" stroke="#111" stroke-width="1.5"/>`;
   // filled shape
   const poly = STAT_DEFS.map(d => pt(d.angle, p.stats[d.key] / 100 * R).map(f).join(',')).join(' ');
-  o += `<polygon points="${poly}" style="fill:var(--aura);fill-opacity:.78"/>`;
+  o += `<polygon class="statpoly" points="${poly}" style="fill:var(--aura);fill-opacity:.78"/>`;
   // axes + tick marks
   STAT_DEFS.forEach(d => {
     const [x, y] = pt(d.angle, R);
@@ -2416,6 +2544,7 @@ function applyBg(p) {
 function applyAura(color) { document.documentElement.style.setProperty('--aura', color || '#d6001c'); }
 function autosize() {
   $$('textarea').forEach(t => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; });
+  armReveal();
 }
 // re-draw just the part of the page that holds editable content
 function refresh() {
@@ -2427,6 +2556,7 @@ function refresh() {
 
 function render(animate) {
   document.body.classList.toggle('editing', editing);
+  applyFx();
   const r = route(), sec = sectionOf(r.kind);
   wheel.items = [];
   document.body.setAttribute('data-sec', r.kind);
@@ -2523,6 +2653,7 @@ document.addEventListener('click', async e => {
     case 'cat-filter': wheel.filter = el.dataset.cat; wheel.sel.abilities = null; render(); break;
     case 'lockbtn': editing ? lock() : openAuth(); break;
     case 'top': window.scrollTo({ top: 0, behavior: 'smooth' }); break;
+    case 'fx': toggleFx(); break;
     case 'zoom': $('#lightbox img').src = el.src; $('#lightbox').classList.add('show'); break;
 
     /* ----- abilities ----- */
@@ -2863,6 +2994,8 @@ async function init() {
   migrateState(state);
   editing = sessionStorage.getItem('codex-unlocked') === '1' && !!state.editHash;
   render(true);
+  buildSparkles();
+  if (fxOn && route().kind === 'menu' && !sessionStorage.getItem('codex-intro')) { sessionStorage.setItem('codex-intro', '1'); playIntro(); }
   booted = true;
 }
 init();
