@@ -639,6 +639,103 @@ body.vnon{overflow:hidden}
 body.nofx #burst,body.nofx #card{display:none}
 @media (max-width:860px){.topbar{flex-wrap:wrap;align-content:center;gap:6px 8px}.fxbtn{padding:4px 10px;font-size:14px}.vn-box{margin:0 3vw 3vh;padding:28px 20px 24px}.vn-char{height:34vh}.vn-title .ransom{font-size:44px!important}}
 
+/* ---------- updates: vinyl intro, cutscene, reading page ---------- */
+body[data-sec="updates"] #secbg,body[data-sec="update"] #secbg{background:radial-gradient(circle,#92114d 0 17%,transparent 18%) 0 0/62px 62px,radial-gradient(circle,#92114d 0 17%,transparent 18%) 31px 31px/62px 62px,#650029}
+body[data-sec="updates"],body[data-sec="update"]{--sec-shade:linear-gradient(158deg,transparent 56%,rgba(28,0,14,.72) 56.2%)}
+body[data-sec="updates"] main,body[data-sec="update"] main{max-width:1240px}
+body[data-sec="updates"] main{max-width:1560px;padding-left:3vw;padding-right:3vw}
+body.solo .topbar{display:none}
+body.solo main{padding-top:26px}
+.solo-tools{position:fixed;right:14px;top:12px;z-index:50}
+.z{transform:translateZ(calc(var(--z,0)*1px))}
+.tilt{transform:translateZ(calc(var(--z,0)*1px)) perspective(800px) rotateY(calc(var(--tx,0)*16deg)) rotateX(calc(var(--ty,0)*-16deg));transition:transform .2s ease-out}
+.world3d{perspective:1100px}
+.w3{transform-style:preserve-3d;transform:rotateY(calc(var(--mx,0)*9deg)) rotateX(calc(var(--my,0)*-7deg));transition:transform .25s ease-out;display:grid;justify-items:center;gap:2.2vmin}
+.s-upd{font:italic 900 clamp(48px,9vmin,120px)/1 var(--f-serif);color:#eef6fb;-webkit-text-stroke:5px #0a2748;paint-order:stroke fill;text-shadow:6px 6px 0 #0a2748;transform:translateZ(calc(var(--z,0)*1px)) rotate(-4deg)}
+.s-upd::first-letter{color:#f3cf84}
+.vtiles{display:flex;gap:2.2vmin;align-items:flex-end;justify-content:center}
+.vtile{position:relative;display:grid;place-items:center;width:clamp(70px,14vmin,170px);height:clamp(100px,20vmin,240px);background:linear-gradient(160deg,#f6d58e 0%,#ecc069 60%,#d9a24a 100%);border:4px solid #000;border-radius:16px;box-shadow:8px 8px 0 #000,inset -14px -10px 0 rgba(160,96,16,.55);transform:rotate(var(--r));animation:tilePop .75s cubic-bezier(.2,1.5,.4,1) calc(var(--i)*.14s + .3s) both}
+.vtile b{font:400 clamp(70px,16vmin,200px)/1 var(--f-black);color:#2b0900}
+.vtile::before{content:"";position:absolute;left:12%;right:30%;top:8%;height:5px;background:rgba(255,255,255,.75);border-radius:4px}
+.vtile.dot{width:clamp(30px,6vmin,70px);height:clamp(36px,7vmin,84px)}
+.vtile.dot b{font-size:clamp(30px,6vmin,70px)}
+@keyframes tilePop{from{opacity:0;transform:translateY(80px) rotateX(70deg) rotate(calc(var(--r)*3)) scale(.5)}to{opacity:1;transform:rotate(var(--r))}}
+.s-ttl{font:italic 900 clamp(44px,11vmin,150px)/1.02 var(--f-serif);color:#eef6fb;-webkit-text-stroke:6px #0a2748;paint-order:stroke fill;text-shadow:8px 8px 0 #0a2748;text-align:center;max-width:84vw;transform:translateZ(calc(var(--z,0)*1px)) rotate(-4deg);animation:vnTitle .8s cubic-bezier(.2,1.2,.4,1) both}
+.s-ttl::first-letter{color:#f3cf84;font-size:1.25em}
+.udate{display:inline-block;background:#0a0a0a;color:#fff;border:3px solid #fff;padding:2px 18px;font:400 clamp(16px,2.6vmin,26px) var(--f-cond);letter-spacing:.12em;text-transform:uppercase;box-shadow:4px 4px 0 var(--red)}
+#upl{position:fixed;inset:0;z-index:235;background:#0b1329;overflow:hidden}
+#upl.out{animation:uplOut .6s ease both}
+@keyframes uplOut{to{opacity:0;transform:scale(1.08)}}
+.upl-start{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:30px;background:radial-gradient(rgba(255,255,255,.1) 1.4px,transparent 2px) 0 0/22px 22px,#0b1329}
+.vinyl{position:relative;width:min(66vmin,480px);aspect-ratio:1;cursor:pointer}
+.vinyl-disc{position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,#05060a 0 2px,#161821 2px 3px,#05060a 3px 5px);box-shadow:0 0 0 6px #000,14px 14px 0 rgba(4,10,40,.9)}
+.vinyl-disc::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 210deg,rgba(255,255,255,.18),transparent 14%,transparent 52%,rgba(255,255,255,.08) 58%,transparent 66%)}
+.vinyl.spin .vinyl-disc{animation:spinRec 2.6s linear infinite}
+@keyframes spinRec{to{transform:rotate(360deg)}}
+.vinyl-label{position:absolute;left:50%;top:50%;width:44%;aspect-ratio:1;margin:-22% 0 0 -22%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f7d894,#eec36f 60%,#d39a3d);border:5px solid #000;display:grid;place-items:center}
+.vinyl-label::before{content:"";position:absolute;inset:7%;border:3px solid #0a0a14;border-radius:50%}
+.vinyl-label i{width:34%;aspect-ratio:1;background:#05060f;clip-path:polygon(0 0,100% 50%,0 100%);margin-left:8%}
+.tonearm{position:absolute;right:-8%;top:-6%;width:44%;height:62%;transform-origin:86% 11%;transform:rotate(-6deg);transition:transform 1s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.vinyl.drop .tonearm{transform:rotate(16deg)}
+.tonearm::before{content:"";position:absolute;right:4%;top:4%;width:24%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffe9b2 0 16%,#eec36f 18% 38%,#aeb3bd 40%);border:4px solid #1a1d2c}
+.tonearm b{position:absolute;right:14%;top:12%;width:7%;height:80%;background:linear-gradient(90deg,#8b92a0,#d6dae2 50%,#7a808e);border:3px solid #1a1d2c;transform-origin:50% 0;transform:rotate(26deg)}
+.upl-play{font:400 clamp(26px,4vmin,40px) var(--f-black);color:#fff;letter-spacing:.3em;cursor:pointer}
+.upl-skip{position:absolute;right:0;bottom:14px;z-index:5;background:#0b1329;color:#fff;border:3px solid #fff;border-right:0;padding:8px 22px;font:400 20px var(--f-black);letter-spacing:.12em;cursor:pointer}
+.upl-scene{position:absolute;inset:0;cursor:pointer}
+.scene{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;animation:stageIn .45s ease both;--bg:#650029;--dot:#8e0042;background:radial-gradient(circle,var(--dot) 0 17%,transparent 18%) 0 0/72px 72px,radial-gradient(circle,var(--dot) 0 17%,transparent 18%) 36px 36px/72px 72px,var(--bg)}
+.scene::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,transparent 58%,rgba(20,0,10,.55) 58.2%);pointer-events:none}
+.scene.th2{--bg:#a3310f;--dot:#cf5517}.scene.th3{--bg:#19103f;--dot:#2c1d6b}.scene.th4{--bg:#0f2f6e;--dot:#1b4aa3}.scene.th5{--bg:#04060f;--dot:#0b1130}
+.scene .w3{position:relative;z-index:2}
+.cards3{display:flex;gap:4vmin;align-items:flex-start;justify-content:center;padding:0 4vw}
+.c3{margin:0;width:clamp(120px,24vmin,320px);transform:translateZ(calc(var(--z)*1px)) translateY(var(--dy)) rotate(var(--r));animation:cardIn .85s cubic-bezier(.2,.9,.25,1) calc(var(--i)*.18s) both}
+.c3img{aspect-ratio:3/4;background:#120708;border:5px solid #1a0604;box-shadow:10px 10px 0 rgba(0,0,0,.55);overflow:hidden;display:grid;place-items:center}
+.c3img img{width:100%;height:100%;object-fit:cover}
+.c3img span{font:400 90px var(--f-cond);color:#552}
+.c3 figcaption{display:inline-block;margin-top:-6px;background:#2a0a07;color:#fff;font:italic 700 clamp(14px,2.4vmin,26px) var(--f-serif);padding:3px 18px;border:3px solid #120403;box-shadow:5px 5px 0 rgba(0,0,0,.5)}
+@keyframes cardIn{from{opacity:0;transform:translateZ(-300px) translateY(160px) rotate(calc(var(--r)*4))}to{opacity:1;transform:translateZ(calc(var(--z)*1px)) translateY(var(--dy)) rotate(var(--r))}}
+.s-cover{max-width:min(80vw,760px);animation:coverIn 1.2s cubic-bezier(.2,.9,.25,1) both}
+.s-cover img{display:block;max-width:100%;max-height:78vh;box-shadow:0 24px 70px rgba(0,0,0,.75);border:4px solid #000}
+@keyframes coverIn{from{opacity:0;transform:translateZ(-200px) scale(.85)}to{opacity:1;transform:translateZ(60px) scale(1)}}
+.upage{position:relative}
+.uhero{position:relative;padding:10px 0 34px;text-align:center}
+.uhero .vtile{width:clamp(56px,10vw,130px);height:clamp(80px,14vw,190px);animation-delay:calc(var(--i)*.14s + .2s)}
+.uhero .vtile b{font-size:clamp(56px,11vw,150px)}
+.uhero .vtile.dot{width:clamp(24px,4vw,52px);height:clamp(30px,5vw,64px)}
+.uhero .vtile.dot b{font-size:clamp(24px,4vw,52px)}
+.utitle{margin:0;font:italic 900 clamp(34px,6vw,72px)/1.05 var(--f-serif);color:#fff;text-shadow:5px 5px 0 var(--red);transform:translateZ(calc(var(--z,0)*1px)) rotate(-1.5deg)}
+.ucover img{display:block;width:100%;max-width:900px;max-height:70vh;object-fit:contain;border:5px solid #000;box-shadow:12px 12px 0 rgba(0,0,0,.6);cursor:zoom-in;background:#000}
+.utoc{background:#0a0a0a;border:4px solid #fff;box-shadow:8px 8px 0 var(--red);padding:20px 26px;margin:34px 0}
+.utoc-h{margin:0 0 12px;font:400 30px var(--f-cond);letter-spacing:.08em;text-transform:uppercase}
+.utoc ol{margin:0;padding:0;list-style:none;columns:2;column-gap:36px}
+.utoc li{break-inside:avoid}
+.utoc-item{display:flex;gap:14px;align-items:baseline;width:100%;text-align:left;background:none;border:0;color:#fff;padding:5px 0;font:700 17px var(--f-body);cursor:pointer;transition:color .15s,transform .15s}
+.utoc-item b{font:400 15px var(--f-mono);color:var(--red2)}
+.utoc-item.h{font:400 21px var(--f-cond);letter-spacing:.06em;text-transform:uppercase;margin-top:6px}
+.utoc-item:hover{color:#f3cf84;transform:translateX(6px)}
+.usec{margin:34px 0;scroll-margin-top:90px}
+.uhead{margin-top:56px}
+.uentry{background:#0a0a0a;border:4px solid #fff;box-shadow:8px 8px 0 rgba(0,0,0,.9);padding:22px 26px}
+.uname{margin:0 0 10px;font:italic 900 clamp(26px,3.4vw,40px)/1.1 var(--f-serif);color:#f3cf84}
+.utext{font-size:18px}
+.utext p,.utext li{margin:0 0 6px}
+.utext ul{margin:6px 0 10px;padding-left:22px}
+.utext li::marker{color:var(--red2)}
+.rev .ln{opacity:0;translate:0 16px}
+.rev.in .ln{opacity:1;translate:0 0;transition:opacity .5s ease calc(var(--k)*70ms + .2s),translate .6s cubic-bezier(.2,.9,.25,1) calc(var(--k)*70ms + .2s)}
+.uimgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;margin-top:16px;perspective:1000px}
+.uimg{margin:0;border:4px solid #fff;background:#0a0a0e;box-shadow:8px 8px 0 rgba(0,0,0,.8);overflow:hidden;cursor:zoom-in}
+.uimg img{width:100%;display:block}
+.backrow{flex-wrap:wrap;gap:14px}
+.ufields{display:grid;grid-template-columns:1fr 2fr;gap:14px;margin:6px 0 16px}
+.ucoverbox{display:grid;gap:10px;margin-bottom:16px;max-width:560px}
+.ucoverprev{width:100%;max-height:220px;object-fit:contain;border:3px solid #fff;background:#000}
+.ushare{background:#0a0a0a;border:4px solid #fff;box-shadow:6px 6px 0 var(--red);padding:16px 20px;margin-bottom:22px}
+.ushare .chk{display:flex;gap:10px;align-items:flex-start;font:600 15px var(--f-body)}
+.ushare input[type=checkbox]{width:20px;height:20px;accent-color:var(--red);margin-top:3px}
+.ushare .hint{margin:10px 0 0;font:600 12px var(--f-mono);color:#aaa}
+body.nofx .rev .ln{opacity:1;translate:none}
+@media (max-width:700px){.utoc ol{columns:1}.ufields{grid-template-columns:1fr}}
+
 /* ---------- responsive ---------- */
 @media (max-width:980px){
   .hero{grid-template-columns:1fr}
@@ -695,6 +792,18 @@ body.nofx #burst,body.nofx #card{display:none}
 </div>
 
 <button class="p5btn red" id="topBtn" data-act="top" aria-label="Back to top">▲ Top</button>
+<div id="upl" hidden aria-label="Update intro">
+  <div class="upl-start" id="uplStart">
+    <div class="vinyl" id="vinyl" data-act="upl-play" role="button" tabindex="0" aria-label="Play the intro">
+      <div class="vinyl-disc"><div class="vinyl-label"><i></i></div></div>
+      <div class="tonearm"><b></b></div>
+    </div>
+    <div class="upl-play" data-act="upl-play">PLAY</div>
+  </div>
+  <div class="upl-scene" id="uplScene" data-act="upl-next"></div>
+  <button class="upl-skip" data-act="upl-skip">SKIP ➤</button>
+</div>
+
 <div id="pal" hidden role="dialog" aria-modal="true" aria-label="Quick search">
   <div class="pal-box">
     <span class="btag">JUMP TO</span>
@@ -774,7 +883,7 @@ body.nofx #burst,body.nofx #card{display:none}
     <label class="dl">Repository <input type="text" id="pubRepo" placeholder="owner/name"></label>
     <label class="dl">Site address <input type="text" id="pubBase" placeholder="https://owner.github.io/Repo/"></label>
     <label class="chk"><input type="checkbox" id="pubData" checked> Update data.json (your content)</label>
-    <label class="chk"><input type="checkbox" id="pubPrev" checked> Update link previews</label>
+    <label class="chk"><input type="checkbox" id="pubPrev" checked> Update link previews and public update pages</label>
     <div class="err" id="pubErr"></div>
     <p class="hint" id="pubStatus"></p>
     <p class="hint">One-time setup: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">open GitHub’s token page</a>, give the token a name, under Repository access choose “Only select repositories” and pick this repo, then under Permissions set <b>Contents</b> to “Read and write”. Generate it and paste it above. The token stays in this browser only and is never put in your data.</p>
@@ -955,9 +1064,9 @@ document.addEventListener('mousemove', e => {
 // boxes slide in as you scroll down to them
 let revObs = null;
 function armReveal() {
-  if (editing || !fxOn || !('IntersectionObserver' in window)) return;
+  if (editing || !fxOn || upl.open || !('IntersectionObserver' in window)) return;
   revObs = revObs || new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); revObs.unobserve(en.target); } }), { threshold: .06 });
-  $$('.moves-head,.move,.statscard,.qitem,.blk,.qintro,.wanted,.kw').forEach(el => { if (!el.classList.contains('rev')) { el.classList.add('rev'); revObs.observe(el); } });
+  $$('.moves-head,.move,.statscard,.qitem,.blk,.qintro,.wanted,.kw,.usec,.uhero,.utoc').forEach(el => { if (!el.classList.contains('rev')) { el.classList.add('rev'); revObs.observe(el); } });
 }
 function playIntro() {
   const el = $('#intro'); if (!el) return;
@@ -978,6 +1087,7 @@ function palSource() {
   const out = [];
   orderedPages().forEach(p => out.push({ kind: 'Ability', name: p.name || 'Untitled', meta: [p.part, p.rarity].filter(Boolean).join(' · '), go: '#/p/' + p.id }));
   state.quests.forEach(q => out.push({ kind: 'Quest', name: q.name || 'Untitled', meta: q.summary, go: '#/q/' + q.id }));
+  (state.updates || []).forEach(u => out.push({ kind: 'Update', name: u.title || 'Untitled', meta: [u.version ? 'v' + u.version : '', u.date].filter(Boolean).join(' · '), go: '#/u/' + u.id }));
   [['keywording', 'Keyword'], ['archetypes', 'Archetype']].forEach(([k, label]) => state[GLOSS[k].key].forEach(e => { if (e.type === 'entry') out.push({ kind: label, name: e.name || 'Untitled', meta: e.text, go: '#/' + k, sec: k, id: e.id }); }));
   return out;
 }
@@ -994,7 +1104,7 @@ function renderPal() {
     : '<li class="pal-none">Nothing found.</li>';
 }
 function openPal() {
-  if (!state) return;
+  if (!state || soloId) return;
   pal.open = true; pal.idx = 0; pal.items = palFilter('');
   $('#pal').hidden = false; $('#palIn').value = ''; renderPal(); $('#palIn').focus(); sfx('open');
 }
@@ -1100,6 +1210,163 @@ function vnKey(e) {
   else if (/^[1-9]$/.test(k)) { e.preventDefault(); vnChoose(+k - 1); }
 }
 
+/* =====================================================================
+   UPDATES: a cinematic intro, then a reading page; a shared update lives on its own public page
+   ===================================================================== */
+// ?u=ID opens one shared update on its own: no password, and no way into the rest of the site
+const soloId = (() => { try { const v = new URLSearchParams(location.search || '').get('u'); return /^[\w-]{3,40}$/.test(v || '') ? v : ''; } catch { return ''; } })();
+const blankUpdate = () => ({ id: uid(), version: '1.0', title: 'New Update', date: '', cover: '', public: false, sections: [] });
+function migrateUpdate(u) {
+  u.version = u.version || ''; u.title = u.title || ''; u.date = u.date || ''; u.cover = u.cover || ''; u.public = !!u.public; u.sections = u.sections || [];
+  u.sections.forEach(x => { if (x.type === 'entry') { x.images = x.images || []; fixLinks(x); } });
+}
+const tilesHTML = v => [...String(v || '?')].map((ch, k) => `<span class="vtile ${ch === '.' ? 'dot' : ''}" style="--r:${((ch.charCodeAt(0) * 7 + k * 13) % 9) - 4}deg;--i:${k}"><b>${esc(ch)}</b></span>`).join('');
+// lines starting with "- " become bullets; every line fades up one after the other
+function textHTML(text) {
+  let out = '', list = [], k = 0;
+  const flush = () => { if (list.length) { out += `<ul>${list.join('')}</ul>`; list = []; } };
+  String(text || '').split('\n').forEach(raw => {
+    const m = raw.match(/^\s*[-•*]\s+(.*)$/);
+    if (m) list.push(`<li class="ln" style="--k:${k++}">${esc(m[1])}</li>`);
+    else { flush(); if (raw.trim()) out += `<p class="ln" style="--k:${k++}">${esc(raw)}</p>`; }
+  });
+  flush(); return out;
+}
+function usecHTML(sec) {
+  if (sec.type === 'header') return `<div class="usec uhead" id="us-${sec.id}">${ransom(sec.text || 'Chapter', 56)}</div>`;
+  const imgs = (sec.images || []).map((src, n) => `<figure class="uimg tilt"><img src="${esc(src)}" alt="${esc(sec.name || '')} ${n + 1}" data-act="zoom"></figure>`).join('');
+  const vids = linksHTML(sec);
+  return `<article class="usec uentry" id="us-${sec.id}"><h3 class="uname">${esc(sec.name || 'Untitled')}</h3><div class="utext">${textHTML(sec.text)}</div>${imgs ? `<div class="uimgs">${imgs}</div>` : ''}${vids ? `<div class="vids">${vids}</div>` : ''}</article>`;
+}
+function updateView(u) {
+  if (editing) return updateEditView(u);
+  const toc = u.sections.map((sec, i) => `<li><button class="utoc-item ${sec.type === 'header' ? 'h' : ''}" data-act="us-go" data-id="${sec.id}"><b>${String(i + 1).padStart(2, '0')}</b>${esc((sec.type === 'header' ? sec.text : sec.name) || 'Untitled')}</button></li>`).join('');
+  return `
+    <div class="upage">
+      ${soloId ? `<div class="menu-tools solo-tools"><button class="p5btn sfx-corner" data-act="sfx">${sfxOn ? 'SFX on' : 'SFX off'}</button><button class="p5btn fx-corner" data-act="fx">${fxOn ? 'FX on' : 'FX off'}</button></div>` : ''}
+      <header class="uhero world3d" id="uhero"><div class="w3">
+        <div class="s-upd z" style="--z:60">Update</div>
+        <div class="vtiles z" style="--z:110">${tilesHTML(u.version)}</div>
+        <h1 class="utitle z" style="--z:40">${esc(u.title)}</h1>
+        ${u.date ? `<div class="udate z" style="--z:30">${esc(u.date)}</div>` : ''}
+        ${u.cover ? `<div class="ucover z tilt" style="--z:20"><img src="${esc(u.cover)}" alt="${esc(u.title)} cover" data-act="zoom"></div>` : ''}
+      </div></header>
+      ${toc ? `<nav class="utoc" aria-label="Contents"><h2 class="utoc-h">Contents</h2><ol>${toc}</ol></nav>` : ''}
+      ${u.sections.map(usecHTML).join('')}
+      <div class="backrow">
+        ${soloId ? '' : '<a class="p5btn red" href="#/updates">◂ Back</a>'}
+        <button class="p5btn" data-act="upl-replay" data-id="${u.id}">↻ Replay intro</button>
+        <button class="p5btn" data-act="copy-update-link" data-id="${u.id}">Copy link</button>
+      </div>
+    </div>`;
+}
+function updateEditView(u) {
+  return `
+    <div class="upage uedit">
+      <span class="p5title sectag">${ransom('Updates', 40)}</span>
+      <div class="titlebar"><h1 class="title">${F(u, 'title', 'Update title')}</h1><div class="acts2 edit-only"><button class="btn" data-act="dup-update" data-id="${u.id}">Duplicate</button></div></div>
+      <div class="ufields"><div><span class="lbl">Version</span>${F(u, 'version', 'e.g. 15.5')}</div><div><span class="lbl">Date</span>${F(u, 'date', 'e.g. November 8, 2026')}</div></div>
+      <div class="ucoverbox"><span class="lbl">Cover image (last scene of the intro, and the top of the page)</span>
+        ${u.cover ? `<img class="ucoverprev" src="${esc(u.cover)}" alt="">` : ''}
+        <div class="drop" data-drop="cover" data-pick="cover">${u.cover ? 'Replace cover' : 'Drop the cover image here or click to choose'}</div>
+        ${u.cover ? '<button class="btn sm danger" data-act="del-cover">Remove cover</button>' : ''}
+      </div>
+      <div class="ushare">
+        <label class="chk"><input type="checkbox" data-f="public" ${u.public ? 'checked' : ''}> Public link: anyone with the link can read this update without the password, and cannot reach the rest of the site</label>
+        <div class="row2"><button class="btn gold" data-act="publish">Publish</button><button class="btn" data-act="copy-update-link" data-id="${u.id}">Copy share link</button></div>
+        <p class="hint">Tick the box, then press Publish to put this update online. Untick it and publish again to take it down.</p>
+      </div>
+      <div id="usecs" class="flatlist"></div>
+      <div class="edit-only block"><div class="addrow">
+        <button class="btn gold" data-act="us-add" data-type="header">+ Header</button>
+        <button class="btn gold" data-act="us-add" data-type="entry">+ Section</button>
+      </div></div>
+      <div class="backrow"><a class="p5btn red" href="#/updates">◂ Back</a></div>
+    </div>`;
+}
+const usTools = x => `<div class="tools edit-only"><button class="btn sm" data-act="us-up" data-b="${x.id}" aria-label="Move up">↑</button><button class="btn sm" data-act="us-down" data-b="${x.id}" aria-label="Move down">↓</button><button class="btn sm danger" data-act="us-del" data-b="${x.id}">Delete</button></div>`;
+function renderUpdateEdit(u) {
+  $('#usecs').innerHTML = u.sections.map(x => x.type === 'header'
+    ? `<div class="blk hd" data-id="${x.id}"><h3>${F(x, 'text', 'Chapter title', { mid: x.id })}</h3>${usTools(x)}</div>`
+    : `<article class="kw" data-id="${x.id}"><header><h3>${F(x, 'name', 'Section title', { mid: x.id })}</h3>${usTools(x)}</header><div class="kbody"><div class="ktext">${F(x, 'text', 'Text. Start a line with “- ” to make a bullet.', { ml: true, mid: x.id })}</div>${mediaInner(x).html}</div></article>`).join('')
+    || '<div class="empty">No sections yet. Add a header or a section below.</div>';
+  autosize();
+}
+// ---- the intro: vinyl PLAY screen, then a short cutscene of the update, then the page ----
+const upl = { open: false, u: null, scenes: [], i: -1, timer: 0, playing: false };
+function updateScenes(u) {
+  const sc = [{ k: 'version', th: 1, ms: 3200, version: u.version || '?' }, { k: 'title', th: 3, ms: 2500, title: u.title || '', date: u.date || '' }];
+  const entries = u.sections.filter(x => x.type === 'entry'), withImg = entries.filter(x => (x.images || []).length);
+  const pool = withImg.length ? withImg : entries;
+  for (let i = 0, n = 0; i < pool.length && n < 4; i += 3, n++) sc.push({ k: 'cards', th: [2, 4, 3, 1][n % 4], ms: 3000, items: pool.slice(i, i + 3).map(x => ({ name: x.name || '', img: (x.images || [])[0] })) });
+  sc.push({ k: 'cover', th: 5, ms: 3600, img: u.cover, title: u.title });
+  return sc;
+}
+function sceneHTML(sc) {
+  let inner;
+  if (sc.k === 'version') inner = `<div class="w3"><div class="s-upd z" style="--z:60">Update</div><div class="vtiles z" style="--z:110">${tilesHTML(sc.version)}</div></div>`;
+  else if (sc.k === 'title') inner = `<div class="w3"><div class="s-ttl z" style="--z:80">${esc(sc.title)}</div>${sc.date ? `<div class="udate z" style="--z:30">${esc(sc.date)}</div>` : ''}</div>`;
+  else if (sc.k === 'cards') inner = `<div class="w3"><div class="cards3">${sc.items.map((it, k) => `<figure class="c3 z" style="--z:${40 + k * 30};--r:${[-3, 2, -2][k % 3]}deg;--dy:${[0, 46, 10][k % 3]}px;--i:${k}"><div class="c3img">${it.img ? `<img src="${esc(it.img)}" alt="">` : `<span>${esc((it.name || '?')[0])}</span>`}</div><figcaption>${esc(it.name)}</figcaption></figure>`).join('')}</div></div>`;
+  else inner = `<div class="w3"><div class="s-cover z tilt" style="--z:60">${sc.img ? `<img src="${esc(sc.img)}" alt="">` : `<div class="s-cover-ph">${ransom(sc.title || 'Update', 80)}</div>`}</div></div>`;
+  return `<div class="scene th${sc.th || 1} k-${sc.k} world3d">${inner}</div>`;
+}
+function openUpl(u) {
+  upl.u = u; upl.scenes = updateScenes(u); upl.i = -1; upl.open = true; upl.playing = false;
+  try { sessionStorage.setItem('codex-upl-' + u.id, '1'); } catch {}
+  const el = $('#upl'); el.hidden = false; el.classList.remove('out');
+  $('#uplStart').hidden = false; $('#uplScene').innerHTML = ''; $('#vinyl').classList.remove('spin', 'drop');
+}
+function uplPlay() {
+  if (!upl.open || upl.playing) return;
+  upl.playing = true; $('#vinyl').classList.add('spin', 'drop'); sfx('open');
+  setTimeout(() => { $('#uplStart').hidden = true; uplNext(); }, 1100);
+}
+function uplNext() {
+  if (!upl.open) return;
+  if (!upl.playing) { uplPlay(); return; }
+  clearTimeout(upl.timer); upl.i++;
+  if (upl.i >= upl.scenes.length) { uplClose(); return; }
+  const sc = upl.scenes[upl.i];
+  $('#uplScene').innerHTML = sceneHTML(sc); sfx('whoosh');
+  upl.timer = setTimeout(uplNext, sc.ms);
+}
+function hideUpl() { clearTimeout(upl.timer); upl.open = false; upl.playing = false; $('#upl').hidden = true; }
+function uplClose() {
+  clearTimeout(upl.timer); upl.open = false; upl.playing = false;
+  const el = $('#upl'); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.classList.remove('out'); }, 620);
+  armReveal();                                              // now that the page is visible, its parts slide in
+}
+function maybeIntro(u) {
+  let seen = false; try { seen = !!sessionStorage.getItem('codex-upl-' + u.id); } catch {}
+  if (fxOn && !reduceMotion && !seen && (u.cover || u.sections.length)) openUpl(u);
+}
+function uplKey(e) {
+  if (e.key === 'Escape') { e.preventDefault(); uplClose(); }
+  else if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); uplNext(); }
+}
+// ---- sharing ----
+async function updateLive(base, id) { try { const r = await fetch(`${base}u/${id}/update.json`, { method: 'HEAD', cache: 'no-store' }); return r.ok; } catch { return false; } }
+async function shareUpdateLink(id) {
+  const u = state.updates.find(x => x.id === id); if (!u) return;
+  if (!u.public && !soloId) { toast(editing ? 'Tick “Public link” first, then press Publish.' : 'This update is not shared publicly.', 5000); return; }
+  const base = siteBase(), plain = (base || location.href.split(/[?#]/)[0]) + '?u=' + id;
+  const live = soloId || (base ? await updateLive(base, id) : false);
+  const url = live && base ? `${base}u/${id}/` : plain;
+  try { await navigator.clipboard.writeText(url); } catch { window.prompt('Copy this link:', url); }
+  if (live) toast('Link copied. Anyone can open it without the password.', 4500);
+  else { toast('Link copied, but the public page is not online yet. Press Publish.', 6000); if (editing) openPub(); }
+}
+// ---- a shared update opened on its own ----
+async function initSolo() {
+  document.body.classList.add('solo');
+  let u = null;
+  try { const r = await fetch(`u/${soloId}/update.json`, { cache: 'no-store' }); if (r.ok) { const d = await r.json(); u = d && d.update; } } catch {}
+  state = migrateState({ pages: [], quests: [], keywords: [], archetypes: [], updates: u && u.id === soloId ? [u] : [] });
+  editing = false;
+  if (state.updates[0]) document.title = (state.updates[0].title || 'Update') + ' | TLA Codex';
+  render(true); buildSparkles(); booted = true;
+}
+
 /* ---------- keybinds ---------- */
 const KEY_ORDER = ['M1','M2','E','R','T','Y','G','H','J','X','V','B','Z','K'];
 // Looks at the moves already in the list (last one first) and returns the next key in KEY_ORDER.
@@ -1195,6 +1462,7 @@ function migrateState(st) {
   st.categories = Array.isArray(st.categories) ? st.categories : [];
   st.categories.forEach(c => { c.id = c.id || uid(); c.name = c.name || 'Category'; });
   st.pages = st.pages || []; st.quests = st.quests || []; st.keywords = st.keywords || []; st.archetypes = st.archetypes || [];
+  st.updates = st.updates || []; st.updates.forEach(migrateUpdate);
   st.pages.forEach(migratePage); st.quests.forEach(migrateQuest);
   st.pages.forEach(p => { if (!st.categories.some(c => c.id === p.category)) p.category = ''; });
   [st.keywords, st.archetypes].forEach(list => list.forEach(k => { if (k.type === 'entry') { k.images = k.images || []; fixLinks(k); } }));
@@ -1355,7 +1623,12 @@ const seed = () => {
   const archs = [
     { id: uid(), type: 'entry', name: 'Example Archetype', text: 'Explain what this archetype is, who it suits and how it plays.', images: [], links: [] }
   ];
-  return { editHash: '', categories: [], pages: [p], quests: [q], keywords: kws, archetypes: archs };
+  const upd = { id: uid(), version: '1.0', title: 'Example Update', date: 'November 1, 2026', cover: '', public: false, sections: [
+    { id: uid(), type: 'header', text: 'New Units' },
+    { id: uid(), type: 'entry', name: 'Example Unit', text: 'A short description of the new unit.\n- First change\n- Second change', images: [], links: [] },
+    { id: uid(), type: 'header', text: 'Changes' },
+    { id: uid(), type: 'entry', name: 'Balance', text: '- Something got stronger\n- Something got weaker', images: [], links: [] } ] };
+  return { editHash: '', categories: [], pages: [p], quests: [q], keywords: kws, archetypes: archs, updates: [upd] };
 };
 
 let state = null;
@@ -1632,16 +1905,32 @@ function sharePageHTML(o) {
 <meta property="og:title" content="${esc(o.title)}">
 <meta property="og:description" content="${esc(o.desc)}">
 <meta property="og:url" content="${esc(o.url)}">
-<meta property="og:image" content="${esc(o.image)}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${esc(o.title)}">
-<meta name="twitter:card" content="summary_large_image">
+${o.image ? `<meta property="og:image" content="${esc(o.image)}">` : ''}
+${o.image && o.size !== false ? '<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">' : ''}
+${o.image ? `<meta property="og:image:alt" content="${esc(o.title)}">` : ''}
+<meta name="twitter:card" content="${o.image ? 'summary_large_image' : 'summary'}">
 <meta name="twitter:title" content="${esc(o.title)}">
 <meta name="twitter:description" content="${esc(o.desc)}">
-<meta name="twitter:image" content="${esc(o.image)}">
+${o.image ? `<meta name="twitter:image" content="${esc(o.image)}">` : ''}
 <script>location.replace(${JSON.stringify(o.go)});<\/script>
 </head><body><p><a href="${esc(o.go)}">Open ${esc(o.title)}</a></p></body></html>`;
+}
+// a shared update becomes its own public pages: the data, a cover picture and a preview page that opens the standalone reader
+function dataUrlToBytes(url) {
+  const m = /^data:(image\/[\w.+-]+);base64,(.*)$/.exec(url || ''); if (!m) return null;
+  const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }[m[1]] || 'img';
+  return { mime: m[1], ext, bytes: unb64(m[2]) };
+}
+function updateFiles(u, base) {
+  const enc = new TextEncoder(), dir = `u/${u.id}/`, files = [];
+  const pub = JSON.parse(JSON.stringify(u)); pub.public = true;
+  files.push({ name: dir + 'update.json', data: enc.encode(JSON.stringify({ v: 1, update: pub })) });
+  const cv = dataUrlToBytes(u.cover);
+  if (cv) files.push({ name: `${dir}cover.${cv.ext}`, data: cv.bytes });
+  const desc = [u.version ? 'Update ' + u.version : '', u.date, u.sections.filter(s => s.type === 'entry').slice(0, 4).map(s => s.name).filter(Boolean).join(', ')].filter(Boolean).join(' · ').slice(0, 220);
+  files.push({ name: dir + 'index.html', data: enc.encode(sharePageHTML({ title: (u.title || 'Update') + (u.version ? ' · v' + u.version : ''), desc,
+    url: `${base}u/${u.id}/`, image: cv ? `${base}u/${u.id}/cover.${cv.ext}` : '', size: false, go: `../../?u=${u.id}` })) });
+  return files;
 }
 // builds the files to upload: one small preview page and one picture per ability (always the real name, text and image)
 async function buildShareFiles(base, onProgress) {
@@ -1655,6 +1944,7 @@ async function buildShareFiles(base, onProgress) {
       url: `${base}p/${pg.id}/`, image: `${base}p/${pg.id}/card.png`, go: `../../#/p/${pg.id}` })) });
     files.push({ name: `p/${pg.id}/card.png`, data: await renderShareCard(pg) });
   }
+  for (const u of state.updates.filter(x => x.public)) files.push(...updateFiles(u, base));
   return files;
 }
 const normBase = v => { v = (v || '').trim(); if (!/^https?:\/\/[^\s/]+/i.test(v)) return ''; return v.endsWith('/') ? v : v + '/'; };
@@ -1761,7 +2051,7 @@ async function publishToGitHub({ token, owner, repo, base, withData, withPreview
   if (withPreviews) {                                            // tidy away previews of abilities that no longer exist
     const keep = new Set(files.map(f => f.name));
     const full = await gh(token, 'GET', `${R}/git/trees/${head.tree.sha}?recursive=1`);
-    if (!full.truncated) (full.tree || []).forEach(t => { if (t.type === 'blob' && /^p\/[^/]+\/(index\.html|card\.png)$/.test(t.path) && !keep.has(t.path)) entries.push({ path: t.path, mode: '100644', type: 'blob', sha: null }); });
+    if (!full.truncated) (full.tree || []).forEach(t => { if (t.type === 'blob' && /^(p|u)\/[^/]+\/(index\.html|card\.png|update\.json|cover\.\w+)$/.test(t.path) && !keep.has(t.path)) entries.push({ path: t.path, mode: '100644', type: 'blob', sha: null }); });
   }
   if (!entries.length) throw new Error('Nothing to publish.');
   onStatus('Saving to your repo…');
@@ -1888,16 +2178,19 @@ $('#lockBtn').onclick = () => editing ? lock() : openAuth();
 
 /* ---------- routing ---------- */
 function route() {
+  if (soloId) { const u = state && state.updates && state.updates[0]; return u ? { kind: 'update', doc: u } : { kind: 'missing' }; }   // a shared update page can never reach the rest of the site
   const h = location.hash; let m, d;
   if ((m = h.match(/^#\/p\/(.+)$/)) && (d = state.pages.find(x => x.id === m[1]))) return { kind: 'ability', doc: d };
   if ((m = h.match(/^#\/q\/(.+)$/)) && (d = state.quests.find(x => x.id === m[1]))) return { kind: 'quest', doc: d };
   if (h === '#/abilities') return { kind: 'abilities', doc: state.categories };
+  if ((m = h.match(/^#\/u\/(.+)$/)) && (d = (state.updates || []).find(x => x.id === m[1]))) return { kind: 'update', doc: d };
+  if (h === '#/updates') return { kind: 'updates' };
   if (h === '#/quests') return { kind: 'quests' };
   if (h === '#/keywording') return { kind: 'keywording', doc: state.keywords };
   if (h === '#/archetypes') return { kind: 'archetypes', doc: state.archetypes };
   return { kind: 'menu' };
 }
-const sectionOf = k => (k === 'ability' || k === 'abilities') ? 'abilities' : (k === 'quest' || k === 'quests') ? 'quests' : k;
+const sectionOf = k => (k === 'ability' || k === 'abilities') ? 'abilities' : (k === 'quest' || k === 'quests') ? 'quests' : (k === 'update' || k === 'updates') ? 'updates' : k;
 
 // red / black / white wipe between screens
 let booted = false, wiping = false;
@@ -1951,9 +2244,10 @@ const MENU = [
   { key: 'abilities',  label: 'Abilities',  sub: 'Stats · passives · moves',  icon: '△', ic: '#3ddc84', href: '#/abilities',  l: '50%', t: '13%', r: '-5deg', w: '50%', hint: 'Every character’s stand stats, passives and full move lists, mode by mode.' },
   { key: 'keywording', label: 'Keywording', sub: 'Terms & rules',             icon: '□', ic: '#ff7ad9', href: '#/keywording', l: '0%',  t: '34%', r: '-3deg', w: '47%', hint: 'The key terms and rules that apply to every moveset.' },
   { key: 'archetypes', label: 'Archetypes', sub: 'Playstyles explained',      icon: '✕', ic: '#4aa3ff', href: '#/archetypes', l: '32%', t: '54%', r: '-6deg', w: '47%', hint: 'What each archetype is, and how it plays.' },
+  { key: 'updates',    label: 'Updates',    sub: 'What changed',              icon: '◆', ic: '#ffd24a', href: '#/updates',    l: '57%', t: '36%', r: '-4deg', w: '41%', hint: 'Update notes: a cinematic intro, then every change laid out to read.' },
   { key: 'edit',       label: 'Edit',       sub: 'Creator only',              icon: '✦', ic: '#ffffff', href: '',             l: '58%', t: '78%', r: '7deg',  w: '38%', hint: '' }
 ];
-const tickerText = Array(5).fill('<span>TLA Codex</span><b>✦</b><span>Abilities</span><b>✦</b><span>Quests</span><b>✦</b><span>Keywording</span><b>✦</b><span>Archetypes</span><b>✦</b>').join('');
+const tickerText = Array(5).fill('<span>TLA Codex</span><b>✦</b><span>Abilities</span><b>✦</b><span>Quests</span><b>✦</b><span>Keywording</span><b>✦</b><span>Archetypes</span><b>✦</b><span>Updates</span><b>✦</b>').join('');
 let menuSel = 1;
 const menuHint = i => { const b = MENU[i]; return b.key === 'edit' ? (editing ? 'Editing is on. Lock it when you are done.' : 'Creator only. Unlock edit mode to change the site.') : b.hint; };
 function selectMenu(i) {
@@ -1996,6 +2290,7 @@ const wheel = { idx: 0, kind: '', items: [], open: null, openKind: '', filter: '
 const WHEEL_META = {
   abilities:  { title: 'Abilities',  prompt: 'Choose an ability to see its stats, passives and moves.',         empty: 'No abilities yet.' },
   quests:     { title: 'Quests',     prompt: 'Choose a quest to read its story, items and choices.',            empty: 'No quests yet.' },
+  updates:    { title: 'Updates',    prompt: 'Choose an update to read what changed.',                      empty: 'No updates yet.' },
   keywording: { title: 'Keywording', prompt: 'Key terms and rules that apply to every moveset. Select one to read it.', empty: 'No keywords yet.' },
   archetypes: { title: 'Archetypes', prompt: 'The archetypes and what each one does. Select one to read it.',    empty: 'No archetypes yet.' }
 };
@@ -2025,6 +2320,11 @@ function wheelItems(kind) {
         const img = (x.characters.find(c => c.image) || x.items.find(i => i.image) || {}).image;
         return { id: x.id, href: '#/q/' + x.id, name: x.name || 'Untitled', meta, img, stage: { img, title: x.name || 'Untitled', label: 'Quest', tag: short(x.summary, 80), sub: meta } };
       });
+  }
+  if (kind === 'updates') {
+    return state.updates.filter(u => !q || (u.title + ' ' + u.version + ' ' + u.date).toLowerCase().includes(q))
+      .map(u => ({ id: u.id, href: '#/u/' + u.id, name: u.title || 'Untitled', meta: [u.version ? 'v' + u.version : '', u.date, u.public ? 'shared' : ''].filter(Boolean).join(' · '), img: u.cover,
+        stage: { img: u.cover, title: u.title || 'Untitled', label: u.version ? 'v' + u.version : 'Update', tag: u.date, sub: u.sections.filter(x => x.type === 'entry').length + ' sections' } }));
   }
   const g = GLOSS[kind]; let group = ''; const out = [];
   state[g.key].forEach(k => {
@@ -2105,6 +2405,10 @@ function wheelEditHTML(kind, items) {
         <div><button class="btn" data-act="cat-add">+ New category</button></div>
       </div>`;
   }
+  if (kind === 'updates') {
+    const u = it && state.updates.find(x => x.id === it.id);
+    return `${head}<div class="row2"><button class="btn gold" data-act="new-update">+ New update</button>${u ? `<button class="btn" data-act="open-sel">Open</button><button class="btn" data-act="dup-update" data-id="${u.id}">Duplicate</button><button class="btn danger" data-act="del-update" data-id="${u.id}">Delete</button>` : ''}</div>`;
+  }
   const q = it && state.quests.find(x => x.id === it.id);
   return `${head}
     <div class="row2">
@@ -2120,7 +2424,7 @@ function wheelPage(kind) {
   wheel.kind = kind; wheel.items = items; wheel.idx = idx;
   if (wheel.openKind !== kind) wheel.open = null;
   if (items[idx]) wheel.sel[kind] = items[idx].id;
-  const canOpen = kind === 'abilities' || kind === 'quests';
+  const canOpen = kind === 'abilities' || kind === 'quests' || kind === 'updates';
   return `
     <div class="wpage">
       <h1 class="p5title">${ransom(m.title, 62)}</h1>
@@ -2835,6 +3139,7 @@ function refresh() {
   if (r.kind === 'ability') renderMoves(r.doc);
   else if (r.kind === 'quest') renderQuestBody(r.doc);
   else if (GLOSS[r.kind] && editing) renderGlossary(r.kind);
+  else if (r.kind === 'update' && editing) renderUpdateEdit(r.doc);
 }
 
 function render(animate) {
@@ -2842,8 +3147,9 @@ function render(animate) {
   applyFx();
   const r = route(), sec = sectionOf(r.kind);
   wheel.items = [];
+  if (upl.open && r.kind !== 'update') hideUpl();
   document.body.setAttribute('data-sec', r.kind);
-  document.body.classList.toggle('haslist', ['abilities', 'quests', 'keywording', 'archetypes'].includes(r.kind) && !(GLOSS[r.kind] && editing && false));
+  document.body.classList.toggle('haslist', ['abilities', 'quests', 'updates', 'keywording', 'archetypes'].includes(r.kind) && !(GLOSS[r.kind] && editing && false));
   $('#lockBtn').textContent = editing ? 'Lock' : 'Edit';
   applyAura(r.kind === 'ability' ? r.doc.aura : '#d6001c');
   applyBg(r.kind === 'ability' ? r.doc : null);
@@ -2857,7 +3163,12 @@ function render(animate) {
     renderMoves(r.doc);
   } else if (r.kind === 'quest') {
     app.innerHTML = questView(r.doc); renderQuestBody(r.doc);
-  } else if (r.kind === 'abilities' || r.kind === 'quests') {
+  } else if (r.kind === 'update') {
+    app.innerHTML = updateView(r.doc);
+    if (editing) renderUpdateEdit(r.doc); else maybeIntro(r.doc);
+  } else if (r.kind === 'missing') {
+    app.innerHTML = '<div class="upage"><div class="empty">This update is not available. The link may be wrong, or it is not shared any more.</div></div>';
+  } else if (r.kind === 'abilities' || r.kind === 'quests' || r.kind === 'updates') {
     app.innerHTML = wheelPage(r.kind); layoutWheel();
   } else if (GLOSS[r.kind]) {
     app.innerHTML = kwView(r.kind);
@@ -2915,7 +3226,7 @@ document.addEventListener('change', e => {
 });
 
 /* ---------- editing: clicks ---------- */
-const EDIT_ACTS = new Set(['publish','sharecards','sitepw','new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down','cat-add','cat-del','cat-up','cat-down','page-left','page-right','add-passive','del-passive','pup','pdown','del-bg']);
+const EDIT_ACTS = new Set(['new-update','del-update','dup-update','us-add','us-del','us-up','us-down','del-cover','publish','sharecards','sitepw','new-page','del-page','dup-page','new-quest','del-quest','dup-quest','add-move','del-move','up','down','del-img','del-portrait','add-link','del-link','add-mode','del-mode','copy-moves','add-char','del-char','del-char-img','add-item','del-item','del-item-img','item-up','item-down','add-obj','del-obj','obj-up','obj-down','add-blk','del-blk','blk-up','blk-down','add-line','del-line','line-up','line-down','add-choice','del-choice','kw-add','kw-del','kw-up','kw-down','cat-add','cat-del','cat-up','cat-down','page-left','page-right','add-passive','del-passive','pup','pdown','del-bg']);
 const focusId = id => { const el = id && $(`[data-id="${id}"]`); if (el) el.scrollIntoView({ block: 'center' }); };
 
 document.addEventListener('click', async e => {
@@ -2938,6 +3249,33 @@ document.addEventListener('click', async e => {
     case 'top': window.scrollTo({ top: 0, behavior: 'smooth' }); break;
     case 'fx': toggleFx(); break;
     case 'sfx': toggleSfx(); break;
+    case 'new-update': { const nu = blankUpdate(); state.updates.unshift(nu); save(); wheel.sel.updates = nu.id; location.hash = '#/u/' + nu.id; break; }
+    case 'del-update':
+      if (confirm('Delete this update?')) { state.updates = state.updates.filter(x => x.id !== el.dataset.id); save(); render(); }
+      break;
+    case 'dup-update': {
+      const i = state.updates.findIndex(x => x.id === el.dataset.id); if (i < 0) break;
+      const c = clone(state.updates[i]); c.id = uid(); c.title = (c.title || 'Untitled') + ' (Copy)'; c.public = false;
+      state.updates.splice(i + 1, 0, c); save(); wheel.sel.updates = c.id; toast('Duplicated. It is not shared until you tick Public link.');
+      if (r.kind === 'update') location.hash = '#/u/' + c.id; else render();
+      break;
+    }
+    case 'us-add': {
+      if (r.kind !== 'update') break;
+      const x = el.dataset.type === 'header' ? { id: uid(), type: 'header', text: 'New chapter' } : { id: uid(), type: 'entry', name: 'New section', text: '', images: [], links: [] };
+      doc.sections.push(x); save(); renderUpdateEdit(doc); focusId(x.id); break;
+    }
+    case 'us-del': if (r.kind === 'update' && confirm('Delete this section?')) { doc.sections = doc.sections.filter(x => x.id !== el.dataset.b); save(); renderUpdateEdit(doc); } break;
+    case 'us-up': case 'us-down':
+      if (r.kind === 'update' && swap(doc.sections, el.dataset.b, act === 'us-up' ? -1 : 1)) { save(); renderUpdateEdit(doc); focusId(el.dataset.b); }
+      break;
+    case 'del-cover': if (r.kind === 'update') { doc.cover = ''; save(); render(); } break;
+    case 'upl-play': uplPlay(); break;
+    case 'upl-next': uplNext(); break;
+    case 'upl-skip': e.stopPropagation(); uplClose(); break;
+    case 'upl-replay': { const u = state.updates.find(x => x.id === el.dataset.id); if (u) { window.scrollTo(0, 0); openUpl(u); } break; }
+    case 'us-go': { const t = $('#us-' + el.dataset.id); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); break; }
+    case 'copy-update-link': shareUpdateLink(el.dataset.id); break;
     case 'pal': openPal(); break;
     case 'pal-go': palGo(+el.dataset.i); break;
     case 'play-quest': openVN(el.dataset.id); break;
@@ -3140,6 +3478,7 @@ $('#lightbox').onclick = () => $('#lightbox').classList.remove('show');
 document.addEventListener('keydown', e => {
   if (palOpen()) { palKey(e); return; }
   if (vnOpen()) { vnKey(e); return; }
+  if (upl.open) { uplKey(e); return; }
   if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 'k') { e.preventDefault(); openPal(); return; }
   const k = e.key, typing = e.target.closest && e.target.closest('input,textarea,select,[contenteditable]');
   if (!typing && !(e.ctrlKey || e.metaKey || e.altKey)) {
@@ -3200,7 +3539,7 @@ async function handleFiles(target, files) {
   for (const f of list) {
     try {
       if (f.type.startsWith('video/')) {
-        const o = (target === 'portrait' || target === 'background') ? null : findObj(doc, target);
+        const o = (target === 'portrait' || target === 'background' || target === 'cover') ? null : findObj(doc, target);
         if (!o || !Array.isArray(o.links)) { toast('Videos cannot be added here'); continue; }
         if (f.size > VIDEO_MAX) {
           toast(`“${f.name}” is too big to store in the site data (4 MB limit). Upload it to your GitHub repo, then paste its path, like videos/${f.name}, into the link box.`, 9000);
@@ -3208,9 +3547,10 @@ async function handleFiles(target, files) {
         }
         o.links.push(await readDataURL(f)); continue;
       }
-      const data = await toData(f, target === 'background' ? 1600 : target === 'portrait' ? 1100 : 900);
+      const data = await toData(f, (target === 'background' || target === 'cover') ? 1600 : target === 'portrait' ? 1100 : 900);
       if (target === 'portrait') doc.portrait = data;
       else if (target === 'background') doc.background = data;
+      else if (target === 'cover') doc.cover = data;
       else {
         const o = findObj(doc, target); if (!o) continue;
         if (Array.isArray(o.images)) o.images.push(data); else if ('image' in o) o.image = data;
@@ -3218,7 +3558,7 @@ async function handleFiles(target, files) {
     } catch { toast('Could not read ' + f.name); }
   }
   save();
-  (target === 'portrait' || target === 'background') ? render() : refresh();
+  (target === 'portrait' || target === 'background' || target === 'cover') ? render() : refresh();
 }
 $('#filePick').onchange = e => { handleFiles(pickTarget, e.target.files); e.target.value = ''; };
 
@@ -3257,7 +3597,7 @@ $('#jsonPick').onchange = async e => {
     }
     if (!Array.isArray(d.pages)) throw 0;
     if (!confirm('Replace your current draft with this file?')) return;
-    state = migrateState({ editHash: d.editHash || state.editHash || '', gate: d.gate || state.gate, categories: d.categories, pages: d.pages, quests: d.quests, keywords: d.keywords, archetypes: d.archetypes });
+    state = migrateState({ editHash: d.editHash || state.editHash || '', gate: d.gate || state.gate, categories: d.categories, pages: d.pages, quests: d.quests, keywords: d.keywords, archetypes: d.archetypes, updates: d.updates });
     if (k && state.gate) { gateKey = k; await rememberKey(k, state.gate); }
     await saveNow(); location.hash = '#/'; render(true); toast('Imported');
   } catch { toast('That file is not a valid data.json, or the password was wrong'); }
@@ -3272,6 +3612,7 @@ function toast(msg, ms = 3200) {
 
 /* ---------- boot ---------- */
 async function init() {
+  if (soloId) return initSolo();
   let draft = null, locked = null;
   try { draft = await idb.get('draft'); } catch {}
   if (draft && draft.pages) state = draft;
